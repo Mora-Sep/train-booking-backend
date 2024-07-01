@@ -105,6 +105,98 @@ const validateTrip = (trip) => {
   }
 };
 
+const validateCreateTrain = (train) => {
+  const { error } = joi
+    .object({
+      number: joi.number().required(),
+      name: joi.string().required(),
+      model: joi.number().required(),
+    })
+    .validate(train);
+  if (error) {
+    return error.details[0].message;
+  } else {
+    return null;
+  }
+};
+
+const validateCreateRailwayStation = (station) => {
+  const { error } = joi
+    .object({
+      code: joi.string().min(3).max(3).required(),
+      name: joi.string().required(),
+      district: joi.string().required(),
+    })
+    .validate(station);
+
+  if (error) {
+    return error.details[0].message;
+  } else {
+    return null;
+  }
+};
+
+const validateCreateRoute = (route) => {
+  const { error } = joi
+    .object({
+      origin: joi.string().length(3).required(),
+      destination: joi.string().length(3).required(),
+      duration: joi.number().required(),
+      basePrice: joi.allow(),
+    })
+    .validate(route);
+
+  if (error) {
+    return error.details[0].message;
+  } else {
+    return null;
+  }
+};
+
+const validateScheduleTrip = (trip) => {
+  const { error } = joi
+    .object({
+      routeID: joi.number().required(),
+      trainCode: joi.number().required(),
+      departureTime: joi.string().required(),
+      frequency: joi.allow(),
+    })
+    .validate(trip);
+
+  if (error) {
+    return error.details[0].message;
+  } else {
+    return null;
+  }
+};
+
+const validateStaffUpdate = (staff) => {
+  let schema;
+  if (staff.currentPassword) {
+    schema = joi.object({
+      firstName: joi.string(),
+      lastName: joi.string(),
+      username: joi.string(),
+      currentPassword: joi.string().min(8).max(16).required(),
+      newPassword: joi.string().min(8).max(16).required(),
+    });
+  } else {
+    schema = joi.object({
+      firstName: joi.string(),
+      lastName: joi.string(),
+      username: joi.string(),
+    });
+  }
+
+  const { error } = schema.validate(staff);
+
+  if (error) {
+    return error.details[0].message;
+  } else {
+    return null;
+  }
+};
+
 module.exports = {
   validateUser,
   validateUserWOPassword,
@@ -114,4 +206,9 @@ module.exports = {
   validateTrain,
   validateRailwayStation,
   validateTrip,
+  validateCreateTrain,
+  validateCreateRailwayStation,
+  validateCreateRoute,
+  validateScheduleTrip,
+  validateStaffUpdate,
 };

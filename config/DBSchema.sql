@@ -629,17 +629,15 @@ CREATE PROCEDURE GuestCreateBooking(
                 SET status_var = TRUE;
             END;
 
-CREATE PROCEDURE ScheduleTrip(
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ScheduleTrip`(
                 IN route_int SMALLINT, 
-                IN train_code VARCHAR(10), 
-                IN departure_date CHAR(10), 
-                IN departure_time CHAR(8),
+                IN train_code SMALLINT, 
+                IN departure_time TIME, 
+                IN frequency ENUM("Weekdays", "Weekends"),
                 OUT status_var BOOLEAN)
-
-            BEGIN
-                DECLARE departure_datetime DATETIME;
-                DECLARE lower_bound DATETIME;
-                DECLARE upper_bound DATETIME;
+BEGIN
+                DECLARE lower_bound TIME;
+                DECLARE upper_bound TIME;
                 DECLARE duration SMALLINT;
                 DECLARE scheduled_count SMALLINT;
                 
@@ -651,25 +649,27 @@ CREATE PROCEDURE ScheduleTrip(
                         FROM route as rut
                         WHERE rut.Route_ID = route_int;
                         
-                        SET departure_datetime = STR_TO_DATE(CONCAT(departure_date, ' ', departure_time), '%Y-%m-%d %H:%i:%s');
-                        SET lower_bound = DATE_SUB(departure_datetime, INTERVAL 1 HOUR);
-                        SET upper_bound = DATE_ADD(departure_datetime, INTERVAL duration + 60 MINUTE);
+                        
+                        SET lower_bound = DATE_SUB(departure_time, INTERVAL 1 HOUR);
+                        SET upper_bound = DATE_ADD(departure_time, INTERVAL duration + 60 MINUTE);
+ 
+                        
                         
                         SELECT COUNT(*) INTO scheduled_count
                         FROM trip as trp
                         WHERE
                             trp.trainCode = train_code
                             AND ( trp.departureDateAndTime > lower_bound AND trp.arrivalDateAndTime < upper_bound )
-                            OR ( trp.departureDateAndTime < lower_bound AND trp.arrivalDateAndTime > upper_bound )
-                            OR ( trp.departureDateAndTime < lower_bound AND trp.arrivalDateAndTime > lower_bound )
-                            OR ( trp.departureDateAndTime < upper_bound AND trp.arrivalDateAndTime > upper_bound );
+                            OR ( trp.departureDateAndTime < lower_bound AND trp.arrivalDateAndTime > upper_bound );
+                            -- OR ( trp.departureDateAndTime < lower_bound AND trp.arrivalDateAndTime > lower_bound );
+                            -- OR ( trp.departureDateAndTime < upper_bound AND trp.arrivalDateAndTime > upper_bound );
 
                         IF scheduled_count > 0 THEN
                             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'train has scheduled trips at this time';
                         END IF;
                         
-                        INSERT INTO scheduled_trip (Route, train, Departure_Time) 
-                        VALUES (route_int, train_code, departure_datetime);
+                        INSERT INTO scheduled_trip (Route, train, Departure_Time, Frequency) 
+                        VALUES (route_int, train_code, departure_time, frequency);
                         
                 COMMIT;
                 SET status_var = TRUE;
@@ -679,7 +679,6 @@ CREATE PROCEDURE CreateRailwayStation(
                 IN Code CHAR(3),
                 IN Name VARCHAR(20),
                 IN District VARCHAR(20),
-                IN Elevation DECIMAL(6,2),
                 OUT status_var BOOLEAN)
             
             BEGIN
@@ -689,9 +688,9 @@ CREATE PROCEDURE CreateRailwayStation(
                 START TRANSACTION;
                 
                     INSERT INTO 
-                        railway_station (Code, Name, District, Elevation) 
+                        railway_station (Code, Name, District) 
                     VALUES 
-                        (Code, Name, District, Elevation);
+                        (Code, Name, District);
                     
                 COMMIT;
                 SET status_var = TRUE;

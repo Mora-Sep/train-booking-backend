@@ -33,6 +33,9 @@ const getAdminToken = async ({ username, password }) => {
 };
 
 const getAdminDetails = async (username) => {
+  if (!(await adminRepository.findAdminByUsername(username))) {
+    throw new Error("Access Denied!");
+  }
   return adminRepository.getAdminDetails(username);
 };
 
