@@ -197,6 +197,23 @@ const validateStaffUpdate = (staff) => {
   }
 };
 
+const validateCreateBooking = (data) => {
+  const { error } = joi
+    .object({
+      tripID: joi.number().required(),
+      class: joi.string().required(),
+      bookingCount: joi.number().required(),
+      passengers: joi.allow(),
+    })
+    .validate(data);
+
+  if (error) {
+    return error.details[0].message;
+  } else {
+    return null;
+  }
+};
+
 module.exports = {
   validateUser,
   validateUserWOPassword,
@@ -211,4 +228,5 @@ module.exports = {
   validateCreateRoute,
   validateScheduleTrip,
   validateStaffUpdate,
+  validateCreateBooking,
 };

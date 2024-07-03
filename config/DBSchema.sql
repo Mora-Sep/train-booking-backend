@@ -238,7 +238,7 @@ CREATE OR REPLACE VIEW seat_reservation AS
                         booked_seat AS bk
                         INNER JOIN booking AS bkset ON bk.Booking = bkset.Booking_Ref_ID
                         INNER JOIN base_price AS bprc ON bkset.BPrice_Per_Booking = bprc.Price_ID
-                        INNER JOIN class AS cls ON bprc.Class = cls.Class_Name
+                        INNER JOIN class AS cls ON bprc.Class = cls.Class_Code
                         INNER JOIN scheduled_trip AS sht ON bkset.scheduled_trip = sht.Scheduled_ID
                         GROUP BY sht.Scheduled_ID , cls.Class_Name) 
                     AS subquery1
@@ -253,7 +253,7 @@ CREATE OR REPLACE VIEW seat_reservation AS
                         INNER JOIN train AS trn ON sht.train = trn.Number
                         INNER JOIN model AS mdl ON trn.Model = mdl.Model_ID
                         INNER JOIN capacity AS cpt ON mdl.Model_ID = cpt.Model
-                        INNER JOIN class AS cls ON cpt.Class = cls.Class_Name)
+                        INNER JOIN class AS cls ON cpt.Class = cls.Class_Code)
                     AS subquery2 
                 ON subquery1.id = subquery2.id AND subquery1.clas = subquery2.clas
             WHERE DATE(subquery2.date) >= CURDATE()
@@ -263,9 +263,10 @@ CREATE OR REPLACE VIEW ticket AS
             SELECT 
                 bk.Ticket_Number AS ticketNumber,
                 CONCAT(bk.FirstName, ' ', bk.LastName) AS passenger,
-                CONCAT('BA', LPAD(CAST(rut.Route_ID AS CHAR (4)), 4, '0')) AS trip,
-                DATE(sht.Departure_Time) AS departureDate,
-                DATE_FORMAT(sht.Departure_Time, '%H:%i') AS departureTime,
+                rut.Route_ID AS route,
+                org.Name AS origin,
+                des.Name AS destination,
+                sht.Departure_Time AS departureTime,
                 cls.Class_Name AS class,
                 bkset.Booking_Ref_ID AS bookingRefID,
                 usr.Username AS bookedUser,
@@ -278,13 +279,13 @@ CREATE OR REPLACE VIEW ticket AS
                 INNER JOIN booking AS bkset ON bk.Booking = bkset.Booking_Ref_ID
                 LEFT JOIN registered_user AS usr ON bkset.User = usr.Username
                 INNER JOIN base_price AS bprc ON bkset.BPrice_Per_Booking = bprc.Price_ID
-                INNER JOIN class AS cls ON bprc.Class = cls.Class_Name
+                INNER JOIN class AS cls ON bprc.Class = cls.Class_Code
                 INNER JOIN scheduled_trip AS sht ON bkset.scheduled_trip = sht.Scheduled_ID
                 INNER JOIN route AS rut ON sht.Route = rut.Route_ID
                 INNER JOIN railway_station AS org ON rut.Origin = org.Code
                 INNER JOIN railway_station AS des ON rut.Destination = des.Code
-            WHERE
-                DATE(sht.Departure_Time) >= CURDATE()
+            -- WHERE
+            --     DATE(sht.Departure_Time) >= CURDATE()
             GROUP BY bk.Ticket_Number;
 
 CREATE OR REPLACE VIEW passenger AS
@@ -306,7 +307,7 @@ CREATE OR REPLACE VIEW passenger AS
                 INNER JOIN booking AS bkset ON bk.Booking = bkset.Booking_Ref_ID
                 LEFT JOIN registered_user AS usr ON bkset.User = usr.Username
                 INNER JOIN base_price AS bprc ON bkset.BPrice_Per_Booking = bprc.Price_ID
-                INNER JOIN class AS cls ON bprc.Class = cls.Class_Name
+                INNER JOIN class AS cls ON bprc.Class = cls.Class_Code
                 INNER JOIN scheduled_trip AS sht ON bkset.scheduled_trip = sht.Scheduled_ID
                 INNER JOIN route AS rut ON sht.Route = rut.Route_ID
                 INNER JOIN railway_station AS org ON rut.Origin = org.Code
@@ -385,7 +386,7 @@ CREATE PROCEDURE CompleteBooking(IN Ref_ID CHAR(12))
 CREATE PROCEDURE UserCreateBooking(
                 IN scheduled_trip_id INTEGER, 
                 IN acc_username VARCHAR(30), 
-                IN travel_class VARCHAR(10), 
+                IN travel_class VARCHAR(20), 
                 IN booking_count SMALLINT, 
                 IN passengers_json JSON,
                 OUT refID CHAR(12),
@@ -441,7 +442,7 @@ CREATE PROCEDURE UserCreateBooking(
                     FROM scheduled_trip AS sht
                     INNER JOIN route AS rut ON sht.Route = rut.Route_ID
                     INNER JOIN base_price AS bprc ON rut.Route_ID = bprc.Route
-                    INNER JOIN class AS cls ON bprc.Class = cls.Class_Name
+                    INNER JOIN class AS cls ON bprc.Class = cls.Class_Code
                     WHERE sht.Scheduled_ID = scheduled_trip_id AND cls.Class_Name = travel_class;
                     
                     INSERT INTO booking (Booking_Ref_ID, scheduled_trip, User, BPrice_Per_Booking, Final_price) 
@@ -462,7 +463,7 @@ CREATE PROCEDURE UserCreateBooking(
                             booked_seat AS bk
                             INNER JOIN booking AS bkset ON bk.Booking = bkset.Booking_Ref_ID
                             INNER JOIN base_price AS bprc ON bkset.BPrice_Per_Booking = bprc.Price_ID
-                            INNER JOIN class AS cls ON bprc.Class = cls.Class_Name
+                            INNER JOIN class AS cls ON bprc.Class = cls.Class_Code
                             INNER JOIN scheduled_trip AS sht ON bkset.scheduled_trip = sht.Scheduled_ID
                         WHERE sht.Scheduled_ID = scheduled_trip_id and  cls.Class_Name = travel_class and bk.Seat_Number = seat_number;
 
@@ -476,7 +477,7 @@ CREATE PROCEDURE UserCreateBooking(
                             INNER JOIN train AS trn ON sht.train = trn.Number
                             INNER JOIN model AS mdl ON trn.Model = mdl.Model_ID
                             INNER JOIN capacity AS cpt ON mdl.Model_ID = cpt.Model
-                            INNER JOIN class AS cls ON cpt.Class = cls.Class_Name
+                            INNER JOIN class AS cls ON cpt.Class = cls.Class_Code
                         WHERE 
                             sht.Scheduled_ID = scheduled_trip_id
                             AND cls.Class_Name = travel_class;
@@ -498,7 +499,7 @@ CREATE PROCEDURE UserCreateBooking(
 CREATE PROCEDURE GuestCreateBooking(
                 IN scheduled_trip_id INTEGER, 
                 IN in_guest_id CHAR(12), 
-                IN travel_class VARCHAR(10), 
+                IN travel_class VARCHAR(20), 
                 IN booking_count SMALLINT, 
                 IN passengers_json JSON,
                 IN email VARCHAR(50),
@@ -809,7 +810,7 @@ CREATE FUNCTION GenerateRandomString()
             END;
 
 
-CREATE FUNCTION CalculateFinalPrice(scheduled_trip_id INTEGER, acc_username VARCHAR(30), travel_class VARCHAR(10), booking_count SMALLINT )
+CREATE FUNCTION CalculateFinalPrice(scheduled_trip_id INTEGER, acc_username VARCHAR(30), travel_class VARCHAR(20), booking_count SMALLINT )
             RETURNS DECIMAL(8,2)
             DETERMINISTIC
             NO SQL
@@ -825,7 +826,7 @@ CREATE FUNCTION CalculateFinalPrice(scheduled_trip_id INTEGER, acc_username VARC
                 FROM scheduled_trip as sht
                 INNER JOIN route as rut on sht.Route= rut.Route_ID
                 INNER JOIN base_price as bprc on rut.Route_ID = bprc.Route
-                INNER JOIN class as cls on bprc.Class = cls.Class_Name
+                INNER JOIN class as cls on bprc.Class = cls.Class_Code
                 WHERE sht.Scheduled_ID = scheduled_trip_id and cls.Class_Name = travel_class;
                 
                 IF acc_username = 'NULL' THEN

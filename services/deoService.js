@@ -7,7 +7,6 @@ const adminRepository = require("../repositories/adminRepository");
 const userRepository = require("../repositories/userRepository");
 const {
   validateStaff,
-  validateCreateModel,
   validateCreateTrain,
   validateCreateRailwayStation,
   validateCreateRoute,
@@ -81,6 +80,12 @@ const updateProfile = async (username, data) => {
 
   if (validateStaffUpdate(data)) {
     throw new Error(validateStaffUpdate(data));
+  }
+
+  if (data.newPassword) {
+    if (!bcrypt.compareSync(data.currentPassword, fetchedDEO.Password)) {
+      throw new Error("Invalid credentials");
+    }
   }
 
   return deoRepository.updateProfile(username, data);

@@ -11,6 +11,7 @@ const {
   validateTrain,
   validateRailwayStation,
   validateTrip,
+  validateStaffUpdate,
 } = require("../utils/validators");
 const { JWT_SECRET, JWT_EXPIRATION } = process.env;
 
@@ -72,6 +73,51 @@ const registerAdmin = async (username, data) => {
   });
 
   return result;
+};
+
+const updateProfile = async (username, data) => {
+  const fetchedAdmin = await adminRepository.findAdminByUsername(username);
+  if (!fetchedAdmin) {
+    throw new Error("Access denied!");
+  }
+
+  if (validateStaffUpdate(data)) {
+    throw new Error(validateStaffUpdate(data));
+  }
+
+  if (data.newPassword) {
+    if (!bcrypt.compareSync(data.currentPassword, fetchedAdmin.Password)) {
+      throw new Error("Invalid credentials");
+    }
+  }
+
+  return adminRepository.updateProfile(username, data);
+};
+
+const deactivateTrip = async (username, data) => {
+  const fetchedAdmin = await adminRepository.findAdminByUsername(username);
+  if (!fetchedAdmin) {
+    throw new Error("Access denied!");
+  }
+
+  if (Number.isInteger(data.tripId)) {
+    throw new Error("Invalid trip ID");
+  }
+
+  return adminRepository.deactivateTrip(data.tripId);
+};
+
+const activateTrip = async (username, data) => {
+  const fetchedAdmin = await adminRepository.findAdminByUsername(username);
+  if (!fetchedAdmin) {
+    throw new Error("Access denied!");
+  }
+
+  if (Number.isInteger(data.tripId)) {
+    throw new Error("Invalid trip ID");
+  }
+
+  return adminRepository.activateTrip(data.tripId);
 };
 
 const deleteModel = async (username, name) => {
@@ -153,4 +199,7 @@ module.exports = {
   deleteTrain,
   deleteRailwayStation,
   deleteScheduledTrip,
+  deactivateTrip,
+  activateTrip,
+  updateProfile,
 };

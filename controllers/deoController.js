@@ -31,7 +31,7 @@ const getDEODetails = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const deo = req.user.username;
-    const result = await deoService.updateProfile(deo, req.query);
+    const result = await deoService.updateProfile(deo, req.body);
     res.status(201).json({ message: "Profile updated successfully" });
   } catch (error) {
     res.status(404).json({ error: error.message });

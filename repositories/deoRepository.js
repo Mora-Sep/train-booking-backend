@@ -24,14 +24,6 @@ const findDEOByUsername = async (username) => {
 
 const updateProfile = async (username, data) => {
   if (data.newPassword) {
-    if (
-      !(await deoConnection("User")
-        .select("password")
-        .where({ username: username })) ===
-      bcrypt.hashSync(data.currentPassword, 10)
-    )
-      throw new Error("Invalid Credentials");
-
     await deoConnection("User")
       .where({ username: username })
       .update({
