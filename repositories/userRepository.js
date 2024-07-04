@@ -157,7 +157,7 @@ const createBooking = async (username, data) => {
   await connection.raw(`SET @finalPrice = FALSE`); //check
   await connection.raw(`SET @status_var = FALSE`);
 
-  const result = connection.raw(
+  await connection.raw(
     "CALL UserCreateBooking(?,?,?,?,?,@refID,@finalPrice,@status_var)",
     [
       data.tripID,
@@ -167,8 +167,11 @@ const createBooking = async (username, data) => {
       JSON.stringify(data.passengers),
     ]
   );
-  // console.log("result : ", result);
-  return result;
+
+  const result = await connection.raw(
+    "SELECT @refID AS refID, @finalPrice AS finalPrice, @status_var AS statusVar"
+  );
+  return result[0][0];
 };
 
 const deleteBooking = async (bookingID) => {

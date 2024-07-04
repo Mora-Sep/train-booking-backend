@@ -214,6 +214,35 @@ const validateCreateBooking = (data) => {
   }
 };
 
+const validateGuestCreateBooking = (data) => {
+  const { error } = joi
+    .object({
+      tripID: joi.number().required(),
+      guestID: joi.allow(),
+      class: joi.string().required(),
+      bookingCount: joi.number().required(),
+      passengers: joi.allow(),
+      email: joi.string().email(),
+      contactNumber: joi.string(),
+    })
+    .validate(data);
+
+  if (error) {
+    return error.details[0].message;
+  } else {
+    return null;
+  }
+};
+
+const validateGuestID = (guestID) => {
+  const { error } = joi.string().length(12).validate(guestID);
+  if (error) {
+    return error.details[0].message;
+  } else {
+    return null;
+  }
+};
+
 module.exports = {
   validateUser,
   validateUserWOPassword,
@@ -229,4 +258,6 @@ module.exports = {
   validateScheduleTrip,
   validateStaffUpdate,
   validateCreateBooking,
+  validateGuestCreateBooking,
+  validateGuestID,
 };

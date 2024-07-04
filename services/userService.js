@@ -242,6 +242,9 @@ const deleteBooking = async (username, data) => {
   const fetchedUser = userRepository.findUserByUsername(username);
   if (!fetchedUser) throw new Error("No such user exists");
 
+  const booking = await userRepository.searchBookedTickets(username);
+  if (!booking) throw new Error("Booking not found");
+
   if (data.id.length !== 12) throw new Error("Invalid booking ref id");
 
   return userRepository.deleteBooking(data.id);

@@ -559,7 +559,7 @@ CREATE PROCEDURE GuestCreateBooking(
                     FROM scheduled_trip AS sht
                     INNER JOIN route AS rut ON sht.Route = rut.Route_ID
                     INNER JOIN base_price AS bprc ON rut.Route_ID = bprc.Route
-                    INNER JOIN class AS cls ON bprc.Class = cls.Class_Name
+                    INNER JOIN class AS cls ON bprc.Class = cls.Class_Code
                     WHERE sht.Scheduled_ID = scheduled_trip_id AND cls.Class_Name = travel_class;
                     
                     INSERT INTO booking (Booking_Ref_ID, scheduled_trip, User, BPrice_Per_Booking, Final_price) 
@@ -580,7 +580,7 @@ CREATE PROCEDURE GuestCreateBooking(
                             booked_seat AS bk
                             INNER JOIN booking AS bkset ON bk.Booking = bkset.Booking_Ref_ID
                             INNER JOIN base_price AS bprc ON bkset.BPrice_Per_Booking = bprc.Price_ID
-                            INNER JOIN class AS cls ON bprc.Class = cls.Class_Name
+                            INNER JOIN class AS cls ON bprc.Class = cls.Class_Code
                             INNER JOIN scheduled_trip AS sht ON bkset.scheduled_trip = sht.Scheduled_ID
                         WHERE sht.Scheduled_ID = scheduled_trip_id and  cls.Class_Name = travel_class and bk.Seat_Number = seat_number;
 
@@ -594,7 +594,7 @@ CREATE PROCEDURE GuestCreateBooking(
                             INNER JOIN train AS trn ON sht.train = trn.Number
                             INNER JOIN model AS mdl ON trn.Model = mdl.Model_ID
                             INNER JOIN capacity AS cpt ON mdl.Model_ID = cpt.Model
-                            INNER JOIN class AS cls ON cpt.Class = cls.Class_Name
+                            INNER JOIN class AS cls ON cpt.Class = cls.Class_Code
                         WHERE 
                             sht.Scheduled_ID = scheduled_trip_id
                             AND cls.Class_Name = travel_class;
