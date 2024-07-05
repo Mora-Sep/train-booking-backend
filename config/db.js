@@ -7,6 +7,7 @@ const db = knex({
   connection: {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
+    port: process.env.DB_PORT,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
   },
@@ -17,6 +18,7 @@ const getAdminConnection = knex({
   connection: {
     host: process.env.DB_HOST,
     user: process.env.DB_ADMIN,
+    port: process.env.DB_PORT,
     password: process.env.DB_ADMIN_PASSWORD,
     database: process.env.DB_NAME,
   },
@@ -27,6 +29,7 @@ const getStaffConnection = knex({
   connection: {
     host: process.env.DB_HOST,
     user: process.env.DB_STAFF,
+    port: process.env.DB_PORT,
     password: process.env.DB_STAFF_PASSWORD,
     database: process.env.DB_NAME,
   },
@@ -37,6 +40,7 @@ const getRegisteredUserConnection = knex({
   connection: {
     host: process.env.DB_HOST,
     user: process.env.DB_REGISTERED_USER,
+    port: process.env.DB_PORT,
     password: process.env.DB_REGISTERED_USER_PASSWORD,
     database: process.env.DB_NAME,
   },
@@ -47,6 +51,7 @@ const getGuestConnection = knex({
   connection: {
     host: process.env.DB_HOST,
     user: process.env.DB_GUEST_USER,
+    port: process.env.DB_PORT,
     password: process.env.DB_GUEST_PASSWORD,
     database: process.env.DB_NAME,
   },
