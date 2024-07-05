@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const timeoutMiddleware = require("./middleware/timeoutMiddleware");
 const userRouter = require("./routes/userRoutes");
 const getAllRouter = require("./routes/getAllRoutes");
 const adminRouter = require("./routes/adminRoutes");
@@ -11,6 +12,7 @@ const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
+app.use(timeoutMiddleware);
 
 // Routes
 app.use("/api/get", getAllRouter);

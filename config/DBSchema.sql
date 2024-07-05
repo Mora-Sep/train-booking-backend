@@ -8,10 +8,10 @@ USE railway;
 
 -- drop_all_users_roles()
 
-DROP USER IF EXISTS adminAccount@localhost;
-DROP USER IF EXISTS staffAccount@localhost;
-DROP USER IF EXISTS registeredUserAccount@localhost;
-DROP USER IF EXISTS guestAccount@localhost;
+DROP USER IF EXISTS 'adminAccount'@'%';
+DROP USER IF EXISTS 'staffAccount'@'%';
+DROP USER IF EXISTS 'registeredUserAccount'@'%';
+DROP USER IF EXISTS 'guestAccount'@'%';
 
 DROP USER IF EXISTS admin;
 DROP USER IF EXISTS staff;
@@ -630,7 +630,7 @@ CREATE PROCEDURE GuestCreateBooking(
                 SET status_var = TRUE;
             END;
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ScheduleTrip`(
+CREATE DEFINER=`root`@`%` PROCEDURE `ScheduleTrip`(
                 IN route_int SMALLINT, 
                 IN train_code SMALLINT, 
                 IN departure_time TIME, 
@@ -1035,10 +1035,10 @@ CREATE TRIGGER check_route_has_paid_bookings
 
 -- create roles and users
 CREATE ROLE IF NOT EXISTS admin, staff, registeredUser, guest;
-CREATE USER IF NOT EXISTS adminAccount@localhost IDENTIFIED BY 'P7tZ99pJ2s9';
-CREATE USER IF NOT EXISTS staffAccount@localhost IDENTIFIED BY 'MK6dLpY9sPz';
-CREATE USER IF NOT EXISTS registeredUserAccount@localhost IDENTIFIED BY '0qR3vKnX8w5';
-CREATE USER IF NOT EXISTS guestAccount@localhost IDENTIFIED BY 'L2mSgV7hg5e';
+CREATE USER IF NOT EXISTS 'adminAccount'@'%' IDENTIFIED BY 'P7tZ99pJ2s9';
+CREATE USER IF NOT EXISTS 'staffAccount'@'%'IDENTIFIED BY 'MK6dLpY9sPz';
+CREATE USER IF NOT EXISTS 'registeredUserAccount'@'%' IDENTIFIED BY '0qR3vKnX8w5';
+CREATE USER IF NOT EXISTS 'guestAccount'@'%' IDENTIFIED BY 'L2mSgV7hg5e';
 
 GRANT ALL PRIVILEGES ON railway.* TO 'admin';
 
@@ -1106,14 +1106,14 @@ GRANT EXECUTE ON PROCEDURE railway.GuestCreateBooking TO 'guest';
 GRANT EXECUTE ON PROCEDURE railway.CompleteBooking TO 'guest';
         
 
-GRANT 'admin' TO 'adminAccount'@'localhost';
-SET DEFAULT ROLE 'admin' TO 'adminAccount'@'localhost';
-GRANT 'staff' TO 'staffAccount'@'localhost';
-SET DEFAULT ROLE 'staff' TO 'staffAccount'@'localhost';
-GRANT 'registeredUser' TO 'registeredUserAccount'@'localhost';
-SET DEFAULT ROLE 'registeredUser' TO 'registeredUserAccount'@'localhost';
-GRANT 'guest' TO 'guestAccount'@'localhost';
-SET DEFAULT ROLE 'guest' TO 'guestAccount'@'localhost';
+GRANT 'admin' TO 'adminAccount'@'%';
+SET DEFAULT ROLE 'admin' TO 'adminAccount'@'%';
+GRANT 'staff' TO 'staffAccount'@'%';
+SET DEFAULT ROLE 'staff' TO 'staffAccount'@'%';
+GRANT 'registeredUser' TO 'registeredUserAccount'@'%';
+SET DEFAULT ROLE 'registeredUser' TO 'registeredUserAccount'@'%';
+GRANT 'guest' TO 'guestAccount'@'%';
+SET DEFAULT ROLE 'guest' TO 'guestAccount'@'%';
 
 
 
