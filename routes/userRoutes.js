@@ -26,28 +26,4 @@ router.put(
   async (req, res) => await userController.updateUserAccount(req, res)
 );
 
-router.get(
-  "/search/tickets",
-  verifyToken,
-  async (req, res) => await userController.searchBookedTickets(req, res)
-);
-
-router.get(
-  "/pending/payments",
-  verifyToken,
-  async (req, res) => await userController.getPendingPayments(req, res)
-);
-
-router.post(
-  "/create/booking",
-  verifyToken,
-  async (req, res) => await userController.createBooking(req, res)
-);
-
-router.delete(
-  "/delete/booking",
-  verifyToken,
-  async (req, res) => await userController.deleteBooking(req, res)
-);
-
 module.exports = router;

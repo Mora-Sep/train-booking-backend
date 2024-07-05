@@ -1,10 +1,6 @@
 require("dotenv").config();
 const userRepository = require("../repositories/userRepository");
-const {
-  validateUser,
-  validateUserWOPassword,
-  validateCreateBooking,
-} = require("../utils/validators");
+const { validateUser, validateUserWOPassword } = require("../utils/validators");
 
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -209,55 +205,10 @@ const updateUser = async (
   return result;
 };
 
-const searchBookedTickets = async (username) => {
-  const fetchedUser = userRepository.findUserByUsername(username);
-  if (!fetchedUser) throw new Error("No such user exists");
-  return userRepository.searchBookedTickets(username);
-};
-
-const getPendingPayments = async (username) => {
-  const fetchedUser = userRepository.findUserByUsername(username);
-  if (!fetchedUser) throw new Error("No such user exists");
-  return userRepository.getPendingPayments(username);
-};
-
-const createBooking = async (username, data) => {
-  const fetchedUser = userRepository.findUserByUsername(username);
-  if (!fetchedUser) throw new Error("No such user exists");
-
-  if (validateCreateBooking(data)) throw new Error(validateCreateBooking(data));
-
-  if (
-    typeof data.passengers !== "object" ||
-    data.passengers === null ||
-    !Array.isArray(data.passengers)
-  ) {
-    throw new Error("Invalid passengers input");
-  }
-
-  return userRepository.createBooking(username, data);
-};
-
-const deleteBooking = async (username, data) => {
-  const fetchedUser = userRepository.findUserByUsername(username);
-  if (!fetchedUser) throw new Error("No such user exists");
-
-  const booking = await userRepository.searchBookedTickets(username);
-  if (!booking) throw new Error("Booking not found");
-
-  if (data.id.length !== 12) throw new Error("Invalid booking ref id");
-
-  return userRepository.deleteBooking(data.id);
-};
-
 module.exports = {
   registerUser,
   loginUser,
   getUserDetails,
   updateUserWOPassword,
   updateUser,
-  searchBookedTickets,
-  getPendingPayments,
-  createBooking,
-  deleteBooking,
 };

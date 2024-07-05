@@ -100,53 +100,9 @@ const updateUserAccount = async (req, res) => {
   }
 };
 
-const searchBookedTickets = async (req, res) => {
-  try {
-    const username = req.user.username;
-    const tickets = await userService.searchBookedTickets(username);
-    res.status(200).json(tickets);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-
-const getPendingPayments = async (req, res) => {
-  try {
-    const username = req.user.username;
-    const pendingPayments = await userService.getPendingPayments(username);
-    res.status(200).json(pendingPayments);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-
-const createBooking = async (req, res) => {
-  try {
-    const username = req.user.username;
-    const result = await userService.createBooking(username, req.body);
-    res.status(200).json(result);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-
-const deleteBooking = async (req, res) => {
-  try {
-    const username = req.user.username;
-    const result = await userService.deleteBooking(username, req.query);
-    res.status(200).json(result);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-
 module.exports = {
   register,
   login,
   getUserDetails,
   updateUserAccount,
-  searchBookedTickets,
-  getPendingPayments,
-  createBooking,
-  deleteBooking,
 };

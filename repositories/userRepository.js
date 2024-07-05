@@ -90,94 +90,6 @@ const updateRU = async (user) => {
     });
 };
 
-const searchBookedTickets = async (username) => {
-  return connection("ticket")
-    .where("bookedUser", username)
-    .select(
-      "ticketNumber",
-      "passenger",
-      "route",
-      "origin",
-      "destination",
-      "departureTime",
-      "class",
-      "bookingRefID",
-      "bookedUser",
-      "status"
-    )
-    .then((tickets) => {
-      if (tickets.length) {
-        return tickets;
-      } else {
-        return null;
-      }
-    });
-};
-
-const getPendingPayments = async (username) => {
-  return connection("booked_seat as bk")
-    .select(
-      "bkset.Booking_Ref_ID as bookingRefID",
-      "bkset.Final_Price as price",
-      "shf.Scheduled_ID as tripID",
-      "bprc.Class as travelClass",
-      "bk.Seat_Number as seat",
-      "bk.FirstName as firstName",
-      "bk.LastName as lastName",
-      "bk.IsAdult as isAdult"
-    )
-    .innerJoin("booking as bkset", "bk.Booking", "bkset.Booking_Ref_ID")
-    .innerJoin(
-      "base_price as bprc",
-      "bkset.BPrice_Per_Booking",
-      "bprc.Price_ID"
-    )
-    .innerJoin(
-      "scheduled_trip as shf",
-      "bkset.Scheduled_Trip",
-      "shf.Scheduled_ID"
-    )
-    .where("bkset.User", username)
-    .andWhere("bkset.Completed", 0)
-    .orderBy("bkset.Created_At", "desc")
-    .then((rows) => {
-      if (rows.length) {
-        return rows;
-      } else {
-        return null;
-      }
-    })
-    .catch((err) => {
-      console.error("Error executing query:", err);
-    });
-};
-
-const createBooking = async (username, data) => {
-  await connection.raw(`SET @refID = FALSE`); //check
-  await connection.raw(`SET @finalPrice = FALSE`); //check
-  await connection.raw(`SET @status_var = FALSE`);
-
-  await connection.raw(
-    "CALL UserCreateBooking(?,?,?,?,?,@refID,@finalPrice,@status_var)",
-    [
-      data.tripID,
-      username,
-      data.class,
-      data.bookingCount,
-      JSON.stringify(data.passengers),
-    ]
-  );
-
-  const result = await connection.raw(
-    "SELECT @refID AS refID, @finalPrice AS finalPrice, @status_var AS statusVar"
-  );
-  return result[0][0];
-};
-
-const deleteBooking = async (bookingID) => {
-  return connection("booking").delete().where("Booking_Ref_ID", bookingID);
-};
-
 module.exports = {
   findUserByEmail,
   findUserByUsername,
@@ -187,8 +99,4 @@ module.exports = {
   getPassword,
   updateUser,
   updateRU,
-  searchBookedTickets,
-  getPendingPayments,
-  createBooking,
-  deleteBooking,
 };
