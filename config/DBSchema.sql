@@ -1,10 +1,10 @@
 
 
-DROP DATABASE IF EXISTS project_database;
+DROP DATABASE IF EXISTS railway;
 
-CREATE DATABASE project_database;
+CREATE DATABASE railway;
 
-USE project_database;
+USE railway;
 
 -- drop_all_users_roles()
 
@@ -1040,70 +1040,70 @@ CREATE USER IF NOT EXISTS staffAccount@localhost IDENTIFIED BY 'MK6dLpY9sPz';
 CREATE USER IF NOT EXISTS registeredUserAccount@localhost IDENTIFIED BY '0qR3vKnX8w5';
 CREATE USER IF NOT EXISTS guestAccount@localhost IDENTIFIED BY 'L2mSgV7hg5e';
 
-GRANT ALL PRIVILEGES ON project_database.* TO 'admin';
+GRANT ALL PRIVILEGES ON railway.* TO 'admin';
 
-GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.capacity TO 'staff';
-GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.model TO 'staff';
-GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.train TO 'staff';
-GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.railway_station TO 'staff';
-GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.intermediate_station TO 'staff';
-GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.route TO 'staff';
-GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.scheduled_trip TO 'staff';
-GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.base_price TO 'staff';
-GRANT SELECT, INSERT, UPDATE ON project_database.class TO 'staff';
-GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.user TO 'staff';
-GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.staff TO 'staff';
-GRANT SELECT ON project_database.trip TO 'staff';
-GRANT EXECUTE ON PROCEDURE project_database.ScheduleTrip TO 'staff';
-GRANT EXECUTE ON PROCEDURE project_database.CreateModel TO 'staff';
-GRANT EXECUTE ON PROCEDURE project_database.CreateRailwayStation TO 'staff';
-GRANT EXECUTE ON PROCEDURE project_database.CreateRoute TO 'staff';
+GRANT SELECT, INSERT, UPDATE, DELETE ON railway.capacity TO 'staff';
+GRANT SELECT, INSERT, UPDATE, DELETE ON railway.model TO 'staff';
+GRANT SELECT, INSERT, UPDATE, DELETE ON railway.train TO 'staff';
+GRANT SELECT, INSERT, UPDATE, DELETE ON railway.railway_station TO 'staff';
+GRANT SELECT, INSERT, UPDATE, DELETE ON railway.intermediate_station TO 'staff';
+GRANT SELECT, INSERT, UPDATE, DELETE ON railway.route TO 'staff';
+GRANT SELECT, INSERT, UPDATE, DELETE ON railway.scheduled_trip TO 'staff';
+GRANT SELECT, INSERT, UPDATE, DELETE ON railway.base_price TO 'staff';
+GRANT SELECT, INSERT, UPDATE ON railway.class TO 'staff';
+GRANT SELECT, INSERT, UPDATE, DELETE ON railway.user TO 'staff';
+GRANT SELECT, INSERT, UPDATE, DELETE ON railway.staff TO 'staff';
+GRANT SELECT ON railway.trip TO 'staff';
+GRANT EXECUTE ON PROCEDURE railway.ScheduleTrip TO 'staff';
+GRANT EXECUTE ON PROCEDURE railway.CreateModel TO 'staff';
+GRANT EXECUTE ON PROCEDURE railway.CreateRailwayStation TO 'staff';
+GRANT EXECUTE ON PROCEDURE railway.CreateRoute TO 'staff';
 
-GRANT SELECT ON project_database.capacity TO 'registeredUser';
-GRANT SELECT ON project_database.model TO 'registeredUser';
-GRANT SELECT ON project_database.train TO 'registeredUser';
-GRANT SELECT ON project_database.railway_station TO 'registeredUser';
-GRANT SELECT ON project_database.intermediate_station TO 'registeredUser';
-GRANT SELECT ON project_database.route TO 'registeredUser';
-GRANT SELECT ON project_database.scheduled_trip TO 'registeredUser';
-GRANT SELECT ON project_database.base_price TO 'registeredUser';
-GRANT SELECT ON project_database.class TO 'registeredUser';
-GRANT SELECT ON project_database.trip TO 'registeredUser';
-GRANT SELECT ON project_database.ticket TO 'registeredUser';
-GRANT SELECT ON project_database.seat_reservation TO 'registeredUser';
-GRANT SELECT ON project_database.user_category TO 'registeredUser';
-GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.user TO 'registeredUser';
-GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.registered_user TO 'registeredUser';
-GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.booking TO 'registeredUser';
-GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.booked_seat TO 'registeredUser';
-GRANT CREATE TEMPORARY TABLES ON project_database.* TO 'registeredUser';
-GRANT EXECUTE ON FUNCTION project_database.GenerateRandomString TO 'registeredUser';
-GRANT EXECUTE ON FUNCTION project_database.CalculateFinalPrice TO 'registeredUser';
-GRANT EXECUTE ON PROCEDURE project_database.UserCreateBooking TO 'registeredUser';
-GRANT EXECUTE ON PROCEDURE project_database.CompleteBooking TO 'registeredUser';
+GRANT SELECT ON railway.capacity TO 'registeredUser';
+GRANT SELECT ON railway.model TO 'registeredUser';
+GRANT SELECT ON railway.train TO 'registeredUser';
+GRANT SELECT ON railway.railway_station TO 'registeredUser';
+GRANT SELECT ON railway.intermediate_station TO 'registeredUser';
+GRANT SELECT ON railway.route TO 'registeredUser';
+GRANT SELECT ON railway.scheduled_trip TO 'registeredUser';
+GRANT SELECT ON railway.base_price TO 'registeredUser';
+GRANT SELECT ON railway.class TO 'registeredUser';
+GRANT SELECT ON railway.trip TO 'registeredUser';
+GRANT SELECT ON railway.ticket TO 'registeredUser';
+GRANT SELECT ON railway.seat_reservation TO 'registeredUser';
+GRANT SELECT ON railway.user_category TO 'registeredUser';
+GRANT SELECT, INSERT, UPDATE, DELETE ON railway.user TO 'registeredUser';
+GRANT SELECT, INSERT, UPDATE, DELETE ON railway.registered_user TO 'registeredUser';
+GRANT SELECT, INSERT, UPDATE, DELETE ON railway.booking TO 'registeredUser';
+GRANT SELECT, INSERT, UPDATE, DELETE ON railway.booked_seat TO 'registeredUser';
+GRANT CREATE TEMPORARY TABLES ON railway.* TO 'registeredUser';
+GRANT EXECUTE ON FUNCTION railway.GenerateRandomString TO 'registeredUser';
+GRANT EXECUTE ON FUNCTION railway.CalculateFinalPrice TO 'registeredUser';
+GRANT EXECUTE ON PROCEDURE railway.UserCreateBooking TO 'registeredUser';
+GRANT EXECUTE ON PROCEDURE railway.CompleteBooking TO 'registeredUser';
 
 
-GRANT SELECT ON project_database.capacity TO 'guest';
-GRANT SELECT ON project_database.model TO 'guest';
-GRANT SELECT ON project_database.train TO 'guest';
-GRANT SELECT ON project_database.railway_station TO 'guest';
-GRANT SELECT ON project_database.intermediate_station TO 'guest';
-GRANT SELECT ON project_database.route TO 'guest';
-GRANT SELECT ON project_database.scheduled_trip TO 'guest';
-GRANT SELECT ON project_database.base_price TO 'guest';
-GRANT SELECT ON project_database.class TO 'guest';
-GRANT SELECT ON project_database.trip TO 'guest';
-GRANT SELECT ON project_database.ticket TO 'guest';
-GRANT SELECT ON project_database.seat_reservation TO 'guest';
-GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.guest TO 'guest';
-GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.booking TO 'guest';
-GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.booked_seat TO 'guest';
-GRANT CREATE TEMPORARY TABLES ON project_database.* TO 'guest';
-GRANT EXECUTE ON FUNCTION project_database.GenerateRandomString TO 'guest';
-GRANT EXECUTE ON FUNCTION project_database.CalculateFinalPrice TO 'guest';
-GRANT EXECUTE ON FUNCTION project_database.GenerateRandomGuestID TO 'guest';
-GRANT EXECUTE ON PROCEDURE project_database.GuestCreateBooking TO 'guest';
-GRANT EXECUTE ON PROCEDURE project_database.CompleteBooking TO 'guest';
+GRANT SELECT ON railway.capacity TO 'guest';
+GRANT SELECT ON railway.model TO 'guest';
+GRANT SELECT ON railway.train TO 'guest';
+GRANT SELECT ON railway.railway_station TO 'guest';
+GRANT SELECT ON railway.intermediate_station TO 'guest';
+GRANT SELECT ON railway.route TO 'guest';
+GRANT SELECT ON railway.scheduled_trip TO 'guest';
+GRANT SELECT ON railway.base_price TO 'guest';
+GRANT SELECT ON railway.class TO 'guest';
+GRANT SELECT ON railway.trip TO 'guest';
+GRANT SELECT ON railway.ticket TO 'guest';
+GRANT SELECT ON railway.seat_reservation TO 'guest';
+GRANT SELECT, INSERT, UPDATE, DELETE ON railway.guest TO 'guest';
+GRANT SELECT, INSERT, UPDATE, DELETE ON railway.booking TO 'guest';
+GRANT SELECT, INSERT, UPDATE, DELETE ON railway.booked_seat TO 'guest';
+GRANT CREATE TEMPORARY TABLES ON railway.* TO 'guest';
+GRANT EXECUTE ON FUNCTION railway.GenerateRandomString TO 'guest';
+GRANT EXECUTE ON FUNCTION railway.CalculateFinalPrice TO 'guest';
+GRANT EXECUTE ON FUNCTION railway.GenerateRandomGuestID TO 'guest';
+GRANT EXECUTE ON PROCEDURE railway.GuestCreateBooking TO 'guest';
+GRANT EXECUTE ON PROCEDURE railway.CompleteBooking TO 'guest';
         
 
 GRANT 'admin' TO 'adminAccount'@'localhost';

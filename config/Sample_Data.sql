@@ -302,9 +302,9 @@ INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(4, 80
 
 
 
-INSERT into Class(Class_Code, Class_Name) values('F', 'First Class');
-INSERT into Class(Class_Code, Class_Name) values('S', 'Second Class');
-INSERT into Class(Class_Code, Class_Name) values('T', 'Third Class');
+INSERT into class(Class_Code, Class_Name) values('F', 'First Class');
+INSERT into class(Class_Code, Class_Name) values('S', 'Second Class');
+INSERT into class(Class_Code, Class_Name) values('T', 'Third Class');
 
 
 INSERT into capacity(Model, Class, Seats_count) values(1, 'F', 0);
@@ -355,29 +355,29 @@ INSERT into user_category(Category_Name, Min_Bookings, Discount) values('Bronze'
 INSERT into user_category(Category_Name, Min_Bookings, Discount) values('Silver', 10, 0.05);
 INSERT into user_category(Category_Name, Min_Bookings, Discount) values('Gold', 30, 0.09);
 
-INSERT into User(Username, Password, FirstName, LastName) values('SamC', 'scrypt:32768:8:1$qN2OzQE8TXoxjdi9$9aa57069ec47380e683d2486263ac4324d6e1b444f19aa3fef5451ac2248ad1b72b3aa8821b3ebfecf29b4e72f4e3df4a305df4bb945b2f743fb7e4cf5900e4d', 'Sam', 'Convoy');
-INSERT into User(Username, Password, FirstName, LastName) values('AliceD', 'scrypt:32768:8:1$SpgB7oh9ua4DoU4I$81b9e2e20866be9b14e929f138aa7f745239cff1abc961e3fe9156b928481732b184a3505848cffe31c5b0b9bf49affd0ffc21c57bc97d27f91af5a0003c1dfa', 'Alice', 'Doe');
-INSERT into User(Username, Password, FirstName, LastName) values('BobS', 'scrypt:32768:8:1$A03WFVBbnLgijKz9$c7b357dcfa8b4d78c6c8715bfcf7a61e064edd7e3e7fac758b535e39bfdf50e471fc2d534ce69abd406f49fc7de871c0218685180e08fd7a5199475222162623', 'Bob', 'Smith');
-INSERT into User(Username, Password, FirstName, LastName) values('JohnD', 'scrypt:32768:8:1$JUpRoEW3444bFKFo$eafbf640a94a8cfc1fc910f368aa6ec575f6114518b82680b691a822766dfb5b50bbfbf68f01659bd2cab1637c30970f530414ce47ef684653e77a7313be1616', 'John', 'Doe');
-INSERT into User(Username, Password, FirstName, LastName) values('JaneS', 'scrypt:32768:8:1$UindG0VIiCzO4Enb$4e7dcb2241f70f7ac4def01d6620f6f7a4a9063cd454e2817c9fa762f9f094677977451b2cb48abf449b358171751bb5bfe10eb627601efdf09ad7fa54b8671b', 'Jane', 'Smith');
-INSERT into User(Username, Password, FirstName, LastName) values('MichaelJ', 'scrypt:32768:8:1$4FDm8QQiKXYSkKpu$df01ca88edbd9f6bacb8e2ae273ac057d7ab3ee45fd0cb7ad75c0a9631d866c0242cebdca79102fa8e3115ddfe61fffb8f551dbfe0aa82f36fa117085c644976', 'Michael', 'Johnson');
-INSERT into User(Username, Password, FirstName, LastName) values('EmilyW', 'scrypt:32768:8:1$jjdv2I37FVv0pQk3$2187830aab3fe1e8ff2afea0d6498c40e467d95710b5905e8e830f4ef2d51ea09f5d03719bb64e4194b9ce502274eb512ffd1c1a6463fecf2bfa0f6fad1774ab', 'Emily', 'Wilson');
-INSERT into User(Username, Password, FirstName, LastName) values('DavidB', 'scrypt:32768:8:1$hiV89CZftV34kdCY$88455e49f0dab429e45de64804e9b831bfcf4d509b0a70a730c934437f40abbf378b98be5d80a5df8b7adbb04c15c6800bd7fbdab9e862299880963c78621e1d', 'David', 'Brown');
-INSERT into User(Username, Password, FirstName, LastName) values('SophiaD', 'scrypt:32768:8:1$16koyrAXN0k8n3We$9c8ac7a214c902e6f8e9563b154cde55b0040dd8db2b35110ad90cb5367cf4ea30a4dc1a4cca5d798b86f386d1c806f054497b232dd367735c48761d8f923f2b', 'Sophia', 'Davis');
-INSERT into User(Username, Password, FirstName, LastName) values('JamesL', 'scrypt:32768:8:1$6IP1wMGAm6iu0EK8$6e80f06139f63709127cbe8445d7b193654bd3efae90782becc266b8cb66056e0958334614dfea498fbb0b807843d748954cda787e5ae523c634dfdf78159267', 'James', 'Lee');
-INSERT into User(Username, Password, FirstName, LastName) values('OliviaM', 'scrypt:32768:8:1$VFH927X3q8gHxHZV$cc49b0033ca744cca9c05892216d7a1f7d7f73611a49eccdedcef0b9abad8528d35535f8b1372e37e6c0ba5bd4fd77049c8702783fc75eb6c5a129b940cce825', 'Olivia', 'Moore');
-INSERT into User(Username, Password, FirstName, LastName) values('WilliamT', 'scrypt:32768:8:1$vUw52SLCVMabvEhE$5c799498999e555bf10081438c1f2ca4333e3168bcd2c2ec27746bc7587584166ed83465b808ed9e6d74878478566e8875abd1966c147799e92a5a455d89731a', 'William', 'Taylor');
-INSERT into User(Username, Password, FirstName, LastName) values('AvaA', 'scrypt:32768:8:1$3eg4EqzD7UiENywY$850f7d00951cca5d9e9f76c7b507371b6f878509e6e753d6b22062ec91288bb9a34b68034a53b3f364594aa4a6029596b0698a45502c9ba10e6dcf5d08aa96a9', 'Ava', 'Anderson');
-INSERT into User(Username, Password, FirstName, LastName) values('ElijahW', 'scrypt:32768:8:1$doHKg8kbqSzD25Vf$10faabb071b4f5616063f9d57e1c33d70e793f63ce01fbcff96d00639fae46b82c0e66a3c61a12bc3f98407a217e1563fb47ccce736d821e5f0c0b99814f677d', 'Elijah', 'White');
-INSERT into User(Username, Password, FirstName, LastName) values('MiaH', 'scrypt:32768:8:1$CCy6uVesgpXX71n0$97750eab9ec4a2ee00bccc5578a45aaed96229587a5ce7b54814667687531892850e086dc61519aa49b42d2ba16b9f5bad7f3d366bd092e25feed69f59b0d344', 'Mia', 'Harris');
-INSERT into User(Username, Password, FirstName, LastName) values('BenjaminM', 'scrypt:32768:8:1$Yw5zbPAhv7zeHLI7$54c85eeb71121b9889186a0a950404d413771e411cd8df9095560c6609b16bb59fc15b976e576f3061899d3722abfe9e38834db720b6886af02fc54711a993f0', 'Benjamin', 'Martin');
-INSERT into User(Username, Password, FirstName, LastName) values('CharlotteT', 'scrypt:32768:8:1$JFhSN5JdmyCMqW8y$a5e30db2775fd6317cfcac7058b103b309881d1c399c761f641d916bffb26dc56ca9d001c263a2110ff8bcfaf20e11795ad0b4fdb397bee1d1263ff30e1674e7', 'Charlotte', 'Thompson');
-INSERT into User(Username, Password, FirstName, LastName) values('IsabellaC', 'scrypt:32768:8:1$q7aHA9GKxDB60dTJ$4390ecab280ed6bcd570fcc008fc587d7a6f539e6be17c87a885e164522c03366cd0321f132618480adf7ac5ae36861fcc49ff477837e49482a3469c66d5a244', 'Isabella', 'Clark');
-INSERT into User(Username, Password, FirstName, LastName) values('AlexanderL', 'scrypt:32768:8:1$JjCthRdRa20Yfllk$8d71a558e0159d372948fcb497d5dbcfdc540f48aaaa01613b5109e77c66ec667ac9d05b9aa0fccd441fe63ca3bda74b1f6a499a873302bab5d5f1a56f899485', 'Alexander', 'Lewis');
-INSERT into User(Username, Password, FirstName, LastName) values('GraceM', 'scrypt:32768:8:1$8W2ySwtgUBLj855f$7aee376fd809abf4443d101fa716daecab16adedda3cf8aa2f19c5b289c823920ba16fb1e40eb14275e4a977c30f2d92898eaa30a03c1469f782ed7e8039a3e4', 'Grace', 'Moore');
-INSERT into User(Username, Password, FirstName, LastName) values('SophiaW', 'scrypt:32768:8:1$LN4WH4DoQ4gaf3aY$176b860e1ba5437009436ce863dfcce44a37f96fcb9ec07239f7c2b76ca15cf45df4183ca3f0f7fed7a2e8865d6105aa38550ea23904009b3918da499fda6a16', 'Sophia', 'Wilson');
-INSERT into User(Username, Password, FirstName, LastName) values('DanielH', '$2a$10$m3Ba3JOSEYstr7elVGDj1.dhZNa71aloyoF3EJYqzYLXGW93a7nJa', 'Daniel', 'Hall');
-INSERT into User(Username, Password, FirstName, LastName) values('HenryW', '$2a$10$/MAQQCZERbMuXGDHz1tr3OpI.q/FVbq3LVjcQHa5u.l5WwwKxh0ny', 'Henry', 'Walker');
+INSERT into user(Username, Password, FirstName, LastName) values('SamC', 'scrypt:32768:8:1$qN2OzQE8TXoxjdi9$9aa57069ec47380e683d2486263ac4324d6e1b444f19aa3fef5451ac2248ad1b72b3aa8821b3ebfecf29b4e72f4e3df4a305df4bb945b2f743fb7e4cf5900e4d', 'Sam', 'Convoy');
+INSERT into user(Username, Password, FirstName, LastName) values('AliceD', 'scrypt:32768:8:1$SpgB7oh9ua4DoU4I$81b9e2e20866be9b14e929f138aa7f745239cff1abc961e3fe9156b928481732b184a3505848cffe31c5b0b9bf49affd0ffc21c57bc97d27f91af5a0003c1dfa', 'Alice', 'Doe');
+INSERT into user(Username, Password, FirstName, LastName) values('BobS', 'scrypt:32768:8:1$A03WFVBbnLgijKz9$c7b357dcfa8b4d78c6c8715bfcf7a61e064edd7e3e7fac758b535e39bfdf50e471fc2d534ce69abd406f49fc7de871c0218685180e08fd7a5199475222162623', 'Bob', 'Smith');
+INSERT into user(Username, Password, FirstName, LastName) values('JohnD', 'scrypt:32768:8:1$JUpRoEW3444bFKFo$eafbf640a94a8cfc1fc910f368aa6ec575f6114518b82680b691a822766dfb5b50bbfbf68f01659bd2cab1637c30970f530414ce47ef684653e77a7313be1616', 'John', 'Doe');
+INSERT into user(Username, Password, FirstName, LastName) values('JaneS', 'scrypt:32768:8:1$UindG0VIiCzO4Enb$4e7dcb2241f70f7ac4def01d6620f6f7a4a9063cd454e2817c9fa762f9f094677977451b2cb48abf449b358171751bb5bfe10eb627601efdf09ad7fa54b8671b', 'Jane', 'Smith');
+INSERT into user(Username, Password, FirstName, LastName) values('MichaelJ', 'scrypt:32768:8:1$4FDm8QQiKXYSkKpu$df01ca88edbd9f6bacb8e2ae273ac057d7ab3ee45fd0cb7ad75c0a9631d866c0242cebdca79102fa8e3115ddfe61fffb8f551dbfe0aa82f36fa117085c644976', 'Michael', 'Johnson');
+INSERT into user(Username, Password, FirstName, LastName) values('EmilyW', 'scrypt:32768:8:1$jjdv2I37FVv0pQk3$2187830aab3fe1e8ff2afea0d6498c40e467d95710b5905e8e830f4ef2d51ea09f5d03719bb64e4194b9ce502274eb512ffd1c1a6463fecf2bfa0f6fad1774ab', 'Emily', 'Wilson');
+INSERT into user(Username, Password, FirstName, LastName) values('DavidB', 'scrypt:32768:8:1$hiV89CZftV34kdCY$88455e49f0dab429e45de64804e9b831bfcf4d509b0a70a730c934437f40abbf378b98be5d80a5df8b7adbb04c15c6800bd7fbdab9e862299880963c78621e1d', 'David', 'Brown');
+INSERT into user(Username, Password, FirstName, LastName) values('SophiaD', 'scrypt:32768:8:1$16koyrAXN0k8n3We$9c8ac7a214c902e6f8e9563b154cde55b0040dd8db2b35110ad90cb5367cf4ea30a4dc1a4cca5d798b86f386d1c806f054497b232dd367735c48761d8f923f2b', 'Sophia', 'Davis');
+INSERT into user(Username, Password, FirstName, LastName) values('JamesL', 'scrypt:32768:8:1$6IP1wMGAm6iu0EK8$6e80f06139f63709127cbe8445d7b193654bd3efae90782becc266b8cb66056e0958334614dfea498fbb0b807843d748954cda787e5ae523c634dfdf78159267', 'James', 'Lee');
+INSERT into user(Username, Password, FirstName, LastName) values('OliviaM', 'scrypt:32768:8:1$VFH927X3q8gHxHZV$cc49b0033ca744cca9c05892216d7a1f7d7f73611a49eccdedcef0b9abad8528d35535f8b1372e37e6c0ba5bd4fd77049c8702783fc75eb6c5a129b940cce825', 'Olivia', 'Moore');
+INSERT into user(Username, Password, FirstName, LastName) values('WilliamT', 'scrypt:32768:8:1$vUw52SLCVMabvEhE$5c799498999e555bf10081438c1f2ca4333e3168bcd2c2ec27746bc7587584166ed83465b808ed9e6d74878478566e8875abd1966c147799e92a5a455d89731a', 'William', 'Taylor');
+INSERT into user(Username, Password, FirstName, LastName) values('AvaA', 'scrypt:32768:8:1$3eg4EqzD7UiENywY$850f7d00951cca5d9e9f76c7b507371b6f878509e6e753d6b22062ec91288bb9a34b68034a53b3f364594aa4a6029596b0698a45502c9ba10e6dcf5d08aa96a9', 'Ava', 'Anderson');
+INSERT into user(Username, Password, FirstName, LastName) values('ElijahW', 'scrypt:32768:8:1$doHKg8kbqSzD25Vf$10faabb071b4f5616063f9d57e1c33d70e793f63ce01fbcff96d00639fae46b82c0e66a3c61a12bc3f98407a217e1563fb47ccce736d821e5f0c0b99814f677d', 'Elijah', 'White');
+INSERT into user(Username, Password, FirstName, LastName) values('MiaH', 'scrypt:32768:8:1$CCy6uVesgpXX71n0$97750eab9ec4a2ee00bccc5578a45aaed96229587a5ce7b54814667687531892850e086dc61519aa49b42d2ba16b9f5bad7f3d366bd092e25feed69f59b0d344', 'Mia', 'Harris');
+INSERT into user(Username, Password, FirstName, LastName) values('BenjaminM', 'scrypt:32768:8:1$Yw5zbPAhv7zeHLI7$54c85eeb71121b9889186a0a950404d413771e411cd8df9095560c6609b16bb59fc15b976e576f3061899d3722abfe9e38834db720b6886af02fc54711a993f0', 'Benjamin', 'Martin');
+INSERT into user(Username, Password, FirstName, LastName) values('CharlotteT', 'scrypt:32768:8:1$JFhSN5JdmyCMqW8y$a5e30db2775fd6317cfcac7058b103b309881d1c399c761f641d916bffb26dc56ca9d001c263a2110ff8bcfaf20e11795ad0b4fdb397bee1d1263ff30e1674e7', 'Charlotte', 'Thompson');
+INSERT into user(Username, Password, FirstName, LastName) values('IsabellaC', 'scrypt:32768:8:1$q7aHA9GKxDB60dTJ$4390ecab280ed6bcd570fcc008fc587d7a6f539e6be17c87a885e164522c03366cd0321f132618480adf7ac5ae36861fcc49ff477837e49482a3469c66d5a244', 'Isabella', 'Clark');
+INSERT into user(Username, Password, FirstName, LastName) values('AlexanderL', 'scrypt:32768:8:1$JjCthRdRa20Yfllk$8d71a558e0159d372948fcb497d5dbcfdc540f48aaaa01613b5109e77c66ec667ac9d05b9aa0fccd441fe63ca3bda74b1f6a499a873302bab5d5f1a56f899485', 'Alexander', 'Lewis');
+INSERT into user(Username, Password, FirstName, LastName) values('GraceM', 'scrypt:32768:8:1$8W2ySwtgUBLj855f$7aee376fd809abf4443d101fa716daecab16adedda3cf8aa2f19c5b289c823920ba16fb1e40eb14275e4a977c30f2d92898eaa30a03c1469f782ed7e8039a3e4', 'Grace', 'Moore');
+INSERT into user(Username, Password, FirstName, LastName) values('SophiaW', 'scrypt:32768:8:1$LN4WH4DoQ4gaf3aY$176b860e1ba5437009436ce863dfcce44a37f96fcb9ec07239f7c2b76ca15cf45df4183ca3f0f7fed7a2e8865d6105aa38550ea23904009b3918da499fda6a16', 'Sophia', 'Wilson');
+INSERT into user(Username, Password, FirstName, LastName) values('DanielH', '$2a$10$m3Ba3JOSEYstr7elVGDj1.dhZNa71aloyoF3EJYqzYLXGW93a7nJa', 'Daniel', 'Hall');
+INSERT into user(Username, Password, FirstName, LastName) values('HenryW', '$2a$10$/MAQQCZERbMuXGDHz1tr3OpI.q/FVbq3LVjcQHa5u.l5WwwKxh0ny', 'Henry', 'Walker');
 
 
 
