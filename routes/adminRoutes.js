@@ -21,6 +21,24 @@ router.post(
   async (req, res) => await adminController.registerAdmin(req, res)
 );
 
+router.patch(
+  "/update-account",
+  verifyToken,
+  async (req, res) => await adminController.updateProfile(req, res)
+);
+
+router.patch(
+  "/deactivate-trip",
+  verifyToken,
+  async (req, res) => await adminController.deactivateTrip(req, res)
+);
+
+router.patch(
+  "/activate-trip",
+  verifyToken,
+  async (req, res) => await adminController.activateTrip(req, res)
+);
+
 router.delete(
   "/model",
   verifyToken,

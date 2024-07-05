@@ -29,6 +29,36 @@ const registerAdmin = async (req, res) => {
   }
 };
 
+const updateProfile = async (req, res) => {
+  try {
+    const admin = req.user.username;
+    const result = await adminService.updateProfile(admin, req.body);
+    res.status(201).json({ message: "Profile updated successfully" });
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+};
+
+const deactivateTrip = async (req, res) => {
+  try {
+    const username = req.user.username;
+    const result = await adminService.deactivateTrip(username, req.query);
+    res.status(200).json({ message: "Trip deactivated successfully" });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const activateTrip = async (req, res) => {
+  try {
+    const username = req.user.username;
+    const result = await adminService.activateTrip(username, req.query);
+    res.status(200).json({ message: "Trip reactivated successfully" });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 const deleteModel = async (req, res) => {
   try {
     const username = req.user.username;
@@ -98,4 +128,7 @@ module.exports = {
   deleteTrain,
   deleteRailwayStation,
   deleteScheduledTrip,
+  deactivateTrip,
+  activateTrip,
+  updateProfile,
 };

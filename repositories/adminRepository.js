@@ -1,4 +1,5 @@
 const adminConnection = require("../config/db").getAdminConnection;
+const bcrypt = require("bcrypt");
 
 const findAdminByUsername = async (username) => {
   return adminConnection("staff as stf")
@@ -43,8 +44,51 @@ const registerStaff = async (admin) => {
     });
 };
 
+const updateProfile = async (username, data) => {
+  if (data.newPassword) {
+    await adminConnection("User")
+      .where({ username: username })
+      .update({
+        firstname: data.firstName,
+        lastname: data.lastName,
+        password: bcrypt.hashSync(data.newPassword, 10),
+      })
+      .then((result) => {
+        return result;
+      })
+      .catch((err) => {
+        return err;
+      });
+  } else {
+    await adminConnection("User")
+      .where({ username: username })
+      .update({ firstname: data.firstName, lastname: data.lastName })
+      .then((result) => {
+        return result;
+      })
+      .catch((err) => {
+        return err;
+      });
+  }
+};
+
+const deactivateTrip = async (tripId) => {
+  return adminConnection("Scheduled_Trip")
+    .update({ Active: 0 })
+    .where("Scheduled_ID", tripId);
+};
+
+const activateTrip = async (tripId) => {
+  return adminConnection("Scheduled_Trip")
+    .update({ Active: 1 })
+    .where("Scheduled_ID", tripId);
+};
+
 module.exports = {
   findAdminByUsername,
   getAdminDetails,
   registerStaff,
+  deactivateTrip,
+  activateTrip,
+  updateProfile,
 };

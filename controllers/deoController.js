@@ -18,7 +18,95 @@ const registerDEO = async (req, res) => {
   }
 };
 
+const getDEODetails = async (req, res) => {
+  try {
+    const deo = req.user.username;
+    const deoDetails = await deoService.getDEODetails(deo);
+    res.status(200).json(deoDetails);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+};
+
+const updateProfile = async (req, res) => {
+  try {
+    const deo = req.user.username;
+    const result = await deoService.updateProfile(deo, req.body);
+    res.status(201).json({ message: "Profile updated successfully" });
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+};
+
+const createModel = async (req, res) => {
+  try {
+    const deo = req.user.username;
+    const result = await deoService.createModel(deo, req.body);
+    res.status(201).json({ message: "Model created successfully" });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const createTrain = async (req, res) => {
+  try {
+    const deo = req.user.username;
+    const result = await deoService.createTrain(deo, req.body);
+    res.status(201).json({ message: "Train created successfully", result });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const createRailwayStation = async (req, res) => {
+  try {
+    const deo = req.user.username;
+    const result = await deoService.createRailwayStation(deo, req.body);
+    res.status(201).json({ message: "Railway Station created successfully" });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const createRoute = async (req, res) => {
+  try {
+    const deo = req.user.username;
+    const result = await deoService.createRoute(deo, req.body);
+    res.status(201).json({ message: "Route created successfully" });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const scheduleTrip = async (req, res) => {
+  try {
+    const deo = req.user.username;
+    const result = await deoService.scheduleTrip(deo, req.body);
+    res.status(201).json({ message: "Trip scheduled successfully" });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const updateDelay = async (req, res) => {
+  try {
+    const deo = req.user.username;
+    const result = await deoService.updateDelay(deo, req.query);
+    res.status(201).json({ message: "Delay updated successfully" });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 module.exports = {
   getDEOToken,
   registerDEO,
+  getDEODetails,
+  createModel,
+  createTrain,
+  createRailwayStation,
+  createRoute,
+  scheduleTrip,
+  updateDelay,
+  updateProfile,
 };
