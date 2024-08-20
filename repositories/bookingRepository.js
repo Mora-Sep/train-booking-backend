@@ -49,6 +49,29 @@ const guestCreateBooking = async (data) => {
   return result[0][0];
 };
 
+const searchTrip = async (from, to, frequency) => {
+  return guestConnection("trip")
+    .where("originCode", from)
+    .andWhere("destinationCode", to)
+    .andWhere("frequency", frequency)
+    .select(
+      "ID",
+      "originCode",
+      "departureDateAndTime",
+      "arrivalDateAndTime",
+      "destinationCode",
+      "durationMinutes",
+      "trainName"
+    )
+    .then((trips) => {
+      if (trips.length) {
+        return trips;
+      } else {
+        return null;
+      }
+    });
+};
+
 const userSearchBookedTickets = async (username) => {
   return ruConnection("ticket")
     .where("bookedUser", username)
@@ -215,4 +238,5 @@ module.exports = {
   guestSearchBookedTickets,
   guestGetPendingPayments,
   searchBookedTicketByID,
+  searchTrip,
 };

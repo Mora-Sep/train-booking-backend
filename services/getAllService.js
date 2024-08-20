@@ -16,9 +16,14 @@ const getAllRailwayStations = async () => {
   return await getAllRepository.getAllRailwayStations();
 };
 
+const getRSCodeByName = async (name) => {
+  return await getAllRepository.getRSCodeByName(name);
+};
+
 module.exports = {
   getAllModels,
   getAllRoutes,
   getAllTrains,
   getAllRailwayStations,
+  getRSCodeByName,
 };

@@ -1,5 +1,6 @@
 const bookingRepository = require("../repositories/bookingRepository");
 const userRepository = require("../repositories/userRepository");
+const getAllRepository = require("../repositories/getAllRepository");
 const {
   validateCreateBooking,
   validateGuestCreateBooking,
@@ -40,6 +41,73 @@ const guestCreateBooking = async (data) => {
 
   const result = await bookingRepository.guestCreateBooking(data);
   return result;
+};
+
+const searchTrip = async (from, to, frequency) => {
+  let fromCode, toCode;
+
+  if (!from || !to || !frequency) {
+    throw new Error("Invalid search parameters");
+  }
+
+  if (from.length !== 3 || to.length !== 3) {
+    const fromCodeRes = await getAllRepository.getRSCodeByName(from);
+    const toCodeRes = await getAllRepository.getRSCodeByName(to);
+
+    fromCode = fromCodeRes[0]?.Code;
+    toCode = toCodeRes[0]?.Code;
+  } else {
+    fromCode = from;
+    toCode = to;
+  }
+
+  // Check if frequency is a valid date and convert it to a day of the week
+  if (!isNaN(Date.parse(frequency))) {
+    const date = new Date(frequency);
+    const daysOfWeek = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    frequency = daysOfWeek[date.getUTCDay()]; // or use date.getDay() if you want local time instead of UTC
+  }
+
+  let list1 = await bookingRepository.searchTrip(fromCode, toCode, frequency);
+  list1 = list1 || [];
+
+  if (["Sunday", "Saturday"].includes(frequency)) {
+    const list2 = await bookingRepository.searchTrip(
+      fromCode,
+      toCode,
+      "Weekends"
+    );
+
+    list1 = list1.concat(list2);
+  }
+
+  if (
+    ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].includes(frequency)
+  ) {
+    const list3 = await bookingRepository.searchTrip(
+      fromCode,
+      toCode,
+      "Weekdays"
+    );
+
+    list1 = list1.concat(list3);
+  }
+
+  const list4 = await bookingRepository.searchTrip(fromCode, toCode, "Daily");
+
+  if (list4 && list4.length) {
+    list1 = list1.concat(list4);
+  }
+
+  return list1;
 };
 
 const userSearchBookedTickets = async (username) => {
@@ -123,4 +191,5 @@ module.exports = {
   guestDeleteBooking,
   completeBooking,
   searchBookedTicketByID,
+  searchTrip,
 };
