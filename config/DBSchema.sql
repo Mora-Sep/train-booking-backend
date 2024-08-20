@@ -203,13 +203,14 @@ CREATE INDEX idx_guest ON guest (Booking_Ref_ID);
 CREATE OR REPLACE VIEW trip AS
             SELECT 
                 sht.Scheduled_ID AS ID,
+                sht.Frequency AS frequency,
                 org.Code AS originCode,
                 des.Code AS destinationCode,
                 DATE_ADD(sht.Departure_Time, INTERVAL sht.Delay_Minutes MINUTE) AS departureDateAndTime,
                 DATE_ADD(sht.Departure_Time, INTERVAL sht.Delay_Minutes + rut.Duration_Minutes MINUTE) AS arrivalDateAndTime,
                 rut.Duration_Minutes AS durationMinutes,
                 mdl.Name AS trainModel,
-                trn.Number AS trainCode
+                trn.Name AS trainName
             FROM
                 scheduled_trip AS sht
                 INNER JOIN route AS rut ON rut.Route_ID = sht.Route
