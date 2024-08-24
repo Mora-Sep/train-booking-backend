@@ -50,16 +50,16 @@ const guestCreateBooking = async (data) => {
 };
 
 const searchTrip = async (from, to, frequency) => {
-  return guestConnection("trip")
+  const rawTrips = await guestConnection("trip")
     .where("originCode", from)
     .andWhere("destinationCode", to)
     .andWhere("frequency", frequency)
     .select(
       "ID",
-      "originCode",
+      "originName",
       "departureDateAndTime",
       "arrivalDateAndTime",
-      "destinationCode",
+      "destinationName",
       "durationMinutes",
       "trainName"
     )
@@ -70,6 +70,40 @@ const searchTrip = async (from, to, frequency) => {
         return null;
       }
     });
+
+  if (!rawTrips || rawTrips.length === 0) {
+    return null;
+  }
+
+  const seatReservationsPromises = rawTrips.map((trip) =>
+    guestConnection("seat_reservation")
+      .where("ID", trip.ID)
+      .select("class", "totalCount", "reservedCount", "bookedSeats")
+      .then((seatReservations) =>
+        seatReservations.length ? seatReservations : null
+      )
+  );
+
+  const seatReservations = await Promise.all(seatReservationsPromises);
+
+  let combinedData = [];
+
+  // Assuming rawTrips is not null and contains an array of trips
+  if (rawTrips) {
+    combinedData = rawTrips.map((trip, index) => {
+      // Use the index to fetch the corresponding seat reservations for this trip
+      const tripSeatReservations = seatReservations[index];
+
+      return {
+        ...trip, // Spread the trip object to include all its properties
+        seatReservations: tripSeatReservations, // Add the seat reservations as a new property
+      };
+    });
+  } else {
+    console.log("No trips found.");
+  }
+
+  return combinedData;
 };
 
 const userSearchBookedTickets = async (username) => {

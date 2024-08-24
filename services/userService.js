@@ -63,6 +63,7 @@ const registerUser = async ({
 
 const loginUser = async ({ username, password }) => {
   const user = await userRepository.findUserByUsername(username);
+  const details = await userRepository.getUserDetails(username);
   if (!user) {
     throw new Error("Incorrect Username or Password");
   }
@@ -72,6 +73,12 @@ const loginUser = async ({ username, password }) => {
 
   const payload = {
     username: user.Username,
+    firstName: user.FirstName,
+    lastName: user.LastName,
+    nic: details.NIC,
+    bookingsCount: details.Bookings_Count,
+    category: details.Category,
+    email: details.Email,
   };
 
   const token = jwt.sign(payload, JWT_SECRET, {

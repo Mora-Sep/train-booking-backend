@@ -206,6 +206,8 @@ CREATE OR REPLACE VIEW trip AS
                 sht.Frequency AS frequency,
                 org.Code AS originCode,
                 des.Code AS destinationCode,
+                org.Name AS originName,
+                des.Name AS destinationName,
                 DATE_ADD(sht.Departure_Time, INTERVAL sht.Delay_Minutes MINUTE) AS departureDateAndTime,
                 DATE_ADD(sht.Departure_Time, INTERVAL sht.Delay_Minutes + rut.Duration_Minutes MINUTE) AS arrivalDateAndTime,
                 rut.Duration_Minutes AS durationMinutes,

@@ -3,9 +3,9 @@ const bookingService = require("../services/bookingService");
 const searchTrip = async (req, res) => {
   try {
     const result = await bookingService.searchTrip(
-      req.body.from,
-      req.body.to,
-      req.body.frequency
+      req.query.from,
+      req.query.to,
+      req.query.frequency
     );
     res.status(200).json(result);
   } catch (error) {
