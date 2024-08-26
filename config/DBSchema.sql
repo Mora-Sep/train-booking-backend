@@ -38,6 +38,7 @@ DROP TABLE IF EXISTS model;
 
 -- drop_all_views()
 DROP VIEW IF EXISTS trip;
+DROP VIEW IF EXISTS admin_trip;
 DROP VIEW IF EXISTS seat_reservation;
 DROP VIEW IF EXISTS ticket;
 DROP VIEW IF EXISTS passenger;
@@ -212,6 +213,32 @@ CREATE OR REPLACE VIEW trip AS
                 DATE_ADD(sht.Departure_Time, INTERVAL sht.Delay_Minutes + rut.Duration_Minutes MINUTE) AS arrivalDateAndTime,
                 rut.Duration_Minutes AS durationMinutes,
                 mdl.Name AS trainModel,
+                trn.Name AS trainName
+            FROM
+                scheduled_trip AS sht
+                INNER JOIN route AS rut ON rut.Route_ID = sht.Route
+                INNER JOIN railway_station AS org ON rut.Origin = org.Code
+                INNER JOIN railway_station AS des ON rut.Destination = des.Code
+                INNER JOIN train AS trn ON sht.train = trn.Number
+                INNER JOIN model AS mdl ON trn.Model = mdl.Model_ID
+            WHERE
+                DATE(DATE_ADD(sht.Departure_Time, INTERVAL sht.Delay_Minutes MINUTE)) >= CURDATE()
+            GROUP BY sht.Scheduled_ID;
+
+CREATE OR REPLACE VIEW admin_trip AS
+            SELECT 
+                sht.Scheduled_ID AS ID,
+                sht.Active AS isactive,
+                sht.Delay_Minutes AS delay,
+                sht.Frequency AS frequency,
+                org.Code AS originCode,
+                des.Code AS destinationCode,
+                org.Name AS originName,
+                des.Name AS destinationName,
+                DATE_ADD(sht.Departure_Time, INTERVAL sht.Delay_Minutes MINUTE) AS departureDateAndTime,
+                DATE_ADD(sht.Departure_Time, INTERVAL sht.Delay_Minutes + rut.Duration_Minutes MINUTE) AS arrivalDateAndTime,
+                rut.Duration_Minutes AS durationMinutes,
+                trn.Number AS trainNumber,
                 trn.Name AS trainName
             FROM
                 scheduled_trip AS sht

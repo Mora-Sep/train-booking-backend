@@ -120,18 +120,27 @@ const activateTrip = async (username, data) => {
   return adminRepository.activateTrip(data.tripId);
 };
 
-const deleteModel = async (username, name) => {
+const getScheduledTrips = async (username) => {
   const fetchedAdmin = await adminRepository.findAdminByUsername(username);
   if (!fetchedAdmin) {
     throw new Error("Access denied!");
   }
 
-  const error = validateModel(name);
+  return adminRepository.getAllScheduledTrips();
+};
+
+const deleteModel = async (username, id) => {
+  const fetchedAdmin = await adminRepository.findAdminByUsername(username);
+  if (!fetchedAdmin) {
+    throw new Error("Access denied!");
+  }
+
+  const error = validateModel(id);
   if (error) {
     throw new Error(error);
   }
 
-  return deleteRepository.deleteModel(name);
+  return deleteRepository.deleteModel(id);
 };
 
 const deleteRoute = async (username, id) => {
@@ -202,4 +211,5 @@ module.exports = {
   deactivateTrip,
   activateTrip,
   updateProfile,
+  getScheduledTrips,
 };

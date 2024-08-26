@@ -72,6 +72,14 @@ const updateProfile = async (username, data) => {
   }
 };
 
+const getAllScheduledTrips = async () => {
+  return adminConnection("admin_trip")
+    .select("*")
+    .then((trips) => {
+      return trips;
+    });
+};
+
 const deactivateTrip = async (tripId) => {
   return adminConnection("Scheduled_Trip")
     .update({ Active: 0 })
@@ -91,4 +99,5 @@ module.exports = {
   deactivateTrip,
   activateTrip,
   updateProfile,
+  getAllScheduledTrips,
 };

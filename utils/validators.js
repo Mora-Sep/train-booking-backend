@@ -61,7 +61,7 @@ const validateStaff = (staff) => {
 };
 
 const validateModel = (model) => {
-  const { error } = joi.string().min(2).max(4).validate(model);
+  const { error } = joi.number().validate(model);
   if (error) {
     return error.details[0].message;
   } else {
