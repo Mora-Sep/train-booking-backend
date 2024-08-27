@@ -5,6 +5,11 @@ const verifyToken = require("../middleware/authMiddleware");
 const bookingController = require("../controllers/bookingController");
 
 router.get(
+  "/search",
+  async (req, res) => await bookingController.searchTrip(req, res)
+);
+
+router.get(
   "/user/search/tickets",
   verifyToken,
   async (req, res) => await bookingController.userSearchBookedTickets(req, res)

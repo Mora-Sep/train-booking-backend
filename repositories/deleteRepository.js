@@ -1,7 +1,7 @@
 const adminConnection = require("../config/db").getAdminConnection;
 
-const deleteModel = async (name) => {
-  return await adminConnection("model").where("Name", name).del();
+const deleteModel = async (id) => {
+  return await adminConnection("model").where("Model_ID", id).del();
 };
 
 const deleteRoute = async (id) => {

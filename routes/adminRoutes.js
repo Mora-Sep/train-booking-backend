@@ -15,6 +15,12 @@ router.get(
   async (req, res) => await adminController.getAdminDetails(req, res)
 );
 
+router.get(
+  "/scheduled-trips",
+  verifyToken,
+  async (req, res) => await adminController.getScheduledTrips(req, res)
+);
+
 router.post(
   "/register",
   verifyToken,

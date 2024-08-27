@@ -16,44 +16,48 @@ const db = knex({
 const getAdminConnection = knex({
   client: "mysql2",
   connection: {
-    host: process.env.DB_HOST,
+    host: process.env.DEV_DB_HOST,
     user: process.env.DB_ADMIN,
     port: process.env.DB_PORT,
     password: process.env.DB_ADMIN_PASSWORD,
-    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
+    database: process.env.DEV_DB_NAME,
   },
 });
 
 const getStaffConnection = knex({
   client: "mysql2",
   connection: {
-    host: process.env.DB_HOST,
+    host: process.env.DEV_DB_HOST,
     user: process.env.DB_STAFF,
     port: process.env.DB_PORT,
     password: process.env.DB_STAFF_PASSWORD,
-    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
+    database: process.env.DEV_DB_NAME,
   },
 });
 
 const getRegisteredUserConnection = knex({
   client: "mysql2",
   connection: {
-    host: process.env.DB_HOST,
+    host: process.env.DEV_DB_HOST,
     user: process.env.DB_REGISTERED_USER,
     port: process.env.DB_PORT,
     password: process.env.DB_REGISTERED_USER_PASSWORD,
-    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
+    database: process.env.DEV_DB_NAME,
   },
 });
 
 const getGuestConnection = knex({
   client: "mysql2",
   connection: {
-    host: process.env.DB_HOST,
+    host: process.env.DEV_DB_HOST,
     user: process.env.DB_GUEST_USER,
     port: process.env.DB_PORT,
     password: process.env.DB_GUEST_PASSWORD,
-    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
+    database: process.env.DEV_DB_NAME,
   },
 });
 

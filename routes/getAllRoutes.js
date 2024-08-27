@@ -18,4 +18,8 @@ router.get("/stations", async (req, res) => {
   await getAllController.getAllRailwayStations(req, res);
 });
 
+router.get("/station", async (req, res) => {
+  await getAllController.getRSCodeByName(req, res);
+});
+
 module.exports = router;

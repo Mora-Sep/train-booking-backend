@@ -1,5 +1,18 @@
 const bookingService = require("../services/bookingService");
 
+const searchTrip = async (req, res) => {
+  try {
+    const result = await bookingService.searchTrip(
+      req.query.from,
+      req.query.to,
+      req.query.frequency
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 const userSearchBookedTickets = async (req, res) => {
   try {
     const username = req.user.username;
@@ -116,4 +129,5 @@ module.exports = {
   guestDeleteBooking,
   completeBooking,
   searchBookedTicketByID,
+  searchTrip,
 };

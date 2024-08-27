@@ -16,9 +16,16 @@ const getAllRailwayStations = async () => {
   return await guestConnection("railway_station").select();
 };
 
+const getRSCodeByName = async (name) => {
+  return await guestConnection("railway_station")
+    .where("Name", name)
+    .select("Code");
+};
+
 module.exports = {
   getAllModels,
   getAllRoutes,
   getAllTrains,
   getAllRailwayStations,
+  getRSCodeByName,
 };

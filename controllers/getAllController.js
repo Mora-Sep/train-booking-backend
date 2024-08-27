@@ -36,9 +36,19 @@ const getAllRailwayStations = async (req, res) => {
   }
 };
 
+const getRSCodeByName = async (req, res) => {
+  try {
+    const code = await getAllService.getRSCodeByName(req.query.name);
+    res.status(200).json(code);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 module.exports = {
   getAllModels,
   getAllRoutes,
   getAllTrains,
   getAllRailwayStations,
+  getRSCodeByName,
 };
