@@ -12,7 +12,11 @@ const dataSQL = fs.readFileSync(dataPath, "utf-8");
 
 // Create MySQL connection
 const connection = mysql.createConnection({
-  uri: process.env.DATABASE_URL,
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  port: process.env.DB_PORT,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   connectTimeout: 20000,
   multipleStatements: true, // Include this if you need to run multiple statements in one query
 });
