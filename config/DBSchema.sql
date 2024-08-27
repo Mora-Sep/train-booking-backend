@@ -213,7 +213,8 @@ CREATE OR REPLACE VIEW trip AS
                 DATE_ADD(sht.Departure_Time, INTERVAL sht.Delay_Minutes + rut.Duration_Minutes MINUTE) AS arrivalDateAndTime,
                 rut.Duration_Minutes AS durationMinutes,
                 mdl.Name AS trainModel,
-                trn.Name AS trainName
+                trn.Name AS trainName,
+                trn.Number AS trainCode
             FROM
                 scheduled_trip AS sht
                 INNER JOIN route AS rut ON rut.Route_ID = sht.Route
