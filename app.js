@@ -16,12 +16,6 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-const corsOptions = {
-  origin: "http://localhost:3000", // Allow requests from this origin
-  credentials: true, // Allow credentials (cookies, authorization headers, etc.)
-};
-app.use(cors(corsOptions));
-
 // Middleware
 app.use(express.json());
 app.use(timeoutMiddleware);
