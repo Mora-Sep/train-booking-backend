@@ -27,6 +27,8 @@ app.use("/api/users", userRouter);
 app.use("/api/booking", bookingRouter);
 
 // Start Server
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Server running at http://localhost:${port}`);
+// });
+
+module.exports = app;
