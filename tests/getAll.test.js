@@ -19,3 +19,38 @@ describe("Nested routes under /api/get", () => {
     );
   });
 });
+describe("Nested routes under /api/get", () => {
+  test("GET /stations responds with expected data", async () => {
+    const response = await request(app).get("/api/get/stations");
+    expect(response.statusCode).toBe(200);
+
+    // Adjusting expectation to match the received array directly
+    expect(response.body).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          Code: expect.any(String),
+          Name: expect.any(String),
+          District: expect.any(String),
+        }),
+      ])
+    );
+  });
+});
+describe("Nested routes under /api/get", () => {
+  test("GET /routes responds with expected data", async () => {
+    const response = await request(app).get("/api/get/routes");
+    expect(response.statusCode).toBe(200);
+
+    // Adjusting expectation to match the received array directly
+    expect(response.body).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          Route_ID: expect.any(Number),
+          Origin: expect.any(String),
+          Destination: expect.any(String),
+          Duration_Minutes: expect.any(Number),
+        }),
+      ])
+    );
+  });
+});
