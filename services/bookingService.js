@@ -21,7 +21,16 @@ const userCreateBooking = async (username, data) => {
     throw new Error("Invalid passengers input");
   }
 
-  return bookingRepository.userCreateBooking(username, data);
+  const finalPrice = await calculateFinalPrice(
+    data.tripID,
+    username,
+    data.class,
+    data.bookingCount,
+    data.from,
+    data.to
+  );
+
+  return bookingRepository.userCreateBooking(username, data, finalPrice);
 };
 
 const guestCreateBooking = async (data) => {
@@ -39,7 +48,16 @@ const guestCreateBooking = async (data) => {
     throw new Error("Invalid passengers input");
   }
 
-  const result = await bookingRepository.guestCreateBooking(data);
+  const finalPrice = await calculateFinalPrice(
+    data.tripID,
+    null,
+    data.class,
+    data.bookingCount,
+    data.from,
+    data.to
+  );
+
+  const result = await bookingRepository.guestCreateBooking(data, finalPrice);
   return result;
 };
 
@@ -180,6 +198,60 @@ const searchBookedTicketByID = async (bookingRefID) => {
   return bookingRepository.searchBookedTicketByID(bookingRefID);
 };
 
+async function calculateFinalPrice(
+  scheduledTripId,
+  username,
+  travelClass,
+  bookingCount,
+  fromStation,
+  toStation
+) {
+  // Fetch station sequences
+  const originSequence = await bookingRepository.getStationSequence(
+    scheduledTripId,
+    fromStation
+  );
+  const destinationSequence = await bookingRepository.getStationSequence(
+    scheduledTripId,
+    toStation
+  );
+
+  if (!originSequence || !destinationSequence) {
+    throw new Error("Invalid origin or destination station");
+  }
+
+  if (originSequence >= destinationSequence) {
+    throw new Error("Origin station must be before destination station");
+  }
+
+  // Calculate distance factor based on the sequence difference
+  const distanceFactor = destinationSequence - originSequence;
+
+  // Fetch base price per class
+  const basePricePerClass = await bookingRepository.getBasePricePerClass(
+    scheduledTripId,
+    travelClass
+  );
+  if (!basePricePerClass) {
+    throw new Error("Could not retrieve base price for the class");
+  }
+
+  // Calculate basic price for the segment
+  const basicPrice = basePricePerClass * distanceFactor * bookingCount;
+
+  // Fetch discount percentage based on the user category
+  let discountPercent;
+  if (username)
+    discountPercent = await bookingRepository.getUserDiscount(username);
+  else discountPercent = 0.0; // Guest user
+
+  // Apply discount to the basic price
+  const discount = basicPrice * discountPercent;
+  const finalPrice = basicPrice - discount;
+
+  return finalPrice.toFixed(2); // Return price formatted to 2 decimal places
+}
+
 module.exports = {
   userSearchBookedTickets,
   userGetPendingPayments,
@@ -192,4 +264,5 @@ module.exports = {
   completeBooking,
   searchBookedTicketByID,
   searchTrip,
+  calculateFinalPrice,
 };

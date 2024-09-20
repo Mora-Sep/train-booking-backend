@@ -202,6 +202,8 @@ const validateCreateBooking = (data) => {
     .object({
       tripID: joi.number().required(),
       class: joi.string().required(),
+      from: joi.string().required(),
+      to: joi.string().required(),
       bookingCount: joi.number().required(),
       passengers: joi.allow(),
     })
@@ -222,6 +224,8 @@ const validateGuestCreateBooking = (data) => {
       class: joi.string().required(),
       bookingCount: joi.number().required(),
       passengers: joi.allow(),
+      from: joi.string().required(),
+      to: joi.string().required(),
       email: joi.string().email(),
       contactNumber: joi.string(),
     })
