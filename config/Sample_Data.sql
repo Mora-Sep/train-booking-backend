@@ -93,6 +93,7 @@ INSERT INTO railway_station (Code, Name, District) VALUES
 
 -- Gampaha District
 INSERT INTO railway_station(Code, Name, District) VALUES ('PRL', 'Peralanda', 'Gampaha');
+INSERT INTO railway_station(Code, Name, District) VALUES ('NIL', 'Stock', 'Stock');
 INSERT INTO railway_station(Code, Name, District) VALUES ('KAN', 'Kandana', 'Gampaha');
 INSERT INTO railway_station(Code, Name, District) VALUES ('KAW', 'Kapuwatta', 'Gampaha');
 INSERT INTO railway_station(Code, Name, District) VALUES ('JLA', 'Ja-Ela', 'Gampaha');
@@ -464,6 +465,15 @@ INSERT into guest(Guest_ID, Booking_Ref_ID) values('4P8K3H1E6Y7S', 'KSRU46IU5724
 INSERT into guest(Guest_ID, Booking_Ref_ID) values('E2VX9L5J7HDB', 'KYJ3928UIBF6');
 INSERT into guest(Guest_ID, Booking_Ref_ID) values('W5G2D4M6R1F1', 'P8J4L4JUINMK');
 INSERT into guest(Guest_ID, Booking_Ref_ID) values('K7VX2N5U4I8B', 'W6B4L28UI4NH');
+
+INSERT INTO intermediate_station (Schedule, Code, Sequence)
+VALUES
+    (1, 'BEL', 1),  -- First intermediate station
+    (1, 'MTR', 2),  -- Third intermediate station
+    (1, 'GLE', 3),  -- Second intermediate station
+    (1, 'KTS', 4),  -- Third intermediate station
+    (1, 'MDA', 5);  -- Third intermediate station
+    
 
 
 
