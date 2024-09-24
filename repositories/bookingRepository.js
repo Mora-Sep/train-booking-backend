@@ -98,7 +98,13 @@ const searchTrip = async (from, to, frequency) => {
   const seatReservationsPromises = rawTrips.map((trip) =>
     guestConnection("seat_reservation")
       .where("ID", trip.ID)
-      .select("class", "totalCount", "reservedCount", "bookedSeats")
+      .select(
+        "class",
+        "totalCount",
+        "totalCarts",
+        "reservedCount",
+        "bookedSeats"
+      )
       .then((seatReservations) =>
         seatReservations.length ? seatReservations : null
       )

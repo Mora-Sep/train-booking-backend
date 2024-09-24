@@ -110,6 +110,7 @@ CREATE TABLE IF NOT EXISTS capacity (
             Model SMALLINT NOT NULL,
             Class CHAR(1) NOT NULL,
             Seats_Count SMALLINT NOT NULL,
+            Carts_Count SMALLINT NOT NULL,
             FOREIGN KEY (Model) REFERENCES model(Model_ID) ON DELETE CASCADE,
             FOREIGN KEY (Class) REFERENCES class(Class_Code) ON DELETE CASCADE );
 
@@ -274,6 +275,7 @@ CREATE OR REPLACE VIEW seat_reservation AS
                 subquery2.id AS ID,
                 subquery2.clas AS class,
                 subquery2.count AS totalCount,
+                subquery2.carts AS totalCarts,
                 IFNULL(subquery1.count, 0) AS reservedCount,
                 IFNULL(subquery1.bookedSeats, '') AS bookedSeats
             FROM
@@ -295,6 +297,7 @@ CREATE OR REPLACE VIEW seat_reservation AS
                     sht.Scheduled_ID AS id,
                     cls.Class_Name AS clas,
                     cpt.Seats_Count AS count,
+                    cpt.Carts_Count as carts,
                     date(sht.Departure_Time) as date
                     FROM
                         scheduled_trip AS sht
