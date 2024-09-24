@@ -1,19 +1,22 @@
 const ruConnection = require("../config/db").getRegisteredUserConnection;
 const guestConnection = require("../config/db").getGuestConnection;
 
-const userCreateBooking = async (username, data) => {
+const userCreateBooking = async (username, data, finalPrice) => {
   await ruConnection.raw(`SET @refID = FALSE`); //check
   await ruConnection.raw(`SET @finalPrice = FALSE`); //check
   await ruConnection.raw(`SET @status_var = FALSE`);
 
   await ruConnection.raw(
-    "CALL UserCreateBooking(?,?,?,?,?,@refID,@finalPrice,@status_var)",
+    "CALL UserCreateBooking(?,?,?,?,?,?,?,?,@refID,@finalPrice,@status_var)",
     [
       data.tripID,
       username,
       data.class,
       data.bookingCount,
+      data.from,
+      data.to,
       JSON.stringify(data.passengers),
+      finalPrice,
     ]
   );
 
@@ -23,22 +26,25 @@ const userCreateBooking = async (username, data) => {
   return result[0][0];
 };
 
-const guestCreateBooking = async (data) => {
+const guestCreateBooking = async (data, finalPrice) => {
   await guestConnection.raw(`SET @refID = FALSE`); //check
   await guestConnection.raw(`SET @finalPrice = FALSE`); //check
   await guestConnection.raw(`SET @out_guest_id = FALSE`);
   await guestConnection.raw(`SET @status_var = FALSE`);
 
   await guestConnection.raw(
-    "CALL GuestCreateBooking(?,?,?,?,?,?,?,@refID,@finalPrice,@out_guest_id, @status_var)",
+    "CALL GuestCreateBooking(?,?,?,?,?,?,?,?,?,?,@refID,@finalPrice,@out_guest_id, @status_var)",
     [
       data.tripID,
       data.guestID,
       data.class,
       data.bookingCount,
       JSON.stringify(data.passengers),
+      data.from,
+      data.to,
       data.email,
       data.contactNumber,
+      finalPrice,
     ]
   );
 
@@ -50,18 +56,31 @@ const guestCreateBooking = async (data) => {
 };
 
 const searchTrip = async (from, to, frequency) => {
+  // Step 1: Find trips that include the origin and destination stations
   const rawTrips = await guestConnection("trip")
-    .where("originCode", from)
-    .andWhere("destinationCode", to)
-    .andWhere("frequency", frequency)
+    .innerJoin("intermediate_station as is1", "trip.ID", "is1.Schedule")
+    .innerJoin("intermediate_station as is2", "trip.ID", "is2.Schedule")
+    .innerJoin("railway_station as rs1", "is1.Code", "rs1.Code")
+    .innerJoin("railway_station as rs2", "is2.Code", "rs2.Code")
+    .where("is1.Code", from)
+    .andWhere("is2.Code", to)
+    .andWhere("is1.Sequence", "<", guestConnection.raw("is2.Sequence"))
+    .andWhere("trip.frequency", frequency)
     .select(
-      "ID",
-      "originName",
-      "departureDateAndTime",
-      "arrivalDateAndTime",
-      "destinationName",
-      "durationMinutes",
-      "trainName"
+      "trip.ID",
+      "is1.Code as originCode",
+      "is1.Sequence as originSequence",
+      "is2.Sequence as destinationSequence",
+      "rs1.Name as originName",
+      "trip.departureDateAndTime",
+      "trip.arrivalDateAndTime",
+      "is2.Code as destinationCode",
+      "rs2.Name as destinationName",
+      "trip.originName as routeOrigin",
+      "trip.destinationName as routeDestination",
+      "trip.durationMinutes",
+      "trip.numberOfIntermediateStations as numberOfStops",
+      "trip.trainName"
     )
     .then((trips) => {
       if (trips.length) {
@@ -75,10 +94,17 @@ const searchTrip = async (from, to, frequency) => {
     return null;
   }
 
+  // Step 2: Fetch seat reservations for each trip
   const seatReservationsPromises = rawTrips.map((trip) =>
     guestConnection("seat_reservation")
       .where("ID", trip.ID)
-      .select("class", "totalCount", "reservedCount", "bookedSeats")
+      .select(
+        "class",
+        "totalCount",
+        "totalCarts",
+        "reservedCount",
+        "bookedSeats"
+      )
       .then((seatReservations) =>
         seatReservations.length ? seatReservations : null
       )
@@ -86,17 +112,15 @@ const searchTrip = async (from, to, frequency) => {
 
   const seatReservations = await Promise.all(seatReservationsPromises);
 
+  // Step 3: Combine trip and seat reservation data
   let combinedData = [];
 
-  // Assuming rawTrips is not null and contains an array of trips
   if (rawTrips) {
     combinedData = rawTrips.map((trip, index) => {
-      // Use the index to fetch the corresponding seat reservations for this trip
       const tripSeatReservations = seatReservations[index];
-
       return {
-        ...trip, // Spread the trip object to include all its properties
-        seatReservations: tripSeatReservations, // Add the seat reservations as a new property
+        ...trip,
+        seatReservations: tripSeatReservations,
       };
     });
   } else {
@@ -262,6 +286,41 @@ const searchBookedTicketByID = async (bookingID) => {
     });
 };
 
+// Fetch sequences for intermediate stations
+async function getStationSequence(scheduledTripId, stationCode) {
+  const result = await guestConnection("intermediate_station")
+    .select("Sequence")
+    .where({ Schedule: scheduledTripId, Code: stationCode })
+    .first(); // .first() ensures only one row is returned
+  return result?.Sequence;
+}
+
+// Fetch base price per class
+async function getBasePricePerClass(scheduledTripId, travelClass) {
+  const result = await guestConnection("scheduled_trip as sht")
+    .join("route as rut", "sht.Route", "rut.Route_ID")
+    .join("base_price as bprc", "rut.Route_ID", "bprc.Route")
+    .join("class as cls", "bprc.Class", "cls.Class_Code")
+    .select("bprc.Price")
+    .where({
+      "sht.Scheduled_ID": scheduledTripId,
+      "cls.Class_Name": travelClass,
+    })
+    .first();
+  return result?.Price;
+}
+
+// Fetch user discount
+async function getUserDiscount(username) {
+  if (!username) return 0.0; // Guest user
+  const result = await ruConnection("registered_user as usr")
+    .join("user_category as ctg", "usr.Category", "ctg.Category_ID")
+    .select("ctg.Discount")
+    .where({ "usr.Username": username })
+    .first();
+  return result?.Discount || 0.0;
+}
+
 module.exports = {
   userSearchBookedTickets,
   userGetPendingPayments,
@@ -273,4 +332,7 @@ module.exports = {
   guestGetPendingPayments,
   searchBookedTicketByID,
   searchTrip,
+  getStationSequence,
+  getBasePricePerClass,
+  getUserDiscount,
 };

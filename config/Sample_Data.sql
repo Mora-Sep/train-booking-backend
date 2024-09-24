@@ -93,6 +93,7 @@ INSERT INTO railway_station (Code, Name, District) VALUES
 
 -- Gampaha District
 INSERT INTO railway_station(Code, Name, District) VALUES ('PRL', 'Peralanda', 'Gampaha');
+INSERT INTO railway_station(Code, Name, District) VALUES ('NIL', 'Stock', 'Stock');
 INSERT INTO railway_station(Code, Name, District) VALUES ('KAN', 'Kandana', 'Gampaha');
 INSERT INTO railway_station(Code, Name, District) VALUES ('KAW', 'Kapuwatta', 'Gampaha');
 INSERT INTO railway_station(Code, Name, District) VALUES ('JLA', 'Ja-Ela', 'Gampaha');
@@ -307,33 +308,33 @@ INSERT into class(Class_Code, Class_Name) values('S', 'Second Class');
 INSERT into class(Class_Code, Class_Name) values('T', 'Third Class');
 
 
-INSERT into capacity(Model, Class, Seats_count) values(1, 'F', 0);
-INSERT into capacity(Model, Class, Seats_count) values(1, 'S', 200);
-INSERT into capacity(Model, Class, Seats_count) values(1, 'T', 400);
-INSERT into capacity(Model, Class, Seats_count) values(2, 'F', 0);
-INSERT into capacity(Model, Class, Seats_count) values(2, 'S', 200);
-INSERT into capacity(Model, Class, Seats_count) values(2, 'T', 400);
-INSERT into capacity(Model, Class, Seats_count) values(3, 'F', 0);
-INSERT into capacity(Model, Class, Seats_count) values(3, 'S', 200);
-INSERT into capacity(Model, Class, Seats_count) values(3, 'T', 300);
-INSERT into capacity(Model, Class, Seats_count) values(4, 'F', 0);
-INSERT into capacity(Model, Class, Seats_count) values(4, 'S', 200);
-INSERT into capacity(Model, Class, Seats_count) values(4, 'T', 300);
-INSERT into capacity(Model, Class, Seats_count) values(5, 'F', 0);
-INSERT into capacity(Model, Class, Seats_count) values(5, 'S', 200);
-INSERT into capacity(Model, Class, Seats_count) values(5, 'T', 400);
-INSERT into capacity(Model, Class, Seats_count) values(6, 'F', 20);
-INSERT into capacity(Model, Class, Seats_count) values(6, 'S', 200);
-INSERT into capacity(Model, Class, Seats_count) values(6, 'T', 400);
-INSERT into capacity(Model, Class, Seats_count) values(7, 'F', 25);
-INSERT into capacity(Model, Class, Seats_count) values(7, 'S', 200);
-INSERT into capacity(Model, Class, Seats_count) values(7, 'T', 400);
-INSERT into capacity(Model, Class, Seats_count) values(8, 'F', 25);
-INSERT into capacity(Model, Class, Seats_count) values(8, 'S', 200);
-INSERT into capacity(Model, Class, Seats_count) values(8, 'T', 400);
-INSERT into capacity(Model, Class, Seats_count) values(9, 'F', 30);
-INSERT into capacity(Model, Class, Seats_count) values(9, 'S', 200);
-INSERT into capacity(Model, Class, Seats_count) values(9, 'T', 400);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(1, 'F', 0, 0);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(1, 'S', 200, 5);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(1, 'T', 400, 10);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(2, 'F', 0, 0);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(2, 'S', 200, 5);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(2, 'T', 400, 10);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(3, 'F', 0, 0);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(3, 'S', 200, 5);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(3, 'T', 300, 5);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(4, 'F', 0, 0);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(4, 'S', 200, 5);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(4, 'T', 300, 5);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(5, 'F', 0, 0);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(5, 'S', 200, 5);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(5, 'T', 400, 10);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(6, 'F', 20, 1);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(6, 'S', 200, 5);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(6, 'T', 400, 10);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(7, 'F', 25, 1);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(7, 'S', 200, 5);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(7, 'T', 400, 10);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(8, 'F', 25, 1);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(8, 'S', 200, 5);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(8, 'T', 400, 10);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(9, 'F', 30, 1);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(9, 'S', 200, 5);
+INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(9, 'T', 400, 10);
 
 
 INSERT into base_price(Class, Route, Price) values('T', 1, 300);
@@ -464,6 +465,25 @@ INSERT into guest(Guest_ID, Booking_Ref_ID) values('4P8K3H1E6Y7S', 'KSRU46IU5724
 INSERT into guest(Guest_ID, Booking_Ref_ID) values('E2VX9L5J7HDB', 'KYJ3928UIBF6');
 INSERT into guest(Guest_ID, Booking_Ref_ID) values('W5G2D4M6R1F1', 'P8J4L4JUINMK');
 INSERT into guest(Guest_ID, Booking_Ref_ID) values('K7VX2N5U4I8B', 'W6B4L28UI4NH');
+
+INSERT INTO intermediate_station (Schedule, Code, Sequence)
+VALUES
+    (1, 'BEL', 1),  -- First intermediate station
+    (1, 'MTR', 2),  -- Third intermediate station
+    (1, 'GLE', 3),  -- Second intermediate station
+    (1, 'KTS', 4),  -- Third intermediate station
+    (1, 'MDA', 5),  -- Third intermediate station
+    (4, 'BEL', 5), 
+    (4, 'MTR', 4),
+    (4, 'GLE', 3), 
+    (4, 'KTS', 2),  
+    (4, 'MDA', 1), 
+    (3, 'BEL', 5), 
+    (3, 'MTR', 4), 
+    (3, 'GLE', 3),  
+    (3, 'KTS', 2),  
+    (3, 'MDA', 1);
+    
 
 
 
