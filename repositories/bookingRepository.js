@@ -64,6 +64,7 @@ const searchTrip = async (from, to, frequency) => {
     .innerJoin("railway_station as rs2", "is2.Code", "rs2.Code")
     .where("is1.Code", from)
     .andWhere("is2.Code", to)
+    .andWhere("is1.Sequence", "<", guestConnection.raw("is2.Sequence"))
     .andWhere("trip.frequency", frequency)
     .select(
       "trip.ID",
