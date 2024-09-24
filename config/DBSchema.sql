@@ -1214,7 +1214,6 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON railway.booking TO 'registeredUser';
 GRANT SELECT, INSERT, UPDATE, DELETE ON railway.booked_seat TO 'registeredUser';
 GRANT CREATE TEMPORARY TABLES ON railway.* TO 'registeredUser';
 GRANT EXECUTE ON FUNCTION railway.GenerateRandomString TO 'registeredUser';
-GRANT EXECUTE ON FUNCTION railway.CalculateFinalPrice TO 'registeredUser';
 GRANT EXECUTE ON PROCEDURE railway.UserCreateBooking TO 'registeredUser';
 GRANT EXECUTE ON PROCEDURE railway.CompleteBooking TO 'registeredUser';
 
@@ -1236,7 +1235,6 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON railway.booking TO 'guest';
 GRANT SELECT, INSERT, UPDATE, DELETE ON railway.booked_seat TO 'guest';
 GRANT CREATE TEMPORARY TABLES ON railway.* TO 'guest';
 GRANT EXECUTE ON FUNCTION railway.GenerateRandomString TO 'guest';
-GRANT EXECUTE ON FUNCTION railway.CalculateFinalPrice TO 'guest';
 GRANT EXECUTE ON FUNCTION railway.GenerateRandomGuestID TO 'guest';
 GRANT EXECUTE ON PROCEDURE railway.GuestCreateBooking TO 'guest';
 GRANT EXECUTE ON PROCEDURE railway.CompleteBooking TO 'guest';
