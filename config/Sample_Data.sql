@@ -472,7 +472,17 @@ VALUES
     (1, 'MTR', 2),  -- Third intermediate station
     (1, 'GLE', 3),  -- Second intermediate station
     (1, 'KTS', 4),  -- Third intermediate station
-    (1, 'MDA', 5);  -- Third intermediate station
+    (1, 'MDA', 5),  -- Third intermediate station
+    (4, 'BEL', 5), 
+    (4, 'MTR', 4),
+    (4, 'GLE', 3), 
+    (4, 'KTS', 2),  
+    (4, 'MDA', 1), 
+    (3, 'BEL', 5), 
+    (3, 'MTR', 4), 
+    (3, 'GLE', 3),  
+    (3, 'KTS', 2),  
+    (3, 'MDA', 1);
     
 
 
