@@ -10,6 +10,11 @@ router.get(
 );
 
 router.get(
+  "/get/seats",
+  async (req, res) => await bookingController.getSeats(req, res)
+);
+
+router.get(
   "/user/search/tickets",
   verifyToken,
   async (req, res) => await bookingController.userSearchBookedTickets(req, res)

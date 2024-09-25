@@ -13,6 +13,19 @@ const searchTrip = async (req, res) => {
   }
 };
 
+const getSeats = async (req, res) => {
+  try {
+    const result = await bookingService.getSeats(
+      req.query.from,
+      req.query.to,
+      req.query.frequency
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 const userSearchBookedTickets = async (req, res) => {
   try {
     const username = req.user.username;
@@ -130,4 +143,5 @@ module.exports = {
   completeBooking,
   searchBookedTicketByID,
   searchTrip,
+  getSeats,
 };

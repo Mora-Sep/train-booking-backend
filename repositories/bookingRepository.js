@@ -130,6 +130,86 @@ const searchTrip = async (from, to, frequency) => {
   return combinedData;
 };
 
+const getSeats = async (from, to, frequency) => {
+  // Step 1: Find trips that include the origin and destination stations
+  const rawTrips = await guestConnection("trip")
+    .innerJoin("intermediate_station as is1", "trip.ID", "is1.Schedule")
+    .innerJoin("intermediate_station as is2", "trip.ID", "is2.Schedule")
+    .innerJoin("railway_station as rs1", "is1.Code", "rs1.Code")
+    .innerJoin("railway_station as rs2", "is2.Code", "rs2.Code")
+    .where("is1.Code", from)
+    .andWhere("is2.Code", to)
+    .andWhere("is1.Sequence", "<", guestConnection.raw("is2.Sequence"))
+    .andWhere("trip.frequency", frequency)
+    .then((trips) => (trips.length ? trips : null));
+
+  if (!rawTrips || rawTrips.length === 0) {
+    return null;
+  }
+
+  // Step 2: Fetch seat reservations for each trip
+  const seatReservationsPromises = rawTrips.map((trip) =>
+    guestConnection("seat_reservation")
+      .where("ID", trip.ID)
+      .select(
+        "class",
+        "totalCount",
+        "totalCarts",
+        "reservedCount",
+        "bookedSeats"
+      )
+      .then((seatReservations) =>
+        seatReservations.length ? seatReservations : null
+      )
+  );
+
+  const seatReservations = await Promise.all(seatReservationsPromises);
+
+  // Step 3: Combine trip and seat reservation data
+  let combinedData = [];
+
+  if (rawTrips) {
+    rawTrips.map((trip, index) => {
+      const tripSeatReservations = seatReservations[index];
+
+      // Create an empty array to store formatted seat data for each class
+      const formattedSeats = [];
+
+      tripSeatReservations.forEach((reservation) => {
+        const { totalCarts, totalCount, bookedSeats } = reservation;
+
+        const seatNumbers = bookedSeats
+          ? bookedSeats.split(",").map(Number)
+          : [];
+
+        // Calculate the number of seats per cart and group them by cart
+        const seatsPerCart = Math.ceil(totalCount / totalCarts);
+
+        // Create a list for the current class's carts
+        const carts = [];
+        for (let i = 0; i < totalCarts; i++) {
+          const startValue = i * seatsPerCart + 1;
+          const endValue = (i + 1) * seatsPerCart;
+          const cartSeats = [];
+          seatNumbers.map((seat) => {
+            if (seat >= startValue && seat <= endValue) {
+              cartSeats.push(seat);
+            }
+          });
+          carts.push(cartSeats); // Add seats for each cart
+        }
+
+        // Add the cart list as an entry in the main list
+        combinedData.push(carts); // Each class becomes an entry as [[carts]]
+      });
+    });
+  } else {
+    console.log("No trips found.");
+  }
+
+  return combinedData;
+};
+
 const userSearchBookedTickets = async (username) => {
   return ruConnection("ticket")
     .where("bookedUser", username)
@@ -335,4 +415,5 @@ module.exports = {
   getStationSequence,
   getBasePricePerClass,
   getUserDiscount,
+  getSeats,
 };
