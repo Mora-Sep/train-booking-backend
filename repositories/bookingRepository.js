@@ -169,7 +169,7 @@ const getSeats = async (from, to, frequency) => {
   let combinedData = [];
 
   if (rawTrips) {
-    rawTrips.map((trip, index) => {
+    combinedData = rawTrips.map((trip, index) => {
       const tripSeatReservations = seatReservations[index];
 
       // Create an empty array to store formatted seat data for each class
@@ -200,8 +200,10 @@ const getSeats = async (from, to, frequency) => {
         }
 
         // Add the cart list as an entry in the main list
-        combinedData.push(carts); // Each class becomes an entry as [[carts]]
+        formattedSeats.push(carts); // Each class becomes an entry as [[carts]]
       });
+
+      return formattedSeats;
     });
   } else {
     console.log("No trips found.");
