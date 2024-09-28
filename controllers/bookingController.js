@@ -6,29 +6,52 @@ const getCheckoutSession = async (req, res) => {
   const booking = await bookingService.getBookingCheckout(bookingRefID);
   const price = booking.finalPrice;
 
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ["card"],
-    mode: "payment",
-    success_url: `https://google.com/`,
-    cancel_url: `https://youtube.com/`,
-    customer_email: booking.email,
-    client_reference_id: bookingRefID,
-    line_items: [
-      {
-        price_data: {
-          currency: "lkr",
-          unit_amount: price * 100,
-          product_data: {
-            name: `Train Ticket`,
-            description: `Train Ticket from ${booking.from} to ${booking.to} booked by ${booking.bookedUser}`,
+  try {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      mode: "payment",
+      success_url: `https://google.com/`,
+      cancel_url: `https://youtube.com/`,
+      customer_email: booking.email,
+      client_reference_id: bookingRefID,
+      line_items: [
+        {
+          price_data: {
+            currency: "lkr",
+            unit_amount: price * 100,
+            product_data: {
+              name: `Train Ticket`,
+              description: `Train Ticket from ${booking.from} to ${booking.to} booked by ${booking.bookedUser}`,
+            },
           },
+          quantity: 1,
         },
-        quantity: 1,
-      },
-    ],
-  });
+      ],
+    });
+    res.status(200).json({ status: "success", session });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
-  res.status(200).json({ status: "success", session });
+const getPaymentIntent = async (req, res) => {
+  const { bookingRefID } = req.query;
+  const booking = await bookingService.getBookingCheckout(bookingRefID);
+  const price = booking.finalPrice;
+
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: price * 100,
+      currency: "lkr",
+      metadata: { bookingRefID },
+    });
+
+    res
+      .status(200)
+      .json({ status: "success", clientSecret: paymentIntent.client_secret });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
 const searchTrip = async (req, res) => {
@@ -184,4 +207,5 @@ module.exports = {
   searchTrip,
   getSeats,
   getCheckoutSession,
+  getPaymentIntent,
 };

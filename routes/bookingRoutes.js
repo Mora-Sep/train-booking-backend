@@ -10,6 +10,11 @@ router.get(
 );
 
 router.get(
+  "/get-payment-intent",
+  async (req, res) => await bookingController.getPaymentIntent(req, res)
+);
+
+router.get(
   "/search",
   async (req, res) => await bookingController.searchTrip(req, res)
 );
