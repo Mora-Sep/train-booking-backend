@@ -1,4 +1,35 @@
 const bookingService = require("../services/bookingService");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+
+const getCheckoutSession = async (req, res) => {
+  const bookingRefID = req.query.bookingRefID;
+  const booking = await bookingService.getBookingCheckout(bookingRefID);
+  const price = booking.finalPrice;
+
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ["card"],
+    mode: "payment",
+    success_url: `https://google.com/`,
+    cancel_url: `https://youtube.com/`,
+    customer_email: booking.email,
+    client_reference_id: bookingRefID,
+    line_items: [
+      {
+        price_data: {
+          currency: "lkr",
+          unit_amount: price * 100,
+          product_data: {
+            name: `Train Ticket`,
+            description: `Train Ticket from ${booking.from} to ${booking.to} booked by ${booking.bookedUser}`,
+          },
+        },
+        quantity: 1,
+      },
+    ],
+  });
+
+  res.status(200).json({ status: "success", session });
+};
 
 const searchTrip = async (req, res) => {
   try {
@@ -122,6 +153,14 @@ const completeBooking = async (req, res) => {
 
 const searchBookedTicketByID = async (req, res) => {
   try {
+    const { bookingRefID } = req.query;
+
+    // Validate the query parameter
+    if (!bookingRefID) {
+      return res
+        .status(400)
+        .json({ error: "Missing bookingRefID in query parameters" });
+    }
     const result = await bookingService.searchBookedTicketByID(
       req.query.bookingRefID
     );
@@ -144,4 +183,5 @@ module.exports = {
   searchBookedTicketByID,
   searchTrip,
   getSeats,
+  getCheckoutSession,
 };

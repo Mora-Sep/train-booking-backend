@@ -260,6 +260,20 @@ const completeBooking = async (bookingRefID) => {
   return result;
 };
 
+const getBookingCheckout = async (bookingRefID) => {
+  if (bookingRefID.length !== 12) throw new Error("Invalid booking ref id");
+
+  const result = await bookingRepository.getBookingCheckout(bookingRefID);
+  const user = await userRepository.getUserDetails(result.bookedUser);
+  const fromStation = await getAllRepository.getRSNameByCode(result.from);
+  const toStation = await getAllRepository.getRSNameByCode(result.to);
+
+  result.email = user.Email;
+  result.from = fromStation[0].Name;
+  result.to = toStation[0].Name;
+  return result;
+};
+
 const searchBookedTicketByID = async (bookingRefID) => {
   if (bookingRefID.length !== 12) throw new Error("Invalid booking ref id");
   return bookingRepository.searchBookedTicketByID(bookingRefID);
@@ -333,4 +347,5 @@ module.exports = {
   searchTrip,
   calculateFinalPrice,
   getSeats,
+  getBookingCheckout,
 };

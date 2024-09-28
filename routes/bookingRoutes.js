@@ -5,6 +5,11 @@ const verifyToken = require("../middleware/authMiddleware");
 const bookingController = require("../controllers/bookingController");
 
 router.get(
+  "/get-checkout-session",
+  async (req, res) => await bookingController.getCheckoutSession(req, res)
+);
+
+router.get(
   "/search",
   async (req, res) => await bookingController.searchTrip(req, res)
 );
@@ -54,7 +59,7 @@ router.get(
 );
 
 router.get(
-  "/search",
+  "/search-by-id",
   async (req, res) => await bookingController.searchBookedTicketByID(req, res)
 );
 

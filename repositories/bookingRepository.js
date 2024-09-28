@@ -261,27 +261,22 @@ const guestSearchBookedTickets = async (guestID) => {
 };
 
 const userGetPendingPayments = async (username) => {
-  return ruConnection("booked_seat as bk")
+  const data = await ruConnection("booking as bkset")
     .select(
       "bkset.Booking_Ref_ID as bookingRefID",
       "bkset.Final_Price as price",
       "shf.Scheduled_ID as tripID",
-      "bprc.Class as travelClass",
-      "bk.Seat_Number as seat",
-      "bk.FirstName as firstName",
-      "bk.LastName as lastName",
-      "bk.IsAdult as isAdult"
-    )
-    .innerJoin("booking as bkset", "bk.Booking", "bkset.Booking_Ref_ID")
-    .innerJoin(
-      "base_price as bprc",
-      "bkset.BPrice_Per_Booking",
-      "bprc.Price_ID"
+      "bprc.Class as travelClass"
     )
     .innerJoin(
       "scheduled_trip as shf",
       "bkset.Scheduled_Trip",
       "shf.Scheduled_ID"
+    )
+    .innerJoin(
+      "base_price as bprc",
+      "bkset.BPrice_Per_Booking",
+      "bprc.Price_ID"
     )
     .where("bkset.User", username)
     .andWhere("bkset.Completed", 0)
@@ -296,21 +291,45 @@ const userGetPendingPayments = async (username) => {
     .catch((err) => {
       console.error("Error executing query:", err);
     });
+
+  if (!data) {
+    return null;
+  }
+
+  for (const booking of data) {
+    const passengers = await ruConnection("booked_seat as bk")
+      .select(
+        "bk.FirstName as firstName",
+        "bk.LastName as lastName",
+        "bk.Seat_Number as seat",
+        "bk.IsAdult as isAdult"
+      )
+      .where("bk.Booking", booking.bookingRefID)
+      .then((rows) => {
+        if (rows.length) {
+          return rows;
+        } else {
+          return null;
+        }
+      })
+      .catch((err) => {
+        console.error("Error executing query:", err);
+      });
+
+    booking.passengers = passengers;
+  }
+
+  return data;
 };
 
 const guestGetPendingPayments = async (guestID) => {
-  return guestConnection("booked_seat as bk")
+  const data = await guestConnection("booking as bkset")
     .select(
       "bkset.Booking_Ref_ID as bookingRefID",
       "bkset.Final_Price as price",
       "shf.Scheduled_ID as tripID",
-      "bprc.Class as travelClass",
-      "bk.Seat_Number as seat",
-      "bk.FirstName as firstName",
-      "bk.LastName as lastName",
-      "bk.IsAdult as isAdult"
+      "bprc.Class as travelClass"
     )
-    .innerJoin("booking as bkset", "bk.Booking", "bkset.Booking_Ref_ID")
     .innerJoin(
       "base_price as bprc",
       "bkset.BPrice_Per_Booking",
@@ -335,6 +354,35 @@ const guestGetPendingPayments = async (guestID) => {
     .catch((err) => {
       console.error("Error executing query:", err);
     });
+
+  if (!data) {
+    return null;
+  }
+
+  for (const booking of data) {
+    const passengers = await guestConnection("booked_seat as bk")
+      .select(
+        "bk.FirstName as firstName",
+        "bk.LastName as lastName",
+        "bk.Seat_Number as seat",
+        "bk.IsAdult as isAdult"
+      )
+      .where("bk.Booking", booking.bookingRefID)
+      .then((rows) => {
+        if (rows.length) {
+          return rows;
+        } else {
+          return null;
+        }
+      })
+      .catch((err) => {
+        console.error("Error executing query:", err);
+      });
+
+    booking.passengers = passengers;
+  }
+
+  return data;
 };
 
 const deleteBooking = async (bookingID) => {
@@ -343,6 +391,24 @@ const deleteBooking = async (bookingID) => {
 
 const completeBooking = async (bookingRefID) => {
   return guestConnection.raw(`CALL CompleteBooking(?)`, [bookingRefID]);
+};
+
+const getBookingCheckout = async (bookingRefID) => {
+  return guestConnection("booking")
+    .select(
+      "Final_Price as finalPrice",
+      "User as bookedUser",
+      "from_station as from",
+      "to_station as to"
+    )
+    .where("Booking_Ref_ID", bookingRefID)
+    .then((booking) => {
+      if (booking.length) {
+        return booking[0];
+      } else {
+        return null;
+      }
+    });
 };
 
 const searchBookedTicketByID = async (bookingID) => {
@@ -418,4 +484,5 @@ module.exports = {
   getBasePricePerClass,
   getUserDiscount,
   getSeats,
+  getBookingCheckout,
 };

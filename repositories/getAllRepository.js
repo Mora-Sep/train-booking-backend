@@ -22,10 +22,17 @@ const getRSCodeByName = async (name) => {
     .select("Code");
 };
 
+const getRSNameByCode = async (code) => {
+  return await guestConnection("railway_station")
+    .where("Code", code)
+    .select("Name");
+};
+
 module.exports = {
   getAllModels,
   getAllRoutes,
   getAllTrains,
   getAllRailwayStations,
   getRSCodeByName,
+  getRSNameByCode,
 };
