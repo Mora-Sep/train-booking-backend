@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS scheduled_trip (
             Route SMALLINT NOT NULL,
             train SMALLINT NOT NULL,
             Departure_Time TIME NOT NULL,
-            Frequency ENUM('Weekdays', 'Weekends') NOT NULL,
+            Frequency ENUM('Weekdays', 'Weekends', 'Daily') NOT NULL,
             Delay_Minutes SMALLINT NOT NULL DEFAULT 0,
             Active BOOLEAN NOT NULL DEFAULT 1,
             FOREIGN KEY (Route) REFERENCES route(Route_ID) ON DELETE CASCADE,
@@ -809,7 +809,8 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `ScheduleTrip`(
                 IN train_code SMALLINT, 
                 IN departure_time TIME, 
                 IN frequency ENUM("Weekdays", "Weekends"),
-                OUT status_var BOOLEAN)
+                OUT status_var BOOLEAN,
+                OUT new_trip_id INT)
 BEGIN
                 DECLARE lower_bound TIME;
                 DECLARE upper_bound TIME;
@@ -845,6 +846,9 @@ BEGIN
                         
                         INSERT INTO scheduled_trip (Route, train, Departure_Time, Frequency) 
                         VALUES (route_int, train_code, departure_time, frequency);
+
+                        -- Retrieve the last inserted trip ID
+                        SET new_trip_id = LAST_INSERT_ID();
                         
                 COMMIT;
                 SET status_var = TRUE;

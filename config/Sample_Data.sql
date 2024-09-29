@@ -66,6 +66,7 @@ INSERT INTO railway_station (Code, Name, District) VALUES
 ('KMA', 'Kadigamuwa', 'Kegalle'),
 ('GDA', 'Gangoda', 'Kegalle'),
 ('IKT', 'Ihala Kotte', 'Kegalle'),
+('KDT', 'Kandy', 'Kandy'),
 ('BNA', 'Balana', 'Kandy'),
 ('KGW', 'Kadugannawa', 'Kandy'),
 ('PLT', 'Pilimatalawa', 'Kandy'),
@@ -164,6 +165,8 @@ INSERT INTO railway_station(Code, Name, District) VALUES ('PKM', 'Puliyankulam',
 -- Jaffna District
 INSERT INTO railway_station(Code, Name, District) VALUES ('JFN', 'Jaffna', 'Jaffna');
 INSERT INTO railway_station(Code, Name, District) VALUES ('KKS', 'Kankesanthurai', 'Jaffna');
+INSERT INTO railway_station(Code, Name, District) VALUES ('KLN', 'Kilinochchi', 'Jaffna');
+INSERT INTO railway_station(Code, Name, District) VALUES ('MNK', 'Mankulam', 'Jaffna');
 
 -- Polonnaruwa District
 INSERT INTO railway_station(Code, Name, District) VALUES ('GOA', 'Gal Oya Junction', 'Polonnaruwa');
@@ -291,6 +294,12 @@ INSERT into route(Origin, Destination, Duration_Minutes) values('BEL', 'MDA', 24
 INSERT into route(Origin, Destination, Duration_Minutes) values('BEL', 'MDA', 210);
 INSERT into route(Origin, Destination, Duration_Minutes) values('MDA', 'BEL', 240);
 INSERT into route(Origin, Destination, Duration_Minutes) values('MDA', 'BEL', 210);
+INSERT into route(Origin, Destination, Duration_Minutes) values('ANP', 'JFN', 300);
+INSERT into route(Origin, Destination, Duration_Minutes) values('JFN', 'ANP', 300);
+INSERT into route(Origin, Destination, Duration_Minutes) values('FOT', 'TCO', 300);
+INSERT into route(Origin, Destination, Duration_Minutes) values('TCO', 'FOT', 300);
+INSERT into route(Origin, Destination, Duration_Minutes) values('FOT', 'KDT', 240);
+INSERT into route(Origin, Destination, Duration_Minutes) values('KDT', 'FOT', 240);
 
 
 
@@ -299,6 +308,12 @@ INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(1, 80
 INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(2, 8058, '06:00:00', 'Weekdays');
 INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(3, 8056, '14:00:00', 'Weekdays');
 INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(4, 8058, '14:30:00', 'Weekdays');
+INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(9, 1005, '08:30:00', 'Daily');
+INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(10, 1005, '15:00:00', 'Daily');
+INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(5, 4077, '08:00:00', 'Weekdays');
+INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(6, 4077, '16:00:00', 'Weekdays');
+INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(7, 4077, '04:00:00', 'Weekends');
+INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(8, 4077, '12:00:00', 'Weekends');
 
 
 
@@ -468,21 +483,66 @@ INSERT into guest(Guest_ID, Booking_Ref_ID) values('K7VX2N5U4I8B', 'W6B4L28UI4NH
 
 INSERT INTO intermediate_station (Schedule, Code, Sequence)
 VALUES
-    (1, 'BEL', 1),  -- First intermediate station
-    (1, 'MTR', 2),  -- Third intermediate station
-    (1, 'GLE', 3),  -- Second intermediate station
-    (1, 'KTS', 4),  -- Third intermediate station
-    (1, 'MDA', 5),  -- Third intermediate station
-    (4, 'BEL', 5), 
-    (4, 'MTR', 4),
-    (4, 'GLE', 3), 
-    (4, 'KTS', 2),  
+    (1, 'BEL', 1),  
+    (1, 'MTR', 2),  
+    (1, 'GLE', 3),  
+    (1, 'KTS', 4),  
+    (1, 'FOT', 5),  
+    (1, 'MDA', 6),  
+    (2, 'BEL', 1),  
+    (2, 'MTR', 2),  
+    (2, 'GLE', 3),  
+    (2, 'KTS', 4),  
+    (2, 'FOT', 5),  
+    (2, 'MDA', 6),  
+    (4, 'BEL', 6), 
+    (4, 'MTR', 5),
+    (4, 'GLE', 4), 
+    (4, 'KTS', 3),  
+    (4, 'FOT', 2),  
     (4, 'MDA', 1), 
-    (3, 'BEL', 5), 
-    (3, 'MTR', 4), 
-    (3, 'GLE', 3),  
-    (3, 'KTS', 2),  
-    (3, 'MDA', 1);
+    (3, 'BEL', 6), 
+    (3, 'MTR', 5), 
+    (3, 'GLE', 4),  
+    (3, 'KTS', 3),  
+    (3, 'FOT', 2),  
+    (3, 'MDA', 1),
+    (5, 'FOT', 1),
+    (5, 'RGM', 2),
+    (5, 'MIG', 3),
+    (5, 'ALW', 4),
+    (5, 'RBK', 5),
+    (5, 'KDT', 6),
+    (6, 'FOT', 6),
+    (6, 'RGM', 5),
+    (6, 'MIG', 4),
+    (6, 'ALW', 3),
+    (6, 'RBK', 2),
+    (6, 'KDT', 1),
+    (7, 'ANP', 1),
+    (7, 'VNA', 2),
+    (7, 'PKM', 3),
+    (7, 'MNK', 4),
+    (7, 'KLN', 5),
+    (7, 'JFN', 6),
+    (8, 'ANP', 6),
+    (8, 'VNA', 5),
+    (8, 'PKM', 4),
+    (8, 'MNK', 3),
+    (8, 'KLN', 2),
+    (8, 'JFN', 1),
+    (9, 'FOT', 1),
+    (9, 'PLG', 2),
+    (9, 'KRN', 3),
+    (9, 'HBN', 4),
+    (9, 'KNI', 5),
+    (9, 'TCO', 6),
+    (10, 'FOT', 6),
+    (10, 'PLG', 5),
+    (10, 'KRN', 4),
+    (10, 'HBN', 3),
+    (10, 'KNI', 2),
+    (10, 'TCO', 1);
     
 
 

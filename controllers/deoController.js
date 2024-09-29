@@ -82,7 +82,17 @@ const scheduleTrip = async (req, res) => {
   try {
     const deo = req.user.username;
     const result = await deoService.scheduleTrip(deo, req.body);
-    res.status(201).json({ message: "Trip scheduled successfully" });
+    res.status(201).json({ tripID: result[0].new_trip_id });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const addStation = async (req, res) => {
+  try {
+    const deo = req.user.username;
+    const result = await deoService.addStation(deo, req.body);
+    res.status(201).json({ message: "Station added successfully" });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -107,6 +117,7 @@ module.exports = {
   createRailwayStation,
   createRoute,
   scheduleTrip,
+  addStation,
   updateDelay,
   updateProfile,
 };

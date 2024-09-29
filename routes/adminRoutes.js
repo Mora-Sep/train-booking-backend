@@ -75,4 +75,16 @@ router.delete(
   async (req, res) => await adminController.deleteScheduledTrip(req, res)
 );
 
+router.get(
+  "/reports/total",
+  verifyToken,
+  async (req, res) => await adminController.getTotalReport(req, res)
+);
+
+router.get(
+  "/reports/current",
+  verifyToken,
+  async (req, res) => await adminController.getCurrentStats(req, res)
+);
+
 module.exports = router;

@@ -104,7 +104,9 @@ const searchTrip = async (from, to, frequency) => {
       "Weekends"
     );
 
-    list1 = list1.concat(list2);
+    if (list2 && list2.length) {
+      list1 = list1.concat(list2);
+    }
   }
 
   if (
@@ -116,7 +118,9 @@ const searchTrip = async (from, to, frequency) => {
       "Weekdays"
     );
 
-    list1 = list1.concat(list3);
+    if (list3 && list3.length) {
+      list1 = list1.concat(list3);
+    }
   }
 
   const list4 = await bookingRepository.searchTrip(fromCode, toCode, "Daily");

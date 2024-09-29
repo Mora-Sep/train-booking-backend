@@ -170,6 +170,22 @@ const validateScheduleTrip = (trip) => {
   }
 };
 
+const validateAddStation = (station) => {
+  const { error } = joi
+    .object({
+      tripID: joi.number().required(),
+      code: joi.string().required(),
+      sequence: joi.number().required(),
+    })
+    .validate(station);
+
+  if (error) {
+    return error.details[0].message;
+  } else {
+    return null;
+  }
+};
+
 const validateStaffUpdate = (staff) => {
   let schema;
   if (staff.currentPassword) {
@@ -260,6 +276,7 @@ module.exports = {
   validateCreateRailwayStation,
   validateCreateRoute,
   validateScheduleTrip,
+  validateAddStation,
   validateStaffUpdate,
   validateCreateBooking,
   validateGuestCreateBooking,
