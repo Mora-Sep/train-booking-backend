@@ -130,7 +130,7 @@ const searchTrip = async (from, to, frequency) => {
   return combinedData;
 };
 
-const getSeats = async (from, to, frequency) => {
+const getSeats = async (from, to, frequency, id) => {
   // Step 1: Find trips that include the origin and destination stations
   const rawTrips = await guestConnection("trip")
     .innerJoin("intermediate_station as is1", "trip.ID", "is1.Schedule")
@@ -148,68 +148,48 @@ const getSeats = async (from, to, frequency) => {
   }
 
   // Step 2: Fetch seat reservations for each trip
-  const seatReservationsPromises = rawTrips.map((trip) =>
-    guestConnection("seat_reservation")
-      .where("ID", trip.ID)
-      .select(
-        "class",
-        "totalCount",
-        "totalCarts",
-        "reservedCount",
-        "bookedSeats"
-      )
-      .then((seatReservations) =>
-        seatReservations.length ? seatReservations : null
-      )
-  );
+  const filteredTrip = rawTrips.filter((trip) => trip.ID === Number(id));
 
-  const seatReservations = await Promise.all(seatReservationsPromises);
+  const seatReservations = await guestConnection("seat_reservation")
+    .where("ID", filteredTrip[0].ID)
+    .select("class", "totalCount", "totalCarts", "reservedCount", "bookedSeats")
+    .then((seatReservations) =>
+      seatReservations.length ? seatReservations : null
+    );
 
-  // Step 3: Combine trip and seat reservation data
-  let combinedData = [];
+  if (seatReservations) {
+    // Create an empty array to store formatted seat data for each class
+    const formattedSeats = [];
 
-  if (rawTrips) {
-    combinedData = rawTrips.map((trip, index) => {
-      const tripSeatReservations = seatReservations[index];
+    seatReservations.forEach((reservation) => {
+      const { totalCarts, totalCount, bookedSeats } = reservation;
 
-      // Create an empty array to store formatted seat data for each class
-      const formattedSeats = [];
+      const seatNumbers = bookedSeats ? bookedSeats.split(",").map(Number) : [];
 
-      tripSeatReservations.forEach((reservation) => {
-        const { totalCarts, totalCount, bookedSeats } = reservation;
+      // Calculate the number of seats per cart and group them by cart
+      const seatsPerCart = Math.ceil(totalCount / totalCarts);
 
-        const seatNumbers = bookedSeats
-          ? bookedSeats.split(",").map(Number)
-          : [];
+      // Create a list for the current class's carts
+      const carts = [];
+      for (let i = 0; i < totalCarts; i++) {
+        const startValue = i * seatsPerCart + 1;
+        const endValue = (i + 1) * seatsPerCart;
+        const cartSeats = [];
+        seatNumbers.map((seat) => {
+          if (seat >= startValue && seat <= endValue) {
+            cartSeats.push(seat);
+          }
+        });
+        carts.push(cartSeats); // Add seats for each cart
+      }
 
-        // Calculate the number of seats per cart and group them by cart
-        const seatsPerCart = Math.ceil(totalCount / totalCarts);
-
-        // Create a list for the current class's carts
-        const carts = [];
-        for (let i = 0; i < totalCarts; i++) {
-          const startValue = i * seatsPerCart + 1;
-          const endValue = (i + 1) * seatsPerCart;
-          const cartSeats = [];
-          seatNumbers.map((seat) => {
-            if (seat >= startValue && seat <= endValue) {
-              cartSeats.push(seat);
-            }
-          });
-          carts.push(cartSeats); // Add seats for each cart
-        }
-
-        // Add the cart list as an entry in the main list
-        formattedSeats.push(carts); // Each class becomes an entry as [[carts]]
-      });
-
-      return formattedSeats;
+      // Add the cart list as an entry in the main list
+      formattedSeats.push(carts); // Each class becomes an entry as [[carts]]
     });
+    return formattedSeats;
   } else {
-    console.log("No trips found.");
+    return "No seat reservations found.";
   }
-
-  return combinedData;
 };
 
 const userSearchBookedTickets = async (username) => {

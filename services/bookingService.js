@@ -132,7 +132,7 @@ const searchTrip = async (from, to, frequency) => {
   return list1;
 };
 
-const getSeats = async (from, to, frequency) => {
+const getSeats = async (from, to, frequency, id) => {
   let fromCode, toCode;
 
   if (!from || !to || !frequency) {
@@ -165,7 +165,7 @@ const getSeats = async (from, to, frequency) => {
     frequency = daysOfWeek[date.getUTCDay()]; // or use date.getDay() if you want local time instead of UTC
   }
 
-  let list1 = await bookingRepository.getSeats(fromCode, toCode, frequency);
+  let list1 = await bookingRepository.getSeats(fromCode, toCode, frequency, id);
   list1 = list1 || [];
 
   if (["Sunday", "Saturday"].includes(frequency)) {
@@ -184,13 +184,14 @@ const getSeats = async (from, to, frequency) => {
     const list3 = await bookingRepository.getSeats(
       fromCode,
       toCode,
-      "Weekdays"
+      "Weekdays",
+      id
     );
 
     list1 = list1.concat(list3);
   }
 
-  const list4 = await bookingRepository.getSeats(fromCode, toCode, "Daily");
+  const list4 = await bookingRepository.getSeats(fromCode, toCode, "Daily", id);
 
   if (list4 && list4.length) {
     list1 = list1.concat(list4);
