@@ -24,11 +24,20 @@ const userCreateBooking = async (username, data) => {
   const finalPrice = await calculateFinalPrice(
     data.tripID,
     username,
-    data.class,
-    data.bookingCount,
+    data.passengers,
     data.from,
     data.to
   );
+
+  for (const passenger of data.passengers) {
+    if (passenger.class === "First Class") {
+      passenger.class = "F";
+    } else if (passenger.class === "Second Class") {
+      passenger.class = "S";
+    } else if (passenger.class === "Third Class") {
+      passenger.class = "T";
+    }
+  }
 
   return bookingRepository.userCreateBooking(username, data, finalPrice);
 };
@@ -287,8 +296,7 @@ const searchBookedTicketByID = async (bookingRefID) => {
 async function calculateFinalPrice(
   scheduledTripId,
   username,
-  travelClass,
-  bookingCount,
+  passengers,
   fromStation,
   toStation
 ) {
@@ -312,18 +320,28 @@ async function calculateFinalPrice(
 
   // Calculate distance factor based on the sequence difference
   const distanceFactor = destinationSequence - originSequence;
+  let basicPrice = 0;
 
-  // Fetch base price per class
-  const basePricePerClass = await bookingRepository.getBasePricePerClass(
-    scheduledTripId,
-    travelClass
-  );
-  if (!basePricePerClass) {
-    throw new Error("Could not retrieve base price for the class");
+  for (const passenger of passengers) {
+    if (passenger.class === "F") {
+      passenger.class = "First Class";
+    } else if (passenger.class === "S") {
+      passenger.class = "Second Class";
+    } else if (passenger.class === "T") {
+      passenger.class = "Third Class";
+    }
+
+    // Fetch base price per class
+    const basePricePerClass = await bookingRepository.getBasePricePerClass(
+      scheduledTripId,
+      passenger.class
+    );
+    if (!basePricePerClass) {
+      throw new Error("Could not retrieve base price for the class");
+    }
+    // Calculate basic price for the segment
+    basicPrice = basicPrice + basePricePerClass * distanceFactor;
   }
-
-  // Calculate basic price for the segment
-  const basicPrice = basePricePerClass * distanceFactor * bookingCount;
 
   // Fetch discount percentage based on the user category
   let discountPercent;

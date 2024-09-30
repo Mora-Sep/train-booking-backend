@@ -217,10 +217,8 @@ const validateCreateBooking = (data) => {
   const { error } = joi
     .object({
       tripID: joi.number().required(),
-      class: joi.string().required(),
       from: joi.string().required(),
       to: joi.string().required(),
-      bookingCount: joi.number().required(),
       passengers: joi.allow(),
     })
     .validate(data);

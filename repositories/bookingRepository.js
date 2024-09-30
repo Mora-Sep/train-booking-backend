@@ -7,12 +7,10 @@ const userCreateBooking = async (username, data, finalPrice) => {
   await ruConnection.raw(`SET @status_var = FALSE`);
 
   await ruConnection.raw(
-    "CALL UserCreateBooking(?,?,?,?,?,?,?,?,@refID,@finalPrice,@status_var)",
+    "CALL UserCreateBooking(?,?,?,?,?,?,@refID,@finalPrice,@status_var)",
     [
       data.tripID,
       username,
-      data.class,
-      data.bookingCount,
       data.from,
       data.to,
       JSON.stringify(data.passengers),
@@ -33,12 +31,10 @@ const guestCreateBooking = async (data, finalPrice) => {
   await guestConnection.raw(`SET @status_var = FALSE`);
 
   await guestConnection.raw(
-    "CALL GuestCreateBooking(?,?,?,?,?,?,?,?,?,?,@refID,@finalPrice,@out_guest_id, @status_var)",
+    "CALL GuestCreateBooking(?,?,?,?,?,?,?,?,@refID,@finalPrice,@out_guest_id, @status_var)",
     [
       data.tripID,
       data.guestID,
-      data.class,
-      data.bookingCount,
       JSON.stringify(data.passengers),
       data.from,
       data.to,
