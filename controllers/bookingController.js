@@ -10,8 +10,8 @@ const getCheckoutSession = async (req, res) => {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
-      success_url: `https://google.com/`,
-      cancel_url: `https://youtube.com/`,
+      success_url: `${process.env.STRIPE_SUCCESS_URL}`,
+      cancel_url: `${process.env.STRIPE_CANCEL_URL}`,
       customer_email: booking.email,
       client_reference_id: bookingRefID,
       line_items: [
