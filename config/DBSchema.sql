@@ -42,6 +42,7 @@ DROP VIEW IF EXISTS admin_trip;
 DROP VIEW IF EXISTS seat_reservation;
 DROP VIEW IF EXISTS ticket;
 DROP VIEW IF EXISTS passenger;
+DROP VIEW IF EXISTS price_list;
 
 -- drop_all_procedures()
 DROP PROCEDURE IF EXISTS CompleteBooking;
@@ -365,6 +366,19 @@ CREATE OR REPLACE VIEW passenger AS
                 INNER JOIN railway_station AS des ON rut.Destination = des.Code
                 LEFT JOIN user_category AS ctg ON usr.Category = ctg.Category_ID
 			ORDER BY bk.Ticket_Number;
+
+CREATE OR REPLACE VIEW price_list AS
+    SELECT 
+        st.Scheduled_ID AS scheduled_trip_id,
+        c.Class_Name AS class_name,
+        bp.Price AS price
+    FROM 
+        scheduled_trip st
+    JOIN 
+        base_price bp ON st.Route = bp.Route
+    JOIN 
+        class c ON bp.Class = c.Class_Code;
+
 
 
 -- create_procedures()
@@ -1195,6 +1209,7 @@ GRANT SELECT, INSERT, UPDATE ON project_database.class TO 'staff';
 GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.user TO 'staff';
 GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.staff TO 'staff';
 GRANT SELECT ON project_database.trip TO 'staff';
+GRANT SELECT ON project_database.price_list TO 'staff';
 GRANT EXECUTE ON PROCEDURE project_database.ScheduleTrip TO 'staff';
 GRANT EXECUTE ON PROCEDURE project_database.CreateModel TO 'staff';
 GRANT EXECUTE ON PROCEDURE project_database.CreateRailwayStation TO 'staff';
@@ -1212,6 +1227,7 @@ GRANT SELECT ON project_database.class TO 'registeredUser';
 GRANT SELECT ON project_database.trip TO 'registeredUser';
 GRANT SELECT ON project_database.ticket TO 'registeredUser';
 GRANT SELECT ON project_database.seat_reservation TO 'registeredUser';
+GRANT SELECT ON project_database.price_list TO 'registeredUser';
 GRANT SELECT ON project_database.user_category TO 'registeredUser';
 GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.user TO 'registeredUser';
 GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.registered_user TO 'registeredUser';
@@ -1235,6 +1251,7 @@ GRANT SELECT ON project_database.class TO 'guest';
 GRANT SELECT ON project_database.trip TO 'guest';
 GRANT SELECT ON project_database.ticket TO 'guest';
 GRANT SELECT ON project_database.seat_reservation TO 'guest';
+GRANT SELECT ON project_database.price_list TO 'guest';
 GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.guest TO 'guest';
 GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.booking TO 'guest';
 GRANT SELECT, INSERT, UPDATE, DELETE ON project_database.booked_seat TO 'guest';

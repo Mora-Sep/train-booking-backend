@@ -112,6 +112,15 @@ const searchTrip = async (from, to, frequency) => {
 
   const seatReservations = await Promise.all(seatReservationsPromises);
 
+  const priceList = rawTrips.map((trip) =>
+    guestConnection("price_list")
+      .where("scheduled_trip_id", trip.ID)
+      .select("class_name AS class", "price")
+      .then((prices) => (prices.length ? prices : null))
+  );
+
+  const prices = await Promise.all(priceList);
+
   // Step 3: Combine trip and seat reservation data
   let combinedData = [];
 
@@ -121,6 +130,7 @@ const searchTrip = async (from, to, frequency) => {
       return {
         ...trip,
         seatReservations: tripSeatReservations,
+        prices: prices[index],
       };
     });
   } else {
