@@ -313,6 +313,7 @@ CREATE OR REPLACE VIEW seat_reservation AS
 CREATE OR REPLACE VIEW ticket AS
             SELECT 
                 bk.Ticket_Number AS ticketNumber,
+                bk.Seat_Number AS seatNumber,
                 CONCAT(bk.FirstName, ' ', bk.LastName) AS passenger,
                 rut.Route_ID AS route,
                 org.Name AS origin,
@@ -332,8 +333,8 @@ CREATE OR REPLACE VIEW ticket AS
                 INNER JOIN class AS cls ON bk.Class = cls.Class_Code
                 INNER JOIN scheduled_trip AS sht ON bkset.scheduled_trip = sht.Scheduled_ID
                 INNER JOIN route AS rut ON sht.Route = rut.Route_ID
-                INNER JOIN railway_station AS org ON rut.Origin = org.Code
-                INNER JOIN railway_station AS des ON rut.Destination = des.Code
+                INNER JOIN railway_station AS org ON bkset.from_station = org.Code
+                INNER JOIN railway_station AS des ON bkset.to_station = des.Code
             -- WHERE
             --     DATE(sht.Departure_Time) >= CURDATE()
             GROUP BY bk.Ticket_Number;

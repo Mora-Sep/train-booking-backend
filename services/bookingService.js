@@ -8,6 +8,8 @@ const {
 } = require("../utils/validators");
 
 const userCreateBooking = async (username, data) => {
+  if (!username) throw new Error("Invalid username");
+
   const fetchedUser = userRepository.findUserByUsername(username);
   if (!fetchedUser) throw new Error("No such user exists");
 
