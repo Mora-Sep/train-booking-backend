@@ -123,10 +123,19 @@ const searchTrip = async (from, to, frequency) => {
   if (rawTrips) {
     combinedData = rawTrips.map((trip, index) => {
       const tripSeatReservations = seatReservations[index];
+      const tripPrices = prices[index].map((priceObj) => {
+        return {
+          class: priceObj.class,
+          price:
+            Number(priceObj.price) *
+            (Number(trip.destinationSequence) - Number(trip.originSequence)),
+        };
+      });
+
       return {
         ...trip,
         seatReservations: tripSeatReservations,
-        prices: prices[index],
+        prices: tripPrices,
       };
     });
   } else {
