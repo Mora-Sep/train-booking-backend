@@ -139,6 +139,7 @@ const searchTrip = async (from, to, frequency) => {
       };
     });
   } else {
+    // No Trips Found
     console.log("No trips found.");
   }
 
