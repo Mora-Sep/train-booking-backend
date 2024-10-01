@@ -194,6 +194,15 @@ const searchBookedTicketByID = async (req, res) => {
   }
 };
 
+const getStatus = async (req, res) => {
+  try {
+    const result = await bookingService.getStatus(req.query.bookingRefID);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 module.exports = {
   userSearchBookedTickets,
   userGetPendingPayments,
@@ -209,4 +218,5 @@ module.exports = {
   getSeats,
   getCheckoutSession,
   getPaymentIntent,
+  getStatus,
 };
