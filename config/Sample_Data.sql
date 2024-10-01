@@ -66,6 +66,7 @@ INSERT INTO railway_station (Code, Name, District) VALUES
 ('KMA', 'Kadigamuwa', 'Kegalle'),
 ('GDA', 'Gangoda', 'Kegalle'),
 ('IKT', 'Ihala Kotte', 'Kegalle'),
+('KDT', 'Kandy', 'Kandy'),
 ('BNA', 'Balana', 'Kandy'),
 ('KGW', 'Kadugannawa', 'Kandy'),
 ('PLT', 'Pilimatalawa', 'Kandy'),
@@ -164,6 +165,8 @@ INSERT INTO railway_station(Code, Name, District) VALUES ('PKM', 'Puliyankulam',
 -- Jaffna District
 INSERT INTO railway_station(Code, Name, District) VALUES ('JFN', 'Jaffna', 'Jaffna');
 INSERT INTO railway_station(Code, Name, District) VALUES ('KKS', 'Kankesanthurai', 'Jaffna');
+INSERT INTO railway_station(Code, Name, District) VALUES ('KLN', 'Kilinochchi', 'Jaffna');
+INSERT INTO railway_station(Code, Name, District) VALUES ('MNK', 'Mankulam', 'Jaffna');
 
 -- Polonnaruwa District
 INSERT INTO railway_station(Code, Name, District) VALUES ('GOA', 'Gal Oya Junction', 'Polonnaruwa');
@@ -291,6 +294,12 @@ INSERT into route(Origin, Destination, Duration_Minutes) values('BEL', 'MDA', 24
 INSERT into route(Origin, Destination, Duration_Minutes) values('BEL', 'MDA', 210);
 INSERT into route(Origin, Destination, Duration_Minutes) values('MDA', 'BEL', 240);
 INSERT into route(Origin, Destination, Duration_Minutes) values('MDA', 'BEL', 210);
+INSERT into route(Origin, Destination, Duration_Minutes) values('ANP', 'JFN', 300);
+INSERT into route(Origin, Destination, Duration_Minutes) values('JFN', 'ANP', 300);
+INSERT into route(Origin, Destination, Duration_Minutes) values('FOT', 'TCO', 300);
+INSERT into route(Origin, Destination, Duration_Minutes) values('TCO', 'FOT', 300);
+INSERT into route(Origin, Destination, Duration_Minutes) values('FOT', 'KDT', 240);
+INSERT into route(Origin, Destination, Duration_Minutes) values('KDT', 'FOT', 240);
 
 
 
@@ -299,6 +308,12 @@ INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(1, 80
 INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(2, 8058, '06:00:00', 'Weekdays');
 INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(3, 8056, '14:00:00', 'Weekdays');
 INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(4, 8058, '14:30:00', 'Weekdays');
+INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(9, 1005, '08:30:00', 'Daily');
+INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(10, 1005, '15:00:00', 'Daily');
+INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(5, 4077, '08:00:00', 'Weekdays');
+INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(6, 4077, '16:00:00', 'Weekdays');
+INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(7, 4077, '04:00:00', 'Weekends');
+INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(8, 4077, '12:00:00', 'Weekends');
 
 
 
@@ -409,52 +424,52 @@ INSERT into staff(Username, Role) values('DanielH', 'Data Entry Operator');
 INSERT into staff(Username, Role) values('HenryW', 'Admin');
 
 
-INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, BPrice_Per_Booking, Final_price, Completed) values('BUI7L6BNML60', 1, NULL, 1, 990, 1);
-INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, BPrice_Per_Booking, Final_price, Completed) values('DER7L6BNM0PK', 1, NULL, 2, 330, 1);
-INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, BPrice_Per_Booking, Final_price, Completed) values('IOPYJ6BNM7UK', 1, NULL, 3, 220, 1);
-INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, BPrice_Per_Booking, Final_price, Completed) values('JYR7L28UIJF3', 1, 'EmilyW', 1, 110, 1);
-INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, BPrice_Per_Booking, Final_price, Completed) values('KSRU46IU5724', 1, NULL, 2, 300, 1);
-INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, BPrice_Per_Booking, Final_price, Completed) values('KYJ3928UIBF6', 1, NULL, 1, 220, 1);
-INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, BPrice_Per_Booking, Final_price, Completed) values('NYR4L28UI4P2', 1, 'SamC', 1, 330, 1);
-INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, BPrice_Per_Booking, Final_price, Completed) values('AYH4L28UI5HN', 2, 'JohnD', 6, 160, 1);
-INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, BPrice_Per_Booking, Final_price, Completed) values('BGR4L4JUIKFV', 2, 'JaneS', 6, 160, 1);
-INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, BPrice_Per_Booking, Final_price, Completed) values('LRR6L21II8J5', 2, 'AliceD', 6, 600, 1);
-INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, BPrice_Per_Booking, Final_price, Completed) values('P8J4L4JUINMK', 2, NULL, 4, 160, 1);
-INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, BPrice_Per_Booking, Final_price, Completed) values('W6B4L28UI4NH', 2, NULL , 4, 480, 1);
+INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, Final_price, Completed) values('BUI7L6BNML60', 1, NULL, 990, 1);
+INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, Final_price, Completed) values('DER7L6BNM0PK', 1, NULL, 330, 1);
+INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, Final_price, Completed) values('IOPYJ6BNM7UK', 1, NULL, 220, 1);
+INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, Final_price, Completed) values('JYR7L28UIJF3', 1, 'EmilyW', 110, 1);
+INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, Final_price, Completed) values('KSRU46IU5724', 1, NULL, 300, 1);
+INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, Final_price, Completed) values('KYJ3928UIBF6', 1, NULL, 220, 1);
+INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, Final_price, Completed) values('NYR4L28UI4P2', 1, 'SamC', 330, 1);
+INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, Final_price, Completed) values('AYH4L28UI5HN', 2, 'JohnD', 160, 1);
+INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, Final_price, Completed) values('BGR4L4JUIKFV', 2, 'JaneS', 160, 1);
+INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, Final_price, Completed) values('LRR6L21II8J5', 2, 'AliceD', 600, 1);
+INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, Final_price, Completed) values('P8J4L4JUINMK', 2, NULL, 160, 1);
+INSERT into booking(Booking_Ref_ID, Scheduled_Trip, User, Final_price, Completed) values('W6B4L28UI4NH', 2, NULL , 480, 1);
 
 
 
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('BUI7L6BNML60', 41, 'Mei', 'Wang', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('BUI7L6BNML60', 42, 'Jian', 'Zhang', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('BUI7L6BNML60', 43, 'Yuki', 'Tanaka', 0);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('BUI7L6BNML60', 44, 'Akira', 'Suzuki', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('BUI7L6BNML60', 45, 'Hiroshi', 'Yamamoto', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('BUI7L6BNML60', 46, 'Priya', 'Patel', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('BUI7L6BNML60', 47, 'Amit', 'Kumar', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('BUI7L6BNML60', 48, 'Lin', 'Chen', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('BUI7L6BNML60', 49, 'Jing', 'Li', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('DER7L6BNM0PK', 23, 'Akiko', 'Sato', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('DER7L6BNM0PK', 24, 'Raj', 'Patel', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('DER7L6BNM0PK', 25, 'Sakura', 'Yamamoto', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('IOPYJ6BNM7UK', 31, 'Xin', 'Chen', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('IOPYJ6BNM7UK', 32, 'Wei', 'Li', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('JYR7L28UIJF3', 10, 'Emily', 'Wilson', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('KSRU46IU5724', 1, 'Sophia', 'Smith', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('KSRU46IU5724', 2, 'Liam', 'Johnson', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('KYJ3928UIBF6', 13, 'Lucas', 'White', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('KYJ3928UIBF6', 14, 'Mia', 'Thompson', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('NYR4L28UI4P2', 2, 'Sam', 'Convoy', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('NYR4L28UI4P2', 3, 'Olivia', 'Smith', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('NYR4L28UI4P2', 4, 'Liam', 'Brown', 0);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('AYH4L28UI5HN', 1, 'John', 'Doe', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('BGR4L4JUIKFV', 3, 'Jane', 'Smith', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('LRR6L21II8J5', 1, 'Alice', 'Doe', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('LRR6L21II8J5', 2, 'Ava', 'Davis', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('LRR6L21II8J5', 3, 'Sophia', 'Martinez', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('P8J4L4JUINMK', 10, 'Samuel', 'Reed', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('W6B4L28UI4NH', 6, 'Daniel', 'Green', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('W6B4L28UI4NH', 7, 'Sofia', 'King', 1);
-INSERT into booked_seat(Booking, Seat_Number, FirstName, LastName, isAdult) values('W6B4L28UI4NH', 8, 'Carter', 'Adams', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('BUI7L6BNML60', 41, 'T', 'Mei', 'Wang', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('BUI7L6BNML60', 42, 'T', 'Jian', 'Zhang', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('BUI7L6BNML60', 43,'T', 'Yuki', 'Tanaka', 0);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('BUI7L6BNML60', 44,'T', 'Akira', 'Suzuki', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('BUI7L6BNML60', 45,'T', 'Hiroshi', 'Yamamoto', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('BUI7L6BNML60', 46,'T', 'Priya', 'Patel', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('BUI7L6BNML60', 47,'T', 'Amit', 'Kumar', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('BUI7L6BNML60', 48,'T', 'Lin', 'Chen', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('BUI7L6BNML60', 49,'T', 'Jing', 'Li', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('DER7L6BNM0PK', 23, 'S', 'Akiko', 'Sato', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('DER7L6BNM0PK', 24,'S', 'Raj', 'Patel', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('DER7L6BNM0PK', 25,'S', 'Sakura', 'Yamamoto', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('IOPYJ6BNM7UK', 15,'F', 'Xin', 'Chen', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('IOPYJ6BNM7UK', 16,'F', 'Wei', 'Li', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('JYR7L28UIJF3', 10,'T', 'Emily', 'Wilson', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('KSRU46IU5724', 1,'S', 'Sophia', 'Smith', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('KSRU46IU5724', 2, 'S','Liam', 'Johnson', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('KYJ3928UIBF6', 13, 'T','Lucas', 'White', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('KYJ3928UIBF6', 14,'T', 'Mia', 'Thompson', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('NYR4L28UI4P2', 2,'T', 'Sam', 'Convoy', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('NYR4L28UI4P2', 3,'T', 'Olivia', 'Smith', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('NYR4L28UI4P2', 4,'T', 'Liam', 'Brown', 0);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('AYH4L28UI5HN', 1,'F', 'John', 'Doe', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('BGR4L4JUIKFV', 3,'F', 'Jane', 'Smith', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('LRR6L21II8J5', 1,'F', 'Alice', 'Doe', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('LRR6L21II8J5', 2,'F', 'Ava', 'Davis', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('LRR6L21II8J5', 3,'F', 'Sophia', 'Martinez', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('P8J4L4JUINMK', 10,'T', 'Samuel', 'Reed', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('W6B4L28UI4NH', 6,'T', 'Daniel', 'Green', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('W6B4L28UI4NH', 7,'T', 'Sofia', 'King', 1);
+INSERT into booked_seat(Booking, Seat_Number, Class, FirstName, LastName, isAdult) values('W6B4L28UI4NH', 8,'T', 'Carter', 'Adams', 1);
 
 
 
@@ -468,21 +483,66 @@ INSERT into guest(Guest_ID, Booking_Ref_ID) values('K7VX2N5U4I8B', 'W6B4L28UI4NH
 
 INSERT INTO intermediate_station (Schedule, Code, Sequence)
 VALUES
-    (1, 'BEL', 1),  -- First intermediate station
-    (1, 'MTR', 2),  -- Third intermediate station
-    (1, 'GLE', 3),  -- Second intermediate station
-    (1, 'KTS', 4),  -- Third intermediate station
-    (1, 'MDA', 5),  -- Third intermediate station
-    (4, 'BEL', 5), 
-    (4, 'MTR', 4),
-    (4, 'GLE', 3), 
-    (4, 'KTS', 2),  
+    (1, 'BEL', 1),  
+    (1, 'MTR', 2),  
+    (1, 'GLE', 3),  
+    (1, 'KTS', 4),  
+    (1, 'FOT', 5),  
+    (1, 'MDA', 6),  
+    (2, 'BEL', 1),  
+    (2, 'MTR', 2),  
+    (2, 'GLE', 3),  
+    (2, 'KTS', 4),  
+    (2, 'FOT', 5),  
+    (2, 'MDA', 6),  
+    (4, 'BEL', 6), 
+    (4, 'MTR', 5),
+    (4, 'GLE', 4), 
+    (4, 'KTS', 3),  
+    (4, 'FOT', 2),  
     (4, 'MDA', 1), 
-    (3, 'BEL', 5), 
-    (3, 'MTR', 4), 
-    (3, 'GLE', 3),  
-    (3, 'KTS', 2),  
-    (3, 'MDA', 1);
+    (3, 'BEL', 6), 
+    (3, 'MTR', 5), 
+    (3, 'GLE', 4),  
+    (3, 'KTS', 3),  
+    (3, 'FOT', 2),  
+    (3, 'MDA', 1),
+    (5, 'FOT', 1),
+    (5, 'RGM', 2),
+    (5, 'MIG', 3),
+    (5, 'ALW', 4),
+    (5, 'RBK', 5),
+    (5, 'KDT', 6),
+    (6, 'FOT', 6),
+    (6, 'RGM', 5),
+    (6, 'MIG', 4),
+    (6, 'ALW', 3),
+    (6, 'RBK', 2),
+    (6, 'KDT', 1),
+    (7, 'ANP', 1),
+    (7, 'VNA', 2),
+    (7, 'PKM', 3),
+    (7, 'MNK', 4),
+    (7, 'KLN', 5),
+    (7, 'JFN', 6),
+    (8, 'ANP', 6),
+    (8, 'VNA', 5),
+    (8, 'PKM', 4),
+    (8, 'MNK', 3),
+    (8, 'KLN', 2),
+    (8, 'JFN', 1),
+    (9, 'FOT', 1),
+    (9, 'PLG', 2),
+    (9, 'KRN', 3),
+    (9, 'HBN', 4),
+    (9, 'KNI', 5),
+    (9, 'TCO', 6),
+    (10, 'FOT', 6),
+    (10, 'PLG', 5),
+    (10, 'KRN', 4),
+    (10, 'HBN', 3),
+    (10, 'KNI', 2),
+    (10, 'TCO', 1);
     
 
 

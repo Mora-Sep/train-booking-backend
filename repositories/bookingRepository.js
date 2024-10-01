@@ -7,12 +7,10 @@ const userCreateBooking = async (username, data, finalPrice) => {
   await ruConnection.raw(`SET @status_var = FALSE`);
 
   await ruConnection.raw(
-    "CALL UserCreateBooking(?,?,?,?,?,?,?,?,@refID,@finalPrice,@status_var)",
+    "CALL UserCreateBooking(?,?,?,?,?,?,@refID,@finalPrice,@status_var)",
     [
       data.tripID,
       username,
-      data.class,
-      data.bookingCount,
       data.from,
       data.to,
       JSON.stringify(data.passengers),
@@ -33,12 +31,10 @@ const guestCreateBooking = async (data, finalPrice) => {
   await guestConnection.raw(`SET @status_var = FALSE`);
 
   await guestConnection.raw(
-    "CALL GuestCreateBooking(?,?,?,?,?,?,?,?,?,?,@refID,@finalPrice,@out_guest_id, @status_var)",
+    "CALL GuestCreateBooking(?,?,?,?,?,?,?,?,@refID,@finalPrice,@out_guest_id, @status_var)",
     [
       data.tripID,
       data.guestID,
-      data.class,
-      data.bookingCount,
       JSON.stringify(data.passengers),
       data.from,
       data.to,
@@ -112,6 +108,15 @@ const searchTrip = async (from, to, frequency) => {
 
   const seatReservations = await Promise.all(seatReservationsPromises);
 
+  const priceList = rawTrips.map((trip) =>
+    guestConnection("price_list")
+      .where("scheduled_trip_id", trip.ID)
+      .select("class_name AS class", "price")
+      .then((prices) => (prices.length ? prices : null))
+  );
+
+  const prices = await Promise.all(priceList);
+
   // Step 3: Combine trip and seat reservation data
   let combinedData = [];
 
@@ -121,6 +126,7 @@ const searchTrip = async (from, to, frequency) => {
       return {
         ...trip,
         seatReservations: tripSeatReservations,
+        prices: prices[index],
       };
     });
   } else {
@@ -128,6 +134,68 @@ const searchTrip = async (from, to, frequency) => {
   }
 
   return combinedData;
+};
+
+const getSeats = async (from, to, frequency, id) => {
+  // Step 1: Find trips that include the origin and destination stations
+  const rawTrips = await guestConnection("trip")
+    .innerJoin("intermediate_station as is1", "trip.ID", "is1.Schedule")
+    .innerJoin("intermediate_station as is2", "trip.ID", "is2.Schedule")
+    .innerJoin("railway_station as rs1", "is1.Code", "rs1.Code")
+    .innerJoin("railway_station as rs2", "is2.Code", "rs2.Code")
+    .where("is1.Code", from)
+    .andWhere("is2.Code", to)
+    .andWhere("is1.Sequence", "<", guestConnection.raw("is2.Sequence"))
+    .andWhere("trip.frequency", frequency)
+    .then((trips) => (trips.length ? trips : null));
+
+  if (!rawTrips || rawTrips.length === 0) {
+    return null;
+  }
+
+  // Step 2: Fetch seat reservations for each trip
+  const filteredTrip = rawTrips.filter((trip) => trip.ID === Number(id));
+
+  const seatReservations = await guestConnection("seat_reservation")
+    .where("ID", filteredTrip[0].ID)
+    .select("class", "totalCount", "totalCarts", "reservedCount", "bookedSeats")
+    .then((seatReservations) =>
+      seatReservations.length ? seatReservations : null
+    );
+
+  if (seatReservations) {
+    // Create an empty array to store formatted seat data for each class
+    const formattedSeats = [];
+
+    seatReservations.forEach((reservation) => {
+      const { totalCarts, totalCount, bookedSeats } = reservation;
+
+      const seatNumbers = bookedSeats ? bookedSeats.split(",").map(Number) : [];
+
+      // Calculate the number of seats per cart and group them by cart
+      const seatsPerCart = Math.ceil(totalCount / totalCarts);
+
+      // Create a list for the current class's carts
+      const carts = [];
+      for (let i = 0; i < totalCarts; i++) {
+        const startValue = i * seatsPerCart + 1;
+        const endValue = (i + 1) * seatsPerCart;
+        const cartSeats = [];
+        seatNumbers.map((seat) => {
+          if (seat >= startValue && seat <= endValue) {
+            cartSeats.push(seat);
+          }
+        });
+        carts.push(cartSeats); // Add seats for each cart
+      }
+
+      // Add the cart list as an entry in the main list
+      formattedSeats.push(carts); // Each class becomes an entry as [[carts]]
+    });
+    return formattedSeats;
+  } else {
+    return "No seat reservations found.";
+  }
 };
 
 const userSearchBookedTickets = async (username) => {
@@ -179,22 +247,11 @@ const guestSearchBookedTickets = async (guestID) => {
 };
 
 const userGetPendingPayments = async (username) => {
-  return ruConnection("booked_seat as bk")
+  const data = await ruConnection("booking as bkset")
     .select(
       "bkset.Booking_Ref_ID as bookingRefID",
       "bkset.Final_Price as price",
-      "shf.Scheduled_ID as tripID",
-      "bprc.Class as travelClass",
-      "bk.Seat_Number as seat",
-      "bk.FirstName as firstName",
-      "bk.LastName as lastName",
-      "bk.IsAdult as isAdult"
-    )
-    .innerJoin("booking as bkset", "bk.Booking", "bkset.Booking_Ref_ID")
-    .innerJoin(
-      "base_price as bprc",
-      "bkset.BPrice_Per_Booking",
-      "bprc.Price_ID"
+      "shf.Scheduled_ID as tripID"
     )
     .innerJoin(
       "scheduled_trip as shf",
@@ -214,21 +271,45 @@ const userGetPendingPayments = async (username) => {
     .catch((err) => {
       console.error("Error executing query:", err);
     });
+
+  if (!data) {
+    return null;
+  }
+
+  for (const booking of data) {
+    const passengers = await ruConnection("booked_seat as bk")
+      .select(
+        "bk.FirstName as firstName",
+        "bk.LastName as lastName",
+        "bk.Seat_Number as seat",
+        "bk.IsAdult as isAdult"
+      )
+      .where("bk.Booking", booking.bookingRefID)
+      .then((rows) => {
+        if (rows.length) {
+          return rows;
+        } else {
+          return null;
+        }
+      })
+      .catch((err) => {
+        console.error("Error executing query:", err);
+      });
+
+    booking.passengers = passengers;
+  }
+
+  return data;
 };
 
 const guestGetPendingPayments = async (guestID) => {
-  return guestConnection("booked_seat as bk")
+  const data = await guestConnection("booking as bkset")
     .select(
       "bkset.Booking_Ref_ID as bookingRefID",
       "bkset.Final_Price as price",
       "shf.Scheduled_ID as tripID",
-      "bprc.Class as travelClass",
-      "bk.Seat_Number as seat",
-      "bk.FirstName as firstName",
-      "bk.LastName as lastName",
-      "bk.IsAdult as isAdult"
+      "bprc.Class as travelClass"
     )
-    .innerJoin("booking as bkset", "bk.Booking", "bkset.Booking_Ref_ID")
     .innerJoin(
       "base_price as bprc",
       "bkset.BPrice_Per_Booking",
@@ -253,6 +334,35 @@ const guestGetPendingPayments = async (guestID) => {
     .catch((err) => {
       console.error("Error executing query:", err);
     });
+
+  if (!data) {
+    return null;
+  }
+
+  for (const booking of data) {
+    const passengers = await guestConnection("booked_seat as bk")
+      .select(
+        "bk.FirstName as firstName",
+        "bk.LastName as lastName",
+        "bk.Seat_Number as seat",
+        "bk.IsAdult as isAdult"
+      )
+      .where("bk.Booking", booking.bookingRefID)
+      .then((rows) => {
+        if (rows.length) {
+          return rows;
+        } else {
+          return null;
+        }
+      })
+      .catch((err) => {
+        console.error("Error executing query:", err);
+      });
+
+    booking.passengers = passengers;
+  }
+
+  return data;
 };
 
 const deleteBooking = async (bookingID) => {
@@ -261,6 +371,24 @@ const deleteBooking = async (bookingID) => {
 
 const completeBooking = async (bookingRefID) => {
   return guestConnection.raw(`CALL CompleteBooking(?)`, [bookingRefID]);
+};
+
+const getBookingCheckout = async (bookingRefID) => {
+  return guestConnection("booking")
+    .select(
+      "Final_Price as finalPrice",
+      "User as bookedUser",
+      "from_station as from",
+      "to_station as to"
+    )
+    .where("Booking_Ref_ID", bookingRefID)
+    .then((booking) => {
+      if (booking.length) {
+        return booking[0];
+      } else {
+        return null;
+      }
+    });
 };
 
 const searchBookedTicketByID = async (bookingID) => {
@@ -335,4 +463,6 @@ module.exports = {
   getStationSequence,
   getBasePricePerClass,
   getUserDiscount,
+  getSeats,
+  getBookingCheckout,
 };

@@ -8,6 +8,8 @@ const {
 } = require("../utils/validators");
 
 const userCreateBooking = async (username, data) => {
+  if (!username) throw new Error("Invalid username");
+
   const fetchedUser = userRepository.findUserByUsername(username);
   if (!fetchedUser) throw new Error("No such user exists");
 
@@ -24,11 +26,20 @@ const userCreateBooking = async (username, data) => {
   const finalPrice = await calculateFinalPrice(
     data.tripID,
     username,
-    data.class,
-    data.bookingCount,
+    data.passengers,
     data.from,
     data.to
   );
+
+  for (const passenger of data.passengers) {
+    if (passenger.class === "First Class") {
+      passenger.class = "F";
+    } else if (passenger.class === "Second Class") {
+      passenger.class = "S";
+    } else if (passenger.class === "Third Class") {
+      passenger.class = "T";
+    }
+  }
 
   return bookingRepository.userCreateBooking(username, data, finalPrice);
 };
@@ -104,7 +115,9 @@ const searchTrip = async (from, to, frequency) => {
       "Weekends"
     );
 
-    list1 = list1.concat(list2);
+    if (list2 && list2.length) {
+      list1 = list1.concat(list2);
+    }
   }
 
   if (
@@ -116,10 +129,80 @@ const searchTrip = async (from, to, frequency) => {
       "Weekdays"
     );
 
-    list1 = list1.concat(list3);
+    if (list3 && list3.length) {
+      list1 = list1.concat(list3);
+    }
   }
 
   const list4 = await bookingRepository.searchTrip(fromCode, toCode, "Daily");
+
+  if (list4 && list4.length) {
+    list1 = list1.concat(list4);
+  }
+
+  return list1;
+};
+
+const getSeats = async (from, to, frequency, id) => {
+  let fromCode, toCode;
+
+  if (!from || !to || !frequency) {
+    throw new Error("Invalid search parameters");
+  }
+
+  if (from.length !== 3 || to.length !== 3) {
+    const fromCodeRes = await getAllRepository.getRSCodeByName(from);
+    const toCodeRes = await getAllRepository.getRSCodeByName(to);
+
+    fromCode = fromCodeRes[0]?.Code;
+    toCode = toCodeRes[0]?.Code;
+  } else {
+    fromCode = from;
+    toCode = to;
+  }
+
+  // Check if frequency is a valid date and convert it to a day of the week
+  if (!isNaN(Date.parse(frequency))) {
+    const date = new Date(frequency);
+    const daysOfWeek = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    frequency = daysOfWeek[date.getUTCDay()]; // or use date.getDay() if you want local time instead of UTC
+  }
+
+  let list1 = await bookingRepository.getSeats(fromCode, toCode, frequency, id);
+  list1 = list1 || [];
+
+  if (["Sunday", "Saturday"].includes(frequency)) {
+    const list2 = await bookingRepository.getSeats(
+      fromCode,
+      toCode,
+      "Weekends"
+    );
+
+    list1 = list1.concat(list2);
+  }
+
+  if (
+    ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].includes(frequency)
+  ) {
+    const list3 = await bookingRepository.getSeats(
+      fromCode,
+      toCode,
+      "Weekdays",
+      id
+    );
+
+    list1 = list1.concat(list3);
+  }
+
+  const list4 = await bookingRepository.getSeats(fromCode, toCode, "Daily", id);
 
   if (list4 && list4.length) {
     list1 = list1.concat(list4);
@@ -193,6 +276,20 @@ const completeBooking = async (bookingRefID) => {
   return result;
 };
 
+const getBookingCheckout = async (bookingRefID) => {
+  if (bookingRefID.length !== 12) throw new Error("Invalid booking ref id");
+
+  const result = await bookingRepository.getBookingCheckout(bookingRefID);
+  const user = await userRepository.getUserDetails(result.bookedUser);
+  const fromStation = await getAllRepository.getRSNameByCode(result.from);
+  const toStation = await getAllRepository.getRSNameByCode(result.to);
+
+  result.email = user.Email;
+  result.from = fromStation[0].Name;
+  result.to = toStation[0].Name;
+  return result;
+};
+
 const searchBookedTicketByID = async (bookingRefID) => {
   if (bookingRefID.length !== 12) throw new Error("Invalid booking ref id");
   return bookingRepository.searchBookedTicketByID(bookingRefID);
@@ -201,8 +298,7 @@ const searchBookedTicketByID = async (bookingRefID) => {
 async function calculateFinalPrice(
   scheduledTripId,
   username,
-  travelClass,
-  bookingCount,
+  passengers,
   fromStation,
   toStation
 ) {
@@ -226,18 +322,28 @@ async function calculateFinalPrice(
 
   // Calculate distance factor based on the sequence difference
   const distanceFactor = destinationSequence - originSequence;
+  let basicPrice = 0;
 
-  // Fetch base price per class
-  const basePricePerClass = await bookingRepository.getBasePricePerClass(
-    scheduledTripId,
-    travelClass
-  );
-  if (!basePricePerClass) {
-    throw new Error("Could not retrieve base price for the class");
+  for (const passenger of passengers) {
+    if (passenger.class === "F") {
+      passenger.class = "First Class";
+    } else if (passenger.class === "S") {
+      passenger.class = "Second Class";
+    } else if (passenger.class === "T") {
+      passenger.class = "Third Class";
+    }
+
+    // Fetch base price per class
+    const basePricePerClass = await bookingRepository.getBasePricePerClass(
+      scheduledTripId,
+      passenger.class
+    );
+    if (!basePricePerClass) {
+      throw new Error("Could not retrieve base price for the class");
+    }
+    // Calculate basic price for the segment
+    basicPrice = basicPrice + basePricePerClass * distanceFactor;
   }
-
-  // Calculate basic price for the segment
-  const basicPrice = basePricePerClass * distanceFactor * bookingCount;
 
   // Fetch discount percentage based on the user category
   let discountPercent;
@@ -265,4 +371,6 @@ module.exports = {
   searchBookedTicketByID,
   searchTrip,
   calculateFinalPrice,
+  getSeats,
+  getBookingCheckout,
 };

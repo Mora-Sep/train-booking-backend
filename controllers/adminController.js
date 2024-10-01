@@ -129,6 +129,30 @@ const deleteScheduledTrip = async (req, res) => {
   }
 };
 
+const getTotalReport = async (req, res) => {
+  try {
+    const username = req.user.username;
+    const result = await adminService.getTotalReport(
+      username,
+      req.query.startDate,
+      req.query.endDate
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const getCurrentStats = async (req, res) => {
+  try {
+    const username = req.user.username;
+    const result = await adminService.getCurrentStats(username);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 module.exports = {
   getAdminToken,
   getAdminDetails,
@@ -142,4 +166,6 @@ module.exports = {
   activateTrip,
   updateProfile,
   getScheduledTrips,
+  getTotalReport,
+  getCurrentStats,
 };

@@ -45,6 +45,12 @@ router.post(
   async (req, res) => await deoController.scheduleTrip(req, res)
 );
 
+router.post(
+  "/add-station",
+  verifyToken,
+  async (req, res) => await deoController.addStation(req, res)
+);
+
 router.patch(
   "/update-delay",
   verifyToken,
