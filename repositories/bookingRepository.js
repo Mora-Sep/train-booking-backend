@@ -458,6 +458,14 @@ async function getUserDiscount(username) {
   return result?.Discount || 0.0;
 }
 
+const getStatus = async (bookingRefID) => {
+  const result = await guestConnection("booking")
+    .select("Completed")
+    .where("Booking_Ref_ID", bookingRefID)
+    .first();
+  return result?.Completed;
+};
+
 module.exports = {
   userSearchBookedTickets,
   userGetPendingPayments,
@@ -474,4 +482,5 @@ module.exports = {
   getUserDiscount,
   getSeats,
   getBookingCheckout,
+  getStatus,
 };

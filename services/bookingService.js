@@ -358,6 +358,11 @@ async function calculateFinalPrice(
   return finalPrice.toFixed(2); // Return price formatted to 2 decimal places
 }
 
+const getStatus = async (bookingRefID) => {
+  const isCompleted = await bookingRepository.getStatus(bookingRefID);
+  return isCompleted;
+};
+
 module.exports = {
   userSearchBookedTickets,
   userGetPendingPayments,
@@ -373,4 +378,5 @@ module.exports = {
   calculateFinalPrice,
   getSeats,
   getBookingCheckout,
+  getStatus,
 };

@@ -75,4 +75,9 @@ router.delete(
 
 router.post("/complete", bookingController.completeBooking);
 
+router.get(
+  "/status",
+  async (req, res) => await bookingController.getStatus(req, res)
+);
+
 module.exports = router;
