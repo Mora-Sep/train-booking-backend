@@ -57,8 +57,7 @@ app.post(
 
 const port = process.env.PORT || 3000;
 const corsOptions = {
-  origin:
-    "https://train-booking-frontend-64s1saxbc-rusira-de-silvas-projects.vercel.app", // Allow requests from this origin
+  origin: "https://train-booking-frontend-eight.vercel.app", // Allow requests from this origin
   credentials: true, // Allow credentials (cookies, authorization headers, etc.)
 };
 app.use(cors(corsOptions));
