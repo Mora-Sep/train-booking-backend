@@ -558,28 +558,28 @@ CREATE PROCEDURE UserCreateBooking(
 
                 SET seat_reserved = 0;
 
-                -- Check if the seat is reserved between the selected stations
-                SELECT 
-                    (COUNT(*) > 0) INTO seat_reserved
-                FROM
-                    booked_seat AS bk
-                    INNER JOIN booking AS bkset ON bk.Booking = bkset.Booking_Ref_ID
-                    INNER JOIN class AS cls ON bk.Class = cls.Class_Code
-                    INNER JOIN scheduled_trip AS sht ON bkset.scheduled_trip = sht.Scheduled_ID
-                    INNER JOIN intermediate_station is1 ON sht.Scheduled_ID = is1.Schedule
-                    INNER JOIN intermediate_station is2 ON sht.Scheduled_ID = is2.Schedule
-                WHERE 
-                    sht.Scheduled_ID = scheduled_trip_id 
-                    AND cls.Class_Code = class 
-                    AND bk.Seat_Number = seat_number
-                    AND is1.Code = from_station 
-                    AND is2.Code = to_station 
-                    AND is1.Sequence <= origin_sequence 
-                    AND is2.Sequence >= destination_sequence;
+                -- -- Check if the seat is reserved between the selected stations
+                -- SELECT 
+                --     (COUNT(*) > 0) INTO seat_reserved
+                -- FROM
+                --     booked_seat AS bk
+                --     INNER JOIN booking AS bkset ON bk.Booking = bkset.Booking_Ref_ID
+                --     INNER JOIN class AS cls ON bk.Class = cls.Class_Code
+                --     INNER JOIN scheduled_trip AS sht ON bkset.scheduled_trip = sht.Scheduled_ID
+                --     INNER JOIN intermediate_station is1 ON sht.Scheduled_ID = is1.Schedule
+                --     INNER JOIN intermediate_station is2 ON sht.Scheduled_ID = is2.Schedule
+                -- WHERE 
+                --     sht.Scheduled_ID = scheduled_trip_id 
+                --     AND cls.Class_Code = class 
+                --     AND bk.Seat_Number = seat_number
+                --     AND is1.Code = from_station 
+                --     AND is2.Code = to_station 
+                --     AND is1.Sequence <= origin_sequence 
+                --     AND is2.Sequence >= destination_sequence;
 
-                IF seat_reserved THEN
-                    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Seat Already Booked';
-                END IF;
+                -- IF seat_reserved THEN
+                --     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Seat Already Booked';
+                -- END IF;
 
                 -- Check if seat number exceeds the maximum seat count
                 SELECT cpt.Seats_Count INTO max_seat_number
@@ -726,27 +726,27 @@ CREATE PROCEDURE GuestCreateBooking(
                 SET seat_reserved = 0;
 
                 -- Check if the seat is reserved between the selected stations
-                SELECT 
-                    (COUNT(*) > 0) INTO seat_reserved
-                FROM
-                    booked_seat AS bk
-                    INNER JOIN booking AS bkset ON bk.Booking = bkset.Booking_Ref_ID
-                    INNER JOIN class AS cls ON bk.Class = cls.Class_Code
-                    INNER JOIN scheduled_trip AS sht ON bkset.scheduled_trip = sht.Scheduled_ID
-                    INNER JOIN intermediate_station is1 ON sht.Scheduled_ID = is1.Schedule
-                    INNER JOIN intermediate_station is2 ON sht.Scheduled_ID = is2.Schedule
-                WHERE 
-                    sht.Scheduled_ID = scheduled_trip_id 
-                    AND cls.Class_Code = class
-                    AND bk.Seat_Number = seat_number
-                    AND is1.Code = from_station 
-                    AND is2.Code = to_station 
-                    AND is1.Sequence <= origin_sequence 
-                    AND is2.Sequence >= destination_sequence;
+                -- SELECT 
+                --     (COUNT(*) > 0) INTO seat_reserved
+                -- FROM
+                --     booked_seat AS bk
+                --     INNER JOIN booking AS bkset ON bk.Booking = bkset.Booking_Ref_ID
+                --     INNER JOIN class AS cls ON bk.Class = cls.Class_Code
+                --     INNER JOIN scheduled_trip AS sht ON bkset.scheduled_trip = sht.Scheduled_ID
+                --     INNER JOIN intermediate_station is1 ON sht.Scheduled_ID = is1.Schedule
+                --     INNER JOIN intermediate_station is2 ON sht.Scheduled_ID = is2.Schedule
+                -- WHERE 
+                --     sht.Scheduled_ID = scheduled_trip_id 
+                --     AND cls.Class_Code = class
+                --     AND bk.Seat_Number = seat_number
+                --     AND is1.Code = from_station 
+                --     AND is2.Code = to_station 
+                --     AND is1.Sequence <= origin_sequence 
+                --     AND is2.Sequence >= destination_sequence;
 
-                IF seat_reserved THEN
-                    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Seat Already Booked';
-                END IF;
+                -- IF seat_reserved THEN
+                --     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Seat Already Booked';
+                -- END IF;
 
                 -- Check if seat number exceeds the maximum seat count
                 SELECT cpt.Seats_Count INTO max_seat_number
