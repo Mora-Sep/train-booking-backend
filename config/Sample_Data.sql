@@ -352,18 +352,18 @@ INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(9, 'S', 200,
 INSERT into capacity(Model, Class, Seats_count, Carts_Count) values(9, 'T', 400, 10);
 
 
-INSERT into base_price(Class, Route, Price) values('T', 1, 300);
-INSERT into base_price(Class, Route, Price) values('S', 1, 600);
-INSERT into base_price(Class, Route, Price) values('F', 1, 1100);
-INSERT into base_price(Class, Route, Price) values('T', 2, 300);
-INSERT into base_price(Class, Route, Price) values('S', 2, 600);
-INSERT into base_price(Class, Route, Price) values('F', 2, 1100);
-INSERT into base_price(Class, Route, Price) values('T', 3, 300);
-INSERT into base_price(Class, Route, Price) values('S', 3, 600);
-INSERT into base_price(Class, Route, Price) values('F', 3, 1100);
-INSERT into base_price(Class, Route, Price) values('T', 4, 300);
-INSERT into base_price(Class, Route, Price) values('S', 4, 600);
-INSERT into base_price(Class, Route, Price) values('F', 4, 1100);
+INSERT into base_price(Class, Route, Price) values('T', 1, 30);
+INSERT into base_price(Class, Route, Price) values('S', 1, 60);
+INSERT into base_price(Class, Route, Price) values('F', 1, 110);
+INSERT into base_price(Class, Route, Price) values('T', 2, 30);
+INSERT into base_price(Class, Route, Price) values('S', 2, 60);
+INSERT into base_price(Class, Route, Price) values('F', 2, 110);
+INSERT into base_price(Class, Route, Price) values('T', 3, 30);
+INSERT into base_price(Class, Route, Price) values('S', 3, 60);
+INSERT into base_price(Class, Route, Price) values('F', 3, 110);
+INSERT into base_price(Class, Route, Price) values('T', 4, 30);
+INSERT into base_price(Class, Route, Price) values('S', 4, 60);
+INSERT into base_price(Class, Route, Price) values('F', 4, 110);
 
 
 
