@@ -46,7 +46,7 @@ const registerStaff = async (admin) => {
 
 const updateProfile = async (username, data) => {
   if (data.newPassword) {
-    await adminConnection("User")
+    await adminConnection("user")
       .where({ username: username })
       .update({
         firstname: data.firstName,
@@ -60,7 +60,7 @@ const updateProfile = async (username, data) => {
         return err;
       });
   } else {
-    await adminConnection("User")
+    await adminConnection("user")
       .where({ username: username })
       .update({ firstname: data.firstName, lastname: data.lastName })
       .then((result) => {
@@ -81,13 +81,13 @@ const getAllScheduledTrips = async () => {
 };
 
 const deactivateTrip = async (tripId) => {
-  return adminConnection("Scheduled_Trip")
+  return adminConnection("scheduled_trip")
     .update({ Active: 0 })
     .where("Scheduled_ID", tripId);
 };
 
 const activateTrip = async (tripId) => {
-  return adminConnection("Scheduled_Trip")
+  return adminConnection("scheduled_trip")
     .update({ Active: 1 })
     .where("Scheduled_ID", tripId);
 };
@@ -111,7 +111,7 @@ const getTotalBookings = async (startDate, endDate) => {
 };
 
 const getActiveTrips = async () => {
-  return adminConnection("Scheduled_Trip")
+  return adminConnection("scheduled_trip")
     .where("Active", 1)
     .count("Scheduled_ID as activeTrips")
     .then((result) => {
@@ -120,7 +120,7 @@ const getActiveTrips = async () => {
 };
 
 const totalUsers = async () => {
-  return adminConnection("User")
+  return adminConnection("user")
     .count("Username as currentRegisteredUsers")
     .then((result) => {
       return result[0].currentRegisteredUsers;
