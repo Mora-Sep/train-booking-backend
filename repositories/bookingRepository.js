@@ -51,6 +51,56 @@ const guestCreateBooking = async (data, finalPrice) => {
   return result[0][0];
 };
 
+const userCancelBooking = async (username, bookingRefID) => {
+  // Check if the booking exists for the user
+  const bookingExists = await ruConnection.raw(
+    `SELECT COUNT(*) as count 
+     FROM booking 
+     WHERE Booking_Ref_ID = ? AND User = ?`,
+    [bookingRefID, username]
+  );
+
+  if (bookingExists[0][0].count > 0) {
+    await ruConnection.transaction(async (trx) => {
+      try {
+        const bookedSeatCountResult = await trx.raw(
+          `SELECT COUNT(*) as seatCount 
+           FROM booked_seat 
+           WHERE Booking = ?`,
+          [bookingRefID]
+        );
+        const bookedSeatCount = bookedSeatCountResult[0][0].seatCount;
+
+        await trx.raw(
+          `DELETE FROM booking WHERE Booking_Ref_ID = ? AND User = ?`,
+          [bookingRefID, username]
+        );
+
+        await trx.raw(
+          `UPDATE registered_user 
+           SET Bookings_Count = GREATEST(Bookings_Count - ?, 0) 
+           WHERE Username = ?`,
+          [bookedSeatCount, username]
+        );
+
+        // Commit the transaction
+        await trx.commit();
+        return {
+          status: "success",
+          message:
+            "Booking cancelled successfully, and Bookings_Count updated.",
+        };
+      } catch (error) {
+        // Rollback the transaction in case of an error
+        await trx.rollback();
+        throw new Error("Error while cancelling the booking.");
+      }
+    });
+  } else {
+    return { status: "error", message: "Booking not found or not authorized." };
+  }
+};
+
 const searchTrip = async (from, to, frequency) => {
   // Step 1: Find trips that include the origin and destination stations
   const rawTrips = await guestConnection("trip")
@@ -374,10 +424,6 @@ const guestGetPendingPayments = async (guestID) => {
   return data;
 };
 
-const deleteBooking = async (bookingID) => {
-  return ruConnection("booking").delete().where("Booking_Ref_ID", bookingID);
-};
-
 const completeBooking = async (bookingRefID) => {
   return guestConnection.raw(`CALL CompleteBooking(?)`, [bookingRefID]);
 };
@@ -470,7 +516,6 @@ module.exports = {
   userSearchBookedTickets,
   userGetPendingPayments,
   userCreateBooking,
-  deleteBooking,
   completeBooking,
   guestCreateBooking,
   guestSearchBookedTickets,
@@ -483,4 +528,5 @@ module.exports = {
   getSeats,
   getBookingCheckout,
   getStatus,
+  userCancelBooking,
 };

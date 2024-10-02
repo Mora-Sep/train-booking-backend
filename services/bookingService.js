@@ -44,6 +44,15 @@ const userCreateBooking = async (username, data) => {
   return bookingRepository.userCreateBooking(username, data, finalPrice);
 };
 
+const userCancelBooking = async (username, bookingRefID) => {
+  const fetchedUser = userRepository.findUserByUsername(username);
+  if (!fetchedUser) throw new Error("No such user exists");
+
+  if (bookingRefID.length !== 12) throw new Error("Invalid booking ref id");
+
+  return bookingRepository.userCancelBooking(username, bookingRefID);
+};
+
 const guestCreateBooking = async (data) => {
   if (validateGuestCreateBooking(data)) {
     throw new Error(validateGuestCreateBooking(data));
@@ -241,18 +250,6 @@ const guestGetPendingPayments = async (guestID) => {
   return payments;
 };
 
-const userDeleteBooking = async (username, data) => {
-  const fetchedUser = userRepository.findUserByUsername(username);
-  if (!fetchedUser) throw new Error("No such user exists");
-
-  const booking = await bookingRepository.userSearchBookedTickets(username);
-  if (!booking) throw new Error("Booking not found");
-
-  if (data.id.length !== 12) throw new Error("Invalid booking ref id");
-
-  return bookingRepository.deleteBooking(data.id);
-};
-
 const guestDeleteBooking = async (guestID, bookingRefID) => {
   if (bookingRefID.length !== 12) throw new Error("Invalid booking ref id");
   if (validateGuestID(guestID)) {
@@ -367,7 +364,6 @@ module.exports = {
   userSearchBookedTickets,
   userGetPendingPayments,
   userCreateBooking,
-  userDeleteBooking,
   guestCreateBooking,
   guestSearchBookedTickets,
   guestGetPendingPayments,
@@ -379,4 +375,5 @@ module.exports = {
   getSeats,
   getBookingCheckout,
   getStatus,
+  userCancelBooking,
 };
