@@ -82,4 +82,9 @@ router.get(
   async (req, res) => await bookingController.getStatus(req, res)
 );
 
+router.post(
+  "/send-ticket",
+  async (req, res) => await bookingController.sendTicket(req, res)
+);
+
 module.exports = router;

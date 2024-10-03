@@ -206,6 +206,16 @@ const getStatus = async (req, res) => {
   }
 };
 
+const sendTicket = async (req, res) => {
+  try {
+    const { bookingRefID } = req.body;
+    await bookingService.sendTicket(bookingRefID);
+    res.status(200).json({ message: "Ticket sent successfully" });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 module.exports = {
   userSearchBookedTickets,
   userGetPendingPayments,
@@ -222,4 +232,5 @@ module.exports = {
   getPaymentIntent,
   getStatus,
   userCancelBooking,
+  sendTicket,
 };

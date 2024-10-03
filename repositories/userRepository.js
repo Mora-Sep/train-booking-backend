@@ -127,6 +127,22 @@ const updatePassword = async (username, password) => {
   });
 };
 
+const getMailByBookingRefId = async (bookingRefId) => {
+  const username = await connection("booking")
+    .where({ Booking_Ref_ID: bookingRefId })
+    .select("User")
+    .then((result) => {
+      return result[0].User;
+    });
+
+  return connection("registered_user")
+    .where({ Username: username })
+    .select("Email")
+    .then((result) => {
+      return result[0].Email;
+    });
+};
+
 module.exports = {
   findUserByEmail,
   findUserByUsername,
@@ -139,4 +155,5 @@ module.exports = {
   updateForgotPW,
   findUserByToken,
   updatePassword,
+  getMailByBookingRefId,
 };

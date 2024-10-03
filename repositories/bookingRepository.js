@@ -512,6 +512,13 @@ const getStatus = async (bookingRefID) => {
   return result?.Completed;
 };
 
+const getTicketDetails = async (bookingRefID) => {
+  const result = await guestConnection("ticket")
+    .select("*")
+    .where("bookingRefID", bookingRefID);
+  return result;
+};
+
 module.exports = {
   userSearchBookedTickets,
   userGetPendingPayments,
@@ -529,4 +536,5 @@ module.exports = {
   getBookingCheckout,
   getStatus,
   userCancelBooking,
+  getTicketDetails,
 };

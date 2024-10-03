@@ -1,3 +1,5 @@
+const qrcode = require("qrcode");
+const nodemailer = require("nodemailer");
 const bookingRepository = require("../repositories/bookingRepository");
 const userRepository = require("../repositories/userRepository");
 const getAllRepository = require("../repositories/getAllRepository");
@@ -360,6 +362,65 @@ const getStatus = async (bookingRefID) => {
   return isCompleted;
 };
 
+const sendTicket = async (bookingRefId) => {
+  try {
+    const email = await userRepository.getMailByBookingRefId(bookingRefId);
+    const bookingDetails = await bookingRepository.getTicketDetails(
+      bookingRefId
+    );
+
+    let formattedDetails = bookingDetails
+      .map((detail) => {
+        return `
+        Passenger: ${detail.passenger}
+        Seat Number: ${detail.seatNumber}
+        Class: ${detail.class}
+        Origin: ${detail.origin}
+        Destination: ${detail.destination}
+        Departure Time: ${detail.departureTime}
+        Status: ${detail.status}
+      `;
+      })
+      .join("\n\n");
+
+    // Create QR code data (can include all booking details)
+    const qrData = `Booking Reference ID: ${bookingRefId}, Details: ${JSON.stringify(
+      bookingDetails
+    )}`;
+    const qrCodeDataUrl = await qrcode.toDataURL(qrData);
+
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.MAILPW,
+      },
+    });
+
+    const mailOptions = {
+      to: email,
+      from: process.env.EMAIL,
+      subject: `Your E-Ticket for Booking #${bookingRefId}`,
+      html: `
+        <p>Dear Customer,</p>
+        <p>Thank you for your booking! Here are your e-ticket details:</p>
+        <pre>${formattedDetails}</pre>
+        <p>Please present this e-ticket and a valid ID when boarding the train. Your QR code for easy scanning is provided below:</p>
+        <img src="${qrCodeDataUrl}" alt="E-ticket QR Code" />
+        <p>Safe travels!</p>
+        <p>Best regards,<br>Train Booking Team</p>
+      `,
+    };
+
+    // Send email
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Error sending e-ticket email:", error);
+  }
+};
+
 module.exports = {
   userSearchBookedTickets,
   userGetPendingPayments,
@@ -376,4 +437,5 @@ module.exports = {
   getBookingCheckout,
   getStatus,
   userCancelBooking,
+  sendTicket,
 };
