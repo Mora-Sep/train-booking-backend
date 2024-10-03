@@ -146,6 +146,8 @@ CREATE TABLE IF NOT EXISTS registered_user (
             Email VARCHAR(50) NOT NULL,
             Contact_Number VARCHAR(16) NOT NULL UNIQUE,
             Bookings_Count SMALLINT NOT NULL DEFAULT 0,
+            reset_password_token VARCHAR(162),
+            reset_password_expires DATETIME,
             FOREIGN KEY (Category) REFERENCES user_category(Category_ID) ON DELETE CASCADE,
             FOREIGN KEY (Username) REFERENCES user(Username) ON DELETE CASCADE);
 

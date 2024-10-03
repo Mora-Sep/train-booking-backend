@@ -3,6 +3,8 @@ const userRepository = require("../repositories/userRepository");
 const { validateUser, validateUserWOPassword } = require("../utils/validators");
 
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET, JWT_EXPIRATION } = process.env;
 
@@ -212,10 +214,61 @@ const updateUser = async (
   return result;
 };
 
+const forgotPassword = async (email) => {
+  const user = await userRepository.findUserByEmail(email);
+  if (!user) {
+    throw new Error("Email not found");
+  }
+
+  // Generate token and set expiration time (1 hour)
+  const token = crypto.randomBytes(20).toString("hex");
+  const expirationTime = new Date(Date.now() + 3600000); // 1 hour
+
+  await userRepository.updateForgotPW(token, expirationTime, email);
+
+  // Send email with reset link
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com", // or use your email service provider
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.MAILPW,
+    },
+  });
+
+  const resetUrl = `${process.env.FRONTEND}/reset-password?token=${token}`;
+
+  const mailOptions = {
+    to: email,
+    from: process.env.EMAIL,
+    subject: "Password Reset",
+    text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
+           Please click on the following link, or paste it into your browser to complete the process:\n\n
+           ${resetUrl}\n\n
+           If you did not request this, please ignore this email and your password will remain unchanged.\n`,
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
+const resetPassword = async (token, newPassword) => {
+  const user = await userRepository.findUserByToken(token);
+  if (!user) {
+    throw new Error("Invalid or expired token");
+  }
+
+  const password = bcrypt.hashSync(newPassword, 10);
+
+  await userRepository.updatePassword(user.Username, password);
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getUserDetails,
   updateUserWOPassword,
   updateUser,
+  forgotPassword,
+  resetPassword,
 };
