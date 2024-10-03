@@ -47,9 +47,13 @@ app.post(
         console.error("Error completing the booking:", error);
       }
 
-      axios.post(`http://localhost:3002/api/booking/send-ticket`, {
-        bookingRefID: session.client_reference_id,
-      });
+      try {
+        axios.post(`http://localhost:3002/api/booking/send-ticket`, {
+          bookingRefID: session.client_reference_id,
+        });
+      } catch (error) {
+        console.log("Error sending ticket", error);
+      }
 
       res.status(200).send("Success");
     } else {
