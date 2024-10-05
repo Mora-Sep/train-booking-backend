@@ -1,3 +1,5 @@
+const qrcode = require("qrcode");
+const nodemailer = require("nodemailer");
 const bookingRepository = require("../repositories/bookingRepository");
 const userRepository = require("../repositories/userRepository");
 const getAllRepository = require("../repositories/getAllRepository");
@@ -42,6 +44,15 @@ const userCreateBooking = async (username, data) => {
   }
 
   return bookingRepository.userCreateBooking(username, data, finalPrice);
+};
+
+const userCancelBooking = async (username, bookingRefID) => {
+  const fetchedUser = userRepository.findUserByUsername(username);
+  if (!fetchedUser) throw new Error("No such user exists");
+
+  if (bookingRefID.length !== 12) throw new Error("Invalid booking ref id");
+
+  return bookingRepository.userCancelBooking(username, bookingRefID);
 };
 
 const guestCreateBooking = async (data) => {
@@ -241,18 +252,6 @@ const guestGetPendingPayments = async (guestID) => {
   return payments;
 };
 
-const userDeleteBooking = async (username, data) => {
-  const fetchedUser = userRepository.findUserByUsername(username);
-  if (!fetchedUser) throw new Error("No such user exists");
-
-  const booking = await bookingRepository.userSearchBookedTickets(username);
-  if (!booking) throw new Error("Booking not found");
-
-  if (data.id.length !== 12) throw new Error("Invalid booking ref id");
-
-  return bookingRepository.deleteBooking(data.id);
-};
-
 const guestDeleteBooking = async (guestID, bookingRefID) => {
   if (bookingRefID.length !== 12) throw new Error("Invalid booking ref id");
   if (validateGuestID(guestID)) {
@@ -363,11 +362,69 @@ const getStatus = async (bookingRefID) => {
   return isCompleted;
 };
 
+const sendTicket = async (bookingRefId) => {
+  try {
+    const email = await userRepository.getMailByBookingRefId(bookingRefId);
+    const bookingDetails = await bookingRepository.getTicketDetails(
+      bookingRefId
+    );
+
+    let formattedDetails = bookingDetails
+      .map((detail) => {
+        return `
+        Passenger: ${detail.passenger}
+        Seat Number: ${detail.seatNumber}
+        Class: ${detail.class}
+        Origin: ${detail.origin}
+        Destination: ${detail.destination}
+        Departure Time: ${detail.departureTime}
+        Status: ${detail.status}
+      `;
+      })
+      .join("\n\n");
+
+    // Create QR code data (can include all booking details)
+    const qrData = `Booking Reference ID: ${bookingRefId}, Details: ${JSON.stringify(
+      bookingDetails
+    )}`;
+    const qrCodeDataUrl = await qrcode.toDataURL(qrData);
+
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.MAILPW,
+      },
+    });
+
+    const mailOptions = {
+      to: email,
+      from: process.env.EMAIL,
+      subject: `Your E-Ticket for Booking #${bookingRefId}`,
+      html: `
+        <p>Dear Customer,</p>
+        <p>Thank you for your booking! Here are your e-ticket details:</p>
+        <pre>${formattedDetails}</pre>
+        <p>Please present this e-ticket and a valid ID when boarding the train. Your QR code for easy scanning is provided below:</p>
+        <img src="${qrCodeDataUrl}" alt="E-ticket QR Code" />
+        <p>Safe travels!</p>
+        <p>Best regards,<br>Train Booking Team</p>
+      `,
+    };
+
+    // Send email
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Error sending e-ticket email:", error);
+  }
+};
+
 module.exports = {
   userSearchBookedTickets,
   userGetPendingPayments,
   userCreateBooking,
-  userDeleteBooking,
   guestCreateBooking,
   guestSearchBookedTickets,
   guestGetPendingPayments,
@@ -379,4 +436,6 @@ module.exports = {
   getSeats,
   getBookingCheckout,
   getStatus,
+  userCancelBooking,
+  sendTicket,
 };

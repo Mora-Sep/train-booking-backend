@@ -113,10 +113,13 @@ const userCreateBooking = async (req, res) => {
   }
 };
 
-const userDeleteBooking = async (req, res) => {
+const userCancelBooking = async (req, res) => {
   try {
     const username = req.user.username;
-    const result = await bookingService.userDeleteBooking(username, req.query);
+    const result = await bookingService.userCancelBooking(
+      username,
+      req.query.bookingRefID
+    );
     res.status(200).json(result);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -203,11 +206,20 @@ const getStatus = async (req, res) => {
   }
 };
 
+const sendTicket = async (req, res) => {
+  try {
+    const { bookingRefID } = req.body;
+    await bookingService.sendTicket(bookingRefID);
+    res.status(200).json({ message: "Ticket sent successfully" });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 module.exports = {
   userSearchBookedTickets,
   userGetPendingPayments,
   userCreateBooking,
-  userDeleteBooking,
   guestSearchBookedTickets,
   guestGetPendingPayments,
   guestCreateBooking,
@@ -219,4 +231,6 @@ module.exports = {
   getCheckoutSession,
   getPaymentIntent,
   getStatus,
+  userCancelBooking,
+  sendTicket,
 };

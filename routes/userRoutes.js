@@ -26,4 +26,16 @@ router.put(
   async (req, res) => await userController.updateUserAccount(req, res)
 );
 
+// Forgot password
+router.post(
+  "/forgot-password",
+  async (req, res) => await userController.forgotPassword(req, res)
+);
+
+// Reset password
+router.post(
+  "/reset-password",
+  async (req, res) => await userController.resetPassword(req, res)
+);
+
 module.exports = router;

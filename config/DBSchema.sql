@@ -146,6 +146,8 @@ CREATE TABLE IF NOT EXISTS registered_user (
             Email VARCHAR(50) NOT NULL,
             Contact_Number VARCHAR(16) NOT NULL UNIQUE,
             Bookings_Count SMALLINT NOT NULL DEFAULT 0,
+            reset_password_token VARCHAR(162),
+            reset_password_expires DATETIME,
             FOREIGN KEY (Category) REFERENCES user_category(Category_ID) ON DELETE CASCADE,
             FOREIGN KEY (Username) REFERENCES user(Username) ON DELETE CASCADE);
 
@@ -459,9 +461,8 @@ CREATE PROCEDURE UserCreateBooking(
     )
     BEGIN
         DECLARE i INTEGER DEFAULT 0;
-        DECLARE basePricePerBooking DECIMAL(8,2);
         DECLARE seat_number SMALLINT;
-        DECLARE class CHAR(1);
+        DECLARE class_value CHAR(1);
         DECLARE first_name VARCHAR(30);
         DECLARE last_name VARCHAR(30);
         DECLARE is_adult BOOLEAN;
@@ -471,8 +472,18 @@ CREATE PROCEDURE UserCreateBooking(
         DECLARE destination_sequence SMALLINT;
 
         DECLARE done BOOLEAN DEFAULT FALSE;
-        DECLARE recordsCursor CURSOR FOR SELECT SeatNumber, Class, FirstName, LastName, IsAdult FROM booking_data;
+        DECLARE recordsCursor CURSOR FOR SELECT SeatNumber, ClassValue, FirstName, LastName, IsAdult FROM booking_data;
         DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+        DROP TEMPORARY TABLE IF EXISTS booking_data;
+
+        CREATE TEMPORARY TABLE IF NOT EXISTS booking_data (
+            SeatNumber SMALLINT,
+            ClassValue CHAR(1),
+            FirstName VARCHAR(30),
+            LastName VARCHAR(30),
+            IsAdult BOOLEAN
+        );
 
         SET status_var = FALSE;
 
@@ -501,29 +512,20 @@ CREATE PROCEDURE UserCreateBooking(
         -- Step 3: Calculate the final price based on the distance between the intermediate stations
         SET final_Price = finalPrice;
 
-        -- Step 4: Create a temporary table to hold passenger data
-        DROP TEMPORARY TABLE IF EXISTS booking_data;
 
-        CREATE TEMPORARY TABLE IF NOT EXISTS booking_data (
-            SeatNumber SMALLINT,
-            Class CHAR(1),
-            FirstName VARCHAR(30),
-            LastName VARCHAR(30),
-            IsAdult BOOLEAN
-        );
 
         -- Step 5: Insert passenger data into the temporary table
         WHILE i < JSON_LENGTH(passengers_json) DO
             SET seat_number = JSON_UNQUOTE(JSON_EXTRACT(passengers_json, CONCAT('$[', i, '].seatNumber')));
-            SET class = JSON_UNQUOTE(JSON_EXTRACT(passengers_json, CONCAT('$[', i, '].class')));
+            SET class_value = JSON_UNQUOTE(JSON_EXTRACT(passengers_json, CONCAT('$[', i, '].class')));
             SET first_name = JSON_UNQUOTE(JSON_EXTRACT(passengers_json, CONCAT('$[', i, '].firstName')));
             SET last_name = JSON_UNQUOTE(JSON_EXTRACT(passengers_json, CONCAT('$[', i, '].lastName')));
             SET is_adult = JSON_EXTRACT(passengers_json, CONCAT('$[', i, '].isAdult'));
 
             INSERT INTO 
-                booking_data (SeatNumber, Class, FirstName, LastName, IsAdult) 
+                booking_data (SeatNumber, ClassValue, FirstName, LastName, IsAdult) 
             VALUES 
-                (seat_number, class, first_name, last_name, is_adult);
+                (seat_number, class_value, first_name, last_name, is_adult);
 
             SET i = i + 1;
         END WHILE;
@@ -551,7 +553,7 @@ CREATE PROCEDURE UserCreateBooking(
             -- Step 8: Loop through passengers and reserve seats
             OPEN recordsCursor;
             readLoop: LOOP
-                FETCH recordsCursor INTO seat_number, class, first_name, last_name, is_adult;
+                FETCH recordsCursor INTO seat_number, class_value, first_name, last_name, is_adult;
                 IF done THEN
                     LEAVE readLoop;
                 END IF;
@@ -582,24 +584,24 @@ CREATE PROCEDURE UserCreateBooking(
                 -- END IF;
 
                 -- Check if seat number exceeds the maximum seat count
-                SELECT cpt.Seats_Count INTO max_seat_number
-                FROM 
-                    scheduled_trip AS sht
-                    INNER JOIN train AS trn ON sht.train = trn.Number
-                    INNER JOIN model AS mdl ON trn.Model = mdl.Model_ID
-                    INNER JOIN capacity AS cpt ON mdl.Model_ID = cpt.Model
-                    INNER JOIN class AS cls ON cpt.Class = cls.Class_Code
-                WHERE 
-                    sht.Scheduled_ID = scheduled_trip_id
-                    AND cls.Class_Code = class;
+                -- SELECT cpt.Seats_Count INTO max_seat_number
+                -- FROM 
+                --     scheduled_trip AS sht
+                --     INNER JOIN train AS trn ON sht.train = trn.Number
+                --     INNER JOIN model AS mdl ON trn.Model = mdl.Model_ID
+                --     INNER JOIN capacity AS cpt ON mdl.Model_ID = cpt.Model
+                --     INNER JOIN class AS cls ON cpt.Class = cls.Class_Code
+                -- WHERE 
+                --     sht.Scheduled_ID = scheduled_trip_id
+                --     AND cls.Class_Code = class;
                 
-                IF seat_number > max_seat_number THEN
-                    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Seat Number Exceeds Maximum Seat Count';
-                END IF;
+                -- IF seat_number > max_seat_number THEN
+                --     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Seat Number Exceeds Maximum Seat Count';
+                -- END IF;
                 
                 -- Insert booked seat record
                 INSERT INTO booked_seat (Booking, Seat_Number, Class, FirstName, LastName, IsAdult) 
-                VALUES (refID, seat_number, class, first_name, last_name, is_adult);
+                VALUES (refID, seat_number, class_value, first_name, last_name, is_adult);
                 
             END LOOP;
             CLOSE recordsCursor;

@@ -42,12 +42,6 @@ router.post(
   async (req, res) => await bookingController.userCreateBooking(req, res)
 );
 
-router.delete(
-  "/user/delete/booking",
-  verifyToken,
-  async (req, res) => await bookingController.userDeleteBooking(req, res)
-);
-
 router.post(
   "/guest/create/booking",
   async (req, res) => await bookingController.guestCreateBooking(req, res)
@@ -73,11 +67,24 @@ router.delete(
   async (req, res) => await bookingController.guestDeleteBooking(req, res)
 );
 
-router.post("/complete", bookingController.completeBooking);
+router.post(
+  "/complete",
+  async (req, res) => await bookingController.completeBooking(req, res)
+);
+router.post(
+  "/cancel",
+  verifyToken,
+  async (req, res) => await bookingController.userCancelBooking(req, res)
+);
 
 router.get(
   "/status",
   async (req, res) => await bookingController.getStatus(req, res)
+);
+
+router.post(
+  "/send-ticket",
+  async (req, res) => await bookingController.sendTicket(req, res)
 );
 
 module.exports = router;
