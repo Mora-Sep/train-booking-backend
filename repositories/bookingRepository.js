@@ -310,13 +310,11 @@ const userGetPendingPayments = async (username) => {
     .select(
       "bkset.Booking_Ref_ID as bookingRefID",
       "bkset.Final_Price as price",
-      "shf.Scheduled_ID as tripID"
+      "rs1.Name as from",
+      "rs2.Name as to"
     )
-    .innerJoin(
-      "scheduled_trip as shf",
-      "bkset.Scheduled_Trip",
-      "shf.Scheduled_ID"
-    )
+    .innerJoin("railway_station as rs1", "bkset.from_station", "rs1.Code")
+    .innerJoin("railway_station as rs2", "bkset.to_station", "rs2.Code")
     .where("bkset.User", username)
     .andWhere("bkset.Completed", 0)
     .orderBy("bkset.Created_At", "desc")
