@@ -153,6 +153,21 @@ const getBookedChildren = async () => {
     });
 };
 
+const getTrainStats = async () => {
+  return adminConnection("train")
+    .select("train.Name as name", "train.Number", "train.Model")
+    .count("scheduled_trip.Scheduled_ID as trips")
+    .sum("booking.Final_Price as revenue")
+    .join("scheduled_trip", "train.Number", "=", "scheduled_trip.train")
+    .join(
+      "booking",
+      "scheduled_trip.Scheduled_ID",
+      "=",
+      "booking.scheduled_trip"
+    )
+    .groupBy("train.Number", "train.Name", "train.Model");
+};
+
 module.exports = {
   findAdminByUsername,
   getAdminDetails,
@@ -168,4 +183,5 @@ module.exports = {
   totalGuests,
   getBookedAdults,
   getBookedChildren,
+  getTrainStats,
 };

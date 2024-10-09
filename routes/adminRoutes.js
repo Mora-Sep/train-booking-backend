@@ -87,4 +87,10 @@ router.get(
   async (req, res) => await adminController.getCurrentStats(req, res)
 );
 
+router.get(
+  "/reports/trains",
+  verifyToken,
+  async (req, res) => await adminController.getTrainStats(req, res)
+);
+
 module.exports = router;
