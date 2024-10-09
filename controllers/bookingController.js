@@ -103,6 +103,16 @@ const userGetPendingPayments = async (req, res) => {
   }
 };
 
+const userGetPaymentHistory = async (req, res) => {
+  try {
+    const username = req.user.username;
+    const paymentHistory = await bookingService.userGetPaymentHistory(username);
+    res.status(200).json(paymentHistory);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 const userCreateBooking = async (req, res) => {
   try {
     const username = req.user.username;
@@ -219,6 +229,7 @@ const sendTicket = async (req, res) => {
 module.exports = {
   userSearchBookedTickets,
   userGetPendingPayments,
+  userGetPaymentHistory,
   userCreateBooking,
   guestSearchBookedTickets,
   guestGetPendingPayments,

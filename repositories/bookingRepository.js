@@ -359,6 +359,60 @@ const userGetPendingPayments = async (username) => {
   return data;
 };
 
+const userGetPaymentHistory = async (username) => {
+  const data = await ruConnection("booking as bkset")
+    .select(
+      "bkset.Booking_Ref_ID as bookingRefID",
+      "bkset.Final_Price as price",
+      "rs1.Name as from",
+      "rs2.Name as to"
+    )
+    .innerJoin("railway_station as rs1", "bkset.from_station", "rs1.Code")
+    .innerJoin("railway_station as rs2", "bkset.to_station", "rs2.Code")
+    .where("bkset.User", username)
+    .andWhere("bkset.Completed", 1)
+    .orderBy("bkset.Created_At", "desc")
+    .then((rows) => {
+      if (rows.length) {
+        return rows;
+      } else {
+        return null;
+      }
+    })
+    .catch((err) => {
+      console.error("Error executing query:", err);
+    });
+
+  if (!data) {
+    return null;
+  }
+
+  for (const booking of data) {
+    const passengers = await ruConnection("booked_seat as bk")
+      .select(
+        "bk.FirstName as firstName",
+        "bk.LastName as lastName",
+        "bk.Seat_Number as seat",
+        "bk.IsAdult as isAdult"
+      )
+      .where("bk.Booking", booking.bookingRefID)
+      .then((rows) => {
+        if (rows.length) {
+          return rows;
+        } else {
+          return null;
+        }
+      })
+      .catch((err) => {
+        console.error("Error executing query:", err);
+      });
+
+    booking.passengers = passengers;
+  }
+
+  return data;
+};
+
 const guestGetPendingPayments = async (guestID) => {
   const data = await guestConnection("booking as bkset")
     .select(
@@ -520,6 +574,7 @@ const getTicketDetails = async (bookingRefID) => {
 module.exports = {
   userSearchBookedTickets,
   userGetPendingPayments,
+  userGetPaymentHistory,
   userCreateBooking,
   completeBooking,
   guestCreateBooking,

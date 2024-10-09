@@ -36,6 +36,12 @@ router.get(
   async (req, res) => await bookingController.userGetPendingPayments(req, res)
 );
 
+router.get(
+  "/user/payment-history",
+  verifyToken,
+  async (req, res) => await bookingController.userGetPaymentHistory(req, res)
+);
+
 router.post(
   "/user/create/booking",
   verifyToken,
