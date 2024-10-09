@@ -19,6 +19,16 @@ const getAdminDetails = async (req, res) => {
   }
 };
 
+const getScheduledTrips = async (req, res) => {
+  try {
+    const username = req.user.username;
+    const scheduledTrips = await adminService.getScheduledTrips(username);
+    res.status(200).json(scheduledTrips);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 const registerAdmin = async (req, res) => {
   try {
     const username = req.user.username;
@@ -62,7 +72,7 @@ const activateTrip = async (req, res) => {
 const deleteModel = async (req, res) => {
   try {
     const username = req.user.username;
-    const result = await adminService.deleteModel(username, req.query.name);
+    const result = await adminService.deleteModel(username, req.query.id);
     res.status(200).json({ message: "Model deleted successfully", result });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -82,7 +92,7 @@ const deleteRoute = async (req, res) => {
 const deleteTrain = async (req, res) => {
   try {
     const username = req.user.username;
-    const result = await adminService.deleteTrain(username, req.query.number);
+    const result = await adminService.deleteTrain(username, req.query.id);
     res.status(200).json({ message: "Train deleted successfully", result });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -94,7 +104,7 @@ const deleteRailwayStation = async (req, res) => {
     const username = req.user.username;
     const result = await adminService.deleteRailwayStation(
       username,
-      req.query.code
+      req.query.id
     );
     res
       .status(200)
@@ -119,6 +129,40 @@ const deleteScheduledTrip = async (req, res) => {
   }
 };
 
+const getTotalReport = async (req, res) => {
+  try {
+    const username = req.user.username;
+    const result = await adminService.getTotalReport(
+      username,
+      req.query.startDate,
+      req.query.endDate
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const getCurrentStats = async (req, res) => {
+  try {
+    const username = req.user.username;
+    const result = await adminService.getCurrentStats(username);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const getTrainStats = async (req, res) => {
+  try {
+    const username = req.user.username;
+    const result = await adminService.getTrainStats(username);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 module.exports = {
   getAdminToken,
   getAdminDetails,
@@ -131,4 +175,8 @@ module.exports = {
   deactivateTrip,
   activateTrip,
   updateProfile,
+  getScheduledTrips,
+  getTotalReport,
+  getCurrentStats,
+  getTrainStats,
 };

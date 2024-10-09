@@ -15,6 +15,12 @@ router.get(
   async (req, res) => await adminController.getAdminDetails(req, res)
 );
 
+router.get(
+  "/scheduled-trips",
+  verifyToken,
+  async (req, res) => await adminController.getScheduledTrips(req, res)
+);
+
 router.post(
   "/register",
   verifyToken,
@@ -67,6 +73,24 @@ router.delete(
   "/trip",
   verifyToken,
   async (req, res) => await adminController.deleteScheduledTrip(req, res)
+);
+
+router.get(
+  "/reports/total",
+  verifyToken,
+  async (req, res) => await adminController.getTotalReport(req, res)
+);
+
+router.get(
+  "/reports/current",
+  verifyToken,
+  async (req, res) => await adminController.getCurrentStats(req, res)
+);
+
+router.get(
+  "/reports/trains",
+  verifyToken,
+  async (req, res) => await adminController.getTrainStats(req, res)
 );
 
 module.exports = router;

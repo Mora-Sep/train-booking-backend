@@ -100,9 +100,31 @@ const updateUserAccount = async (req, res) => {
   }
 };
 
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    await userService.forgotPassword(email);
+    res.status(200).json({ message: "Password reset link sent to email" });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+    await userService.resetPassword(token, newPassword);
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 module.exports = {
   register,
   login,
   getUserDetails,
   updateUserAccount,
+  forgotPassword,
+  resetPassword,
 };

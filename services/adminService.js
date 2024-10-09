@@ -15,6 +15,25 @@ const {
 } = require("../utils/validators");
 const { JWT_SECRET, JWT_EXPIRATION } = process.env;
 
+const formatDateWithTime = (dateString) => {
+  const date = new Date(dateString);
+
+  // Get current time
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+
+  // Format YYYY-MM-DD HH:MM:SS
+  const formattedDate = `${date.getFullYear()}-${String(
+    date.getMonth() + 1
+  ).padStart(2, "0")}-${String(date.getDate()).padStart(
+    2,
+    "0"
+  )} ${hours}:${minutes}:${seconds}`;
+
+  return formattedDate;
+};
+
 const getAdminToken = async ({ username, password }) => {
   const admin = await adminRepository.findAdminByUsername(username);
   if (!admin) {
@@ -120,18 +139,27 @@ const activateTrip = async (username, data) => {
   return adminRepository.activateTrip(data.tripId);
 };
 
-const deleteModel = async (username, name) => {
+const getScheduledTrips = async (username) => {
   const fetchedAdmin = await adminRepository.findAdminByUsername(username);
   if (!fetchedAdmin) {
     throw new Error("Access denied!");
   }
 
-  const error = validateModel(name);
+  return adminRepository.getAllScheduledTrips();
+};
+
+const deleteModel = async (username, id) => {
+  const fetchedAdmin = await adminRepository.findAdminByUsername(username);
+  if (!fetchedAdmin) {
+    throw new Error("Access denied!");
+  }
+
+  const error = validateModel(id);
   if (error) {
     throw new Error(error);
   }
 
-  return deleteRepository.deleteModel(name);
+  return deleteRepository.deleteModel(id);
 };
 
 const deleteRoute = async (username, id) => {
@@ -190,6 +218,58 @@ const deleteScheduledTrip = async (username, id) => {
   return deleteRepository.deleteScheduledTrip(id);
 };
 
+const getTotalReport = async (username, startDate, endDate) => {
+  const fetchedAdmin = await adminRepository.findAdminByUsername(username);
+  if (!fetchedAdmin) {
+    throw new Error("Access denied!");
+  }
+
+  if (!startDate || !endDate) {
+    throw new Error("Invalid date range");
+  }
+
+  startDate = formatDateWithTime(startDate);
+  endDate = formatDateWithTime(endDate);
+
+  const totalRevenue = await adminRepository.getRevenue(startDate, endDate);
+  const totalBookings = await adminRepository.getTotalBookings(
+    startDate,
+    endDate
+  );
+
+  return { totalRevenue, totalBookings };
+};
+
+const getCurrentStats = async (username) => {
+  const fetchedAdmin = await adminRepository.findAdminByUsername(username);
+  if (!fetchedAdmin) {
+    throw new Error("Access denied!");
+  }
+
+  const activeTrips = await adminRepository.getActiveTrips();
+  const currentUsers = await adminRepository.totalUsers();
+  const currentGuests = await adminRepository.totalGuests();
+  const totalAdults = await adminRepository.getBookedAdults();
+  const totalChildren = await adminRepository.getBookedChildren();
+
+  return {
+    activeTrips,
+    currentUsers,
+    currentGuests,
+    totalAdults,
+    totalChildren,
+  };
+};
+
+const getTrainStats = async (username) => {
+  const fetchedAdmin = await adminRepository.findAdminByUsername(username);
+  if (!fetchedAdmin) {
+    throw new Error("Access denied!");
+  }
+
+  return adminRepository.getTrainStats();
+};
+
 module.exports = {
   getAdminToken,
   getAdminDetails,
@@ -202,4 +282,8 @@ module.exports = {
   deactivateTrip,
   activateTrip,
   updateProfile,
+  getScheduledTrips,
+  getTotalReport,
+  getCurrentStats,
+  getTrainStats,
 };

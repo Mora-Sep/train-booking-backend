@@ -61,7 +61,7 @@ const validateStaff = (staff) => {
 };
 
 const validateModel = (model) => {
-  const { error } = joi.string().min(2).max(4).validate(model);
+  const { error } = joi.number().validate(model);
   if (error) {
     return error.details[0].message;
   } else {
@@ -170,6 +170,22 @@ const validateScheduleTrip = (trip) => {
   }
 };
 
+const validateAddStation = (station) => {
+  const { error } = joi
+    .object({
+      tripID: joi.number().required(),
+      code: joi.string().required(),
+      sequence: joi.number().required(),
+    })
+    .validate(station);
+
+  if (error) {
+    return error.details[0].message;
+  } else {
+    return null;
+  }
+};
+
 const validateStaffUpdate = (staff) => {
   let schema;
   if (staff.currentPassword) {
@@ -201,8 +217,8 @@ const validateCreateBooking = (data) => {
   const { error } = joi
     .object({
       tripID: joi.number().required(),
-      class: joi.string().required(),
-      bookingCount: joi.number().required(),
+      from: joi.string().required(),
+      to: joi.string().required(),
       passengers: joi.allow(),
     })
     .validate(data);
@@ -222,6 +238,8 @@ const validateGuestCreateBooking = (data) => {
       class: joi.string().required(),
       bookingCount: joi.number().required(),
       passengers: joi.allow(),
+      from: joi.string().required(),
+      to: joi.string().required(),
       email: joi.string().email(),
       contactNumber: joi.string(),
     })
@@ -256,6 +274,7 @@ module.exports = {
   validateCreateRailwayStation,
   validateCreateRoute,
   validateScheduleTrip,
+  validateAddStation,
   validateStaffUpdate,
   validateCreateBooking,
   validateGuestCreateBooking,
