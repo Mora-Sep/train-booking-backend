@@ -261,6 +261,15 @@ const getCurrentStats = async (username) => {
   };
 };
 
+const getTrainStats = async (username) => {
+  const fetchedAdmin = await adminRepository.findAdminByUsername(username);
+  if (!fetchedAdmin) {
+    throw new Error("Access denied!");
+  }
+
+  return adminRepository.getTrainStats();
+};
+
 module.exports = {
   getAdminToken,
   getAdminDetails,
@@ -276,4 +285,5 @@ module.exports = {
   getScheduledTrips,
   getTotalReport,
   getCurrentStats,
+  getTrainStats,
 };

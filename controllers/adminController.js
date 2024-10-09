@@ -153,6 +153,16 @@ const getCurrentStats = async (req, res) => {
   }
 };
 
+const getTrainStats = async (req, res) => {
+  try {
+    const username = req.user.username;
+    const result = await adminService.getTrainStats(username);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 module.exports = {
   getAdminToken,
   getAdminDetails,
@@ -168,4 +178,5 @@ module.exports = {
   getScheduledTrips,
   getTotalReport,
   getCurrentStats,
+  getTrainStats,
 };
