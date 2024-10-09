@@ -243,6 +243,12 @@ const userGetPendingPayments = async (username) => {
   return bookingRepository.userGetPendingPayments(username);
 };
 
+const userGetPaymentHistory = async (username) => {
+  const fetchedUser = userRepository.findUserByUsername(username);
+  if (!fetchedUser) throw new Error("No such user exists");
+  return bookingRepository.userGetPaymentHistory(username);
+};
+
 const guestGetPendingPayments = async (guestID) => {
   if (validateGuestID(guestID)) {
     throw new Error(validateGuestID(guestID));
@@ -424,6 +430,7 @@ const sendTicket = async (bookingRefId) => {
 module.exports = {
   userSearchBookedTickets,
   userGetPendingPayments,
+  userGetPaymentHistory,
   userCreateBooking,
   guestCreateBooking,
   guestSearchBookedTickets,
