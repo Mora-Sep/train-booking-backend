@@ -59,7 +59,7 @@ const searchTrip = async (req, res) => {
     const result = await bookingService.searchTrip(
       req.query.from,
       req.query.to,
-      req.query.frequency
+      req.query.date
     );
     res.status(200).json(result);
   } catch (error) {
@@ -72,7 +72,7 @@ const getSeats = async (req, res) => {
     const result = await bookingService.getSeats(
       req.query.from,
       req.query.to,
-      req.query.frequency,
+      req.query.date,
       req.query.id
     );
     res.status(200).json(result);

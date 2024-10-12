@@ -304,16 +304,38 @@ INSERT into route(Origin, Destination, Duration_Minutes) values('KDT', 'FOT', 24
 
 
 
-INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(1, 8056, '06:10:00', 'Weekdays');
-INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(2, 8058, '06:00:00', 'Weekdays');
-INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(3, 8056, '14:00:00', 'Weekdays');
-INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(4, 8058, '14:30:00', 'Weekdays');
-INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(9, 1005, '08:30:00', 'Daily');
-INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(10, 1005, '15:00:00', 'Daily');
-INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(5, 4077, '08:00:00', 'Weekdays');
-INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(6, 4077, '16:00:00', 'Weekdays');
-INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(7, 4077, '04:00:00', 'Weekends');
-INSERT into scheduled_trip(Route, train, Departure_Time, Frequency) values(8, 4077, '12:00:00', 'Weekends');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(1, 8056, '06:10:00', '2024-10-14');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(2, 8058, '06:00:00', '2024-10-14');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(3, 8056, '14:00:00', '2024-10-14');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(4, 8058, '14:30:00', '2024-10-14');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(9, 1005, '08:30:00', '2024-10-14');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(10, 1005, '15:00:00', '2024-10-14');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(5, 4077, '08:00:00', '2024-10-14');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(6, 4077, '16:00:00', '2024-10-14');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(7, 4077, '04:00:00', '2024-10-14');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(8, 4077, '12:00:00', '2024-10-14');
+
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(1, 8056, '06:10:00', '2024-10-15');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(2, 8058, '06:00:00', '2024-10-15');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(3, 8056, '14:00:00', '2024-10-15');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(4, 8058, '14:30:00', '2024-10-15');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(9, 1005, '08:30:00', '2024-10-15');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(10, 1005, '15:00:00', '2024-10-15');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(5, 4077, '08:00:00', '2024-10-15');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(6, 4077, '16:00:00', '2024-10-15');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(7, 4077, '04:00:00', '2024-10-15');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(8, 4077, '12:00:00', '2024-10-15');
+
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(1, 8056, '06:10:00', '2024-10-16');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(2, 8058, '06:00:00', '2024-10-16');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(3, 8056, '14:00:00', '2024-10-16');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(4, 8058, '14:30:00', '2024-10-16');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(9, 1005, '08:30:00', '2024-10-16');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(10, 1005, '15:00:00', '2024-10-16');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(5, 4077, '08:00:00', '2024-10-16');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(6, 4077, '16:00:00', '2024-10-16');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(7, 4077, '04:00:00', '2024-10-16');
+INSERT into scheduled_trip(Route, train, Departure_Time, Date) values(8, 4077, '12:00:00', '2024-10-16');
 
 
 
@@ -543,6 +565,132 @@ VALUES
     (10, 'HBN', 3),
     (10, 'KNI', 2),
     (10, 'TCO', 1);
+    
+INSERT INTO intermediate_station (Schedule, Code, Sequence)
+VALUES
+    (11, 'BEL', 1),  
+    (11, 'MTR', 2),  
+    (11, 'GLE', 3),  
+    (11, 'KTS', 4),  
+    (11, 'FOT', 5),  
+    (11, 'MDA', 6),  
+    (12, 'BEL', 1),  
+    (12, 'MTR', 2),  
+    (12, 'GLE', 3),  
+    (12, 'KTS', 4),  
+    (12, 'FOT', 5),  
+    (12, 'MDA', 6),  
+    (14, 'BEL', 6), 
+    (14, 'MTR', 5),
+    (14, 'GLE', 4), 
+    (14, 'KTS', 3),  
+    (14, 'FOT', 2),  
+    (14, 'MDA', 1), 
+    (13, 'BEL', 6), 
+    (13, 'MTR', 5), 
+    (13, 'GLE', 4),  
+    (13, 'KTS', 3),  
+    (13, 'FOT', 2),  
+    (13, 'MDA', 1),
+    (15, 'FOT', 1),
+    (15, 'RGM', 2),
+    (15, 'MIG', 3),
+    (15, 'ALW', 4),
+    (15, 'RBK', 5),
+    (15, 'KDT', 6),
+    (16, 'FOT', 6),
+    (16, 'RGM', 5),
+    (16, 'MIG', 4),
+    (16, 'ALW', 3),
+    (16, 'RBK', 2),
+    (16, 'KDT', 1),
+    (17, 'ANP', 1),
+    (17, 'VNA', 2),
+    (17, 'PKM', 3),
+    (17, 'MNK', 4),
+    (17, 'KLN', 5),
+    (17, 'JFN', 6),
+    (18, 'ANP', 6),
+    (18, 'VNA', 5),
+    (18, 'PKM', 4),
+    (18, 'MNK', 3),
+    (18, 'KLN', 2),
+    (18, 'JFN', 1),
+    (19, 'FOT', 1),
+    (19, 'PLG', 2),
+    (19, 'KRN', 3),
+    (19, 'HBN', 4),
+    (19, 'KNI', 5),
+    (19, 'TCO', 6),
+    (20, 'FOT', 6),
+    (20, 'PLG', 5),
+    (20, 'KRN', 4),
+    (20, 'HBN', 3),
+    (20, 'KNI', 2),
+    (20, 'TCO', 1);
+
+INSERT INTO intermediate_station (Schedule, Code, Sequence)
+VALUES
+    (21, 'BEL', 1),  
+    (21, 'MTR', 2),  
+    (21, 'GLE', 3),  
+    (21, 'KTS', 4),  
+    (21, 'FOT', 5),  
+    (21, 'MDA', 6),  
+    (22, 'BEL', 1),  
+    (22, 'MTR', 2),  
+    (22, 'GLE', 3),  
+    (22, 'KTS', 4),  
+    (22, 'FOT', 5),  
+    (22, 'MDA', 6),  
+    (24, 'BEL', 6), 
+    (24, 'MTR', 5),
+    (24, 'GLE', 4), 
+    (24, 'KTS', 3),  
+    (24, 'FOT', 2),  
+    (24, 'MDA', 1), 
+    (23, 'BEL', 6), 
+    (23, 'MTR', 5), 
+    (23, 'GLE', 4),  
+    (23, 'KTS', 3),  
+    (23, 'FOT', 2),  
+    (23, 'MDA', 1),
+    (25, 'FOT', 1),
+    (25, 'RGM', 2),
+    (25, 'MIG', 3),
+    (25, 'ALW', 4),
+    (25, 'RBK', 5),
+    (25, 'KDT', 6),
+    (26, 'FOT', 6),
+    (26, 'RGM', 5),
+    (26, 'MIG', 4),
+    (26, 'ALW', 3),
+    (26, 'RBK', 2),
+    (26, 'KDT', 1),
+    (27, 'ANP', 1),
+    (27, 'VNA', 2),
+    (27, 'PKM', 3),
+    (27, 'MNK', 4),
+    (27, 'KLN', 5),
+    (27, 'JFN', 6),
+    (28, 'ANP', 6),
+    (28, 'VNA', 5),
+    (28, 'PKM', 4),
+    (28, 'MNK', 3),
+    (28, 'KLN', 2),
+    (28, 'JFN', 1),
+    (29, 'FOT', 1),
+    (29, 'PLG', 2),
+    (29, 'KRN', 3),
+    (29, 'HBN', 4),
+    (29, 'KNI', 5),
+    (29, 'TCO', 6),
+    (30, 'FOT', 6),
+    (30, 'PLG', 5),
+    (30, 'KRN', 4),
+    (30, 'HBN', 3),
+    (30, 'KNI', 2),
+    (30, 'TCO', 1);
     
 
 

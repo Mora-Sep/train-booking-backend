@@ -10,6 +10,83 @@ const dataPath = path.join(__dirname, "Sample_Data.sql");
 const schemaSQL = fs.readFileSync(schemaPath, "utf-8");
 const dataSQL = fs.readFileSync(dataPath, "utf-8");
 
+function formatDate(date) {
+  return date.toISOString().split("T")[0];
+}
+
+function generateScheduledTrips(startDate, days) {
+  let queries = "";
+  const routesTrainsTimes = [
+    [1, 8056, "06:10:00"],
+    [2, 8058, "06:00:00"],
+    [3, 8056, "14:00:00"],
+    [4, 8058, "14:30:00"],
+    [9, 1005, "08:30:00"],
+    [10, 1005, "15:00:00"],
+    [5, 4077, "08:00:00"],
+    [6, 4077, "16:00:00"],
+    [7, 4077, "04:00:00"],
+    [8, 4077, "12:00:00"],
+  ];
+
+  for (let i = 0; i < days; i++) {
+    const dateStr = formatDate(new Date(startDate.getTime() + i * 86400000));
+    const dayQueries = routesTrainsTimes
+      .map((rt) => `(${rt[0]}, ${rt[1]}, '${rt[2]}', '${dateStr}')`)
+      .join(",\n");
+    queries += `-- Queries for ${dateStr}\nINSERT INTO scheduled_trip(Route, train, Departure_Time, Date) VALUES\n${dayQueries};\n\n`;
+  }
+  return queries;
+}
+
+function generateIntermediateStations(startDate, days, startingScheduleId) {
+  let queries = "";
+  const stationsSequences = [
+    ["BEL", 1],
+    ["MTR", 2],
+    ["GLE", 3],
+    ["KTS", 4],
+    ["FOT", 5],
+    ["MDA", 6],
+  ];
+  let scheduleId = startingScheduleId;
+
+  for (let i = 0; i < days; i++) {
+    const dateStr = formatDate(new Date(startDate.getTime() + i * 86400000));
+    const stationQueries = stationsSequences
+      .map((ss) => `(${scheduleId}, '${ss[0]}', ${ss[1]})`)
+      .join(",\n");
+    queries += `-- Intermediate stations for ${dateStr} (Schedule ${scheduleId})\nINSERT INTO intermediate_station (Schedule, Code, Sequence) VALUES\n${stationQueries};\n\n`;
+    scheduleId += 10; // Increment by 10 for each day's schedules
+  }
+  return queries;
+}
+
+// Start from October 17, 2024
+const startDate = new Date(2024, 9, 17); // Month is 0-indexed (9 = October)
+const days = 90; // Approximately three months
+const startingScheduleId = 31; // Assuming schedule ID starts from 31 after your last manual entry
+
+const scheduledTripQueries = generateScheduledTrips(startDate, days);
+const intermediateStationQueries = generateIntermediateStations(
+  startDate,
+  days,
+  startingScheduleId
+);
+
+fs.writeFileSync(
+  path.join(__dirname, "scheduled_trip_queries.sql"),
+  scheduledTripQueries
+);
+fs.writeFileSync(
+  path.join(__dirname, "intermediate_station_queries.sql"),
+  intermediateStationQueries
+);
+
+console.log(
+  "SQL queries have been generated and saved to scheduled_trip_queries.sql and intermediate_station_queries.sql"
+);
+
 // Create MySQL connection
 const connection = mysql.createConnection({
   host: process.env.DEV_DB_HOST,
@@ -31,8 +108,21 @@ connection.connect((err) => {
 
     connection.query(dataSQL, (error, results) => {
       if (error) throw error;
-      console.log("Data populated successfully.");
-      connection.end();
+      console.log("Initial data populated successfully.");
+
+      connection.query(scheduledTripQueries, (error, results) => {
+        if (error) throw error;
+        console.log("Scheduled trips created successfully.");
+
+        connection.query(intermediateStationQueries, (error, results) => {
+          if (error) throw error;
+          console.log("Intermediate stations created successfully.");
+
+          console.log("All queries executed successfully.");
+        });
+
+        connection.end();
+      });
     });
   });
 });
