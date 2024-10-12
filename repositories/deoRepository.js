@@ -107,7 +107,7 @@ const scheduleTrip = async (data) => {
   await deoConnection.raw(`SET @new_trip_id = 1`);
   const status = await deoConnection.raw(
     "CALL ScheduleTrip(?, ?, ?, ?, @status_var, @new_trip_id)",
-    [data.routeID, data.trainCode, data.departureTime, data.frequency]
+    [data.routeID, data.trainCode, data.departureTime, data.date]
   );
 
   // Retrieve the OUT parameter values (status_var and new_trip_id)
