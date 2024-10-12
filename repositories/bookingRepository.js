@@ -101,7 +101,7 @@ const userCancelBooking = async (username, bookingRefID) => {
   }
 };
 
-const searchTrip = async (from, to, frequency) => {
+const searchTrip = async (from, to, date) => {
   // Step 1: Find trips that include the origin and destination stations
   const rawTrips = await guestConnection("trip")
     .innerJoin("intermediate_station as is1", "trip.ID", "is1.Schedule")
@@ -111,7 +111,7 @@ const searchTrip = async (from, to, frequency) => {
     .where("is1.Code", from)
     .andWhere("is2.Code", to)
     .andWhere("is1.Sequence", "<", guestConnection.raw("is2.Sequence"))
-    .andWhere("trip.frequency", frequency)
+    .andWhere("trip.date", date)
     .select(
       "trip.ID",
       "is1.Code as originCode",
@@ -196,7 +196,7 @@ const searchTrip = async (from, to, frequency) => {
   return combinedData;
 };
 
-const getSeats = async (from, to, frequency, id) => {
+const getSeats = async (from, to, date, id) => {
   // Step 1: Find trips that include the origin and destination stations
   const rawTrips = await guestConnection("trip")
     .innerJoin("intermediate_station as is1", "trip.ID", "is1.Schedule")
@@ -206,7 +206,7 @@ const getSeats = async (from, to, frequency, id) => {
     .where("is1.Code", from)
     .andWhere("is2.Code", to)
     .andWhere("is1.Sequence", "<", guestConnection.raw("is2.Sequence"))
-    .andWhere("trip.frequency", frequency)
+    .andWhere("trip.date", date)
     .then((trips) => (trips.length ? trips : null));
 
   if (!rawTrips || rawTrips.length === 0) {

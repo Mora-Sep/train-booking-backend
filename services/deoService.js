@@ -167,12 +167,6 @@ const scheduleTrip = async (username, data) => {
     throw new Error(validateScheduleTrip(data));
   }
 
-  if (
-    data.frequency.toLowerCase() !== "weekdays".toLowerCase() &&
-    data.frequency.toLowerCase() !== "weekends".toLowerCase()
-  )
-    throw new Error("Invalid frequency input");
-
   return deoRepository.scheduleTrip(data);
 };
 

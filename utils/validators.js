@@ -159,7 +159,7 @@ const validateScheduleTrip = (trip) => {
       routeID: joi.number().required(),
       trainCode: joi.number().required(),
       departureTime: joi.string().required(),
-      frequency: joi.allow(),
+      date: joi.date().required(),
     })
     .validate(trip);
 

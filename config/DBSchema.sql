@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS scheduled_trip (
             Route SMALLINT NOT NULL,
             train SMALLINT NOT NULL,
             Departure_Time TIME NOT NULL,
-            Frequency ENUM('Weekdays', 'Weekends', 'Daily') NOT NULL,
+            Date DATE NOT NULL,
             Delay_Minutes SMALLINT NOT NULL DEFAULT 0,
             Active BOOLEAN NOT NULL DEFAULT 1,
             FOREIGN KEY (Route) REFERENCES route(Route_ID) ON DELETE CASCADE,
@@ -213,7 +213,7 @@ CREATE INDEX idx_guest ON guest (Booking_Ref_ID);
 CREATE OR REPLACE VIEW trip AS
 SELECT 
     sht.Scheduled_ID AS ID,
-    sht.Frequency AS frequency,
+    sht.Date AS date,
     org.Code AS originCode,
     des.Code AS destinationCode,
     org.Name AS originName,
@@ -247,7 +247,7 @@ CREATE OR REPLACE VIEW admin_trip AS
                 sht.Scheduled_ID AS ID,
                 sht.Active AS isactive,
                 sht.Delay_Minutes AS delay,
-                sht.Frequency AS frequency,
+                sht.Date AS date,
                 org.Code AS originCode,
                 des.Code AS destinationCode,
                 org.Name AS originName,
@@ -320,6 +320,7 @@ CREATE OR REPLACE VIEW ticket AS
                 rut.Route_ID AS route,
                 org.Name AS origin,
                 des.Name AS destination,
+                sht.Date AS date,
                 sht.Departure_Time AS departureTime,
                 cls.Class_Name AS class,
                 bkset.Booking_Ref_ID AS bookingRefID,
@@ -800,7 +801,7 @@ CREATE DEFINER=`root`@`%` PROCEDURE `ScheduleTrip`(
                 IN route_int SMALLINT, 
                 IN train_code SMALLINT, 
                 IN departure_time TIME, 
-                IN frequency ENUM("Weekdays", "Weekends"),
+                IN date DATE,
                 OUT status_var BOOLEAN,
                 OUT new_trip_id INT)
 BEGIN
@@ -836,8 +837,8 @@ BEGIN
                             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'train has scheduled trips at this time';
                         END IF;
                         
-                        INSERT INTO scheduled_trip (Route, train, Departure_Time, Frequency) 
-                        VALUES (route_int, train_code, departure_time, frequency);
+                        INSERT INTO scheduled_trip (Route, train, Departure_Time, Date) 
+                        VALUES (route_int, train_code, departure_time, date);
 
                         -- Retrieve the last inserted trip ID
                         SET new_trip_id = LAST_INSERT_ID();

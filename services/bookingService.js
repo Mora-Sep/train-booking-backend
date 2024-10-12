@@ -83,10 +83,10 @@ const guestCreateBooking = async (data) => {
   return result;
 };
 
-const searchTrip = async (from, to, frequency) => {
+const searchTrip = async (from, to, date) => {
   let fromCode, toCode;
 
-  if (!from || !to || !frequency) {
+  if (!from || !to || !date) {
     throw new Error("Invalid search parameters");
   }
 
@@ -101,63 +101,16 @@ const searchTrip = async (from, to, frequency) => {
     toCode = to;
   }
 
-  // Check if frequency is a valid date and convert it to a day of the week
-  if (!isNaN(Date.parse(frequency))) {
-    const date = new Date(frequency);
-    const daysOfWeek = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
-    frequency = daysOfWeek[date.getUTCDay()]; // or use date.getDay() if you want local time instead of UTC
-  }
-
-  let list1 = await bookingRepository.searchTrip(fromCode, toCode, frequency);
+  let list1 = await bookingRepository.searchTrip(fromCode, toCode, date);
   list1 = list1 || [];
-
-  if (["Sunday", "Saturday"].includes(frequency)) {
-    const list2 = await bookingRepository.searchTrip(
-      fromCode,
-      toCode,
-      "Weekends"
-    );
-
-    if (list2 && list2.length) {
-      list1 = list1.concat(list2);
-    }
-  }
-
-  if (
-    ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].includes(frequency)
-  ) {
-    const list3 = await bookingRepository.searchTrip(
-      fromCode,
-      toCode,
-      "Weekdays"
-    );
-
-    if (list3 && list3.length) {
-      list1 = list1.concat(list3);
-    }
-  }
-
-  const list4 = await bookingRepository.searchTrip(fromCode, toCode, "Daily");
-
-  if (list4 && list4.length) {
-    list1 = list1.concat(list4);
-  }
 
   return list1;
 };
 
-const getSeats = async (from, to, frequency, id) => {
+const getSeats = async (from, to, date, id) => {
   let fromCode, toCode;
 
-  if (!from || !to || !frequency) {
+  if (!from || !to || !date) {
     throw new Error("Invalid search parameters");
   }
 
@@ -172,52 +125,8 @@ const getSeats = async (from, to, frequency, id) => {
     toCode = to;
   }
 
-  // Check if frequency is a valid date and convert it to a day of the week
-  if (!isNaN(Date.parse(frequency))) {
-    const date = new Date(frequency);
-    const daysOfWeek = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
-    frequency = daysOfWeek[date.getUTCDay()]; // or use date.getDay() if you want local time instead of UTC
-  }
-
-  let list1 = await bookingRepository.getSeats(fromCode, toCode, frequency, id);
+  let list1 = await bookingRepository.getSeats(fromCode, toCode, date, id);
   list1 = list1 || [];
-
-  if (["Sunday", "Saturday"].includes(frequency)) {
-    const list2 = await bookingRepository.getSeats(
-      fromCode,
-      toCode,
-      "Weekends"
-    );
-
-    list1 = list1.concat(list2);
-  }
-
-  if (
-    ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].includes(frequency)
-  ) {
-    const list3 = await bookingRepository.getSeats(
-      fromCode,
-      toCode,
-      "Weekdays",
-      id
-    );
-
-    list1 = list1.concat(list3);
-  }
-
-  const list4 = await bookingRepository.getSeats(fromCode, toCode, "Daily", id);
-
-  if (list4 && list4.length) {
-    list1 = list1.concat(list4);
-  }
 
   return list1;
 };
@@ -383,6 +292,7 @@ const sendTicket = async (bookingRefId) => {
         Class: ${detail.class}
         Origin: ${detail.origin}
         Destination: ${detail.destination}
+        Date: ${detail.date}
         Departure Time: ${detail.departureTime}
         Status: ${detail.status}
       `;
