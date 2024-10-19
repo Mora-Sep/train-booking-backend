@@ -1,5 +1,6 @@
 
 
+DROP DATABASE IF EXISTS project_database;
 DROP DATABASE IF EXISTS railway;
 
 CREATE DATABASE railway;
@@ -1041,6 +1042,21 @@ CREATE EVENT CheckBookingValidity
 --                             SET MESSAGE_TEXT = 'Route of base price and scheduled trip do not match';
 --                     END IF;
 --                 END;
+
+
+CREATE EVENT DeletePastBookings
+ON SCHEDULE EVERY 1 DAY
+STARTS CURRENT_TIMESTAMP
+DO
+BEGIN
+    DELETE FROM booking
+    WHERE scheduled_trip IN (
+        SELECT Scheduled_ID
+        FROM scheduled_trip
+        WHERE Date < CURDATE()
+    );
+END;
+
 
 CREATE TRIGGER check_booking_has_seats_and_guest
                 BEFORE UPDATE ON booking

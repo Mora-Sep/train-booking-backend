@@ -49,6 +49,14 @@ function generateIntermediateStations(startDate, days, startingScheduleId) {
     ["FOT", 5],
     ["MDA", 6],
   ];
+  const stationsSequences2 = [
+    ["BEL", 6],
+    ["MTR", 5],
+    ["GLE", 4],
+    ["KTS", 3],
+    ["FOT", 2],
+    ["MDA", 1],
+  ];
   let scheduleId = startingScheduleId;
 
   for (let i = 0; i < days; i++) {
@@ -56,7 +64,13 @@ function generateIntermediateStations(startDate, days, startingScheduleId) {
     const stationQueries = stationsSequences
       .map((ss) => `(${scheduleId}, '${ss[0]}', ${ss[1]})`)
       .join(",\n");
+    const stationQueries2 = stationsSequences2
+      .map((ss) => `(${scheduleId + 3}, '${ss[0]}', ${ss[1]})`)
+      .join(",\n");
     queries += `-- Intermediate stations for ${dateStr} (Schedule ${scheduleId})\nINSERT INTO intermediate_station (Schedule, Code, Sequence) VALUES\n${stationQueries};\n\n`;
+    queries += `-- Intermediate stations for ${dateStr} (Schedule ${
+      scheduleId + 3
+    })\nINSERT INTO intermediate_station (Schedule, Code, Sequence) VALUES\n${stationQueries2};\n\n`;
     scheduleId += 10; // Increment by 10 for each day's schedules
   }
   return queries;
