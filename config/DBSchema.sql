@@ -182,7 +182,7 @@ CREATE TABLE IF NOT EXISTS booked_seat (
             IsAdult BOOLEAN NOT NULL,
             FOREIGN KEY (Booking) REFERENCES booking(Booking_Ref_ID) ON DELETE CASCADE,
             FOREIGN KEY (Class) REFERENCES class(Class_Code) ON DELETE CASCADE,
-            CONSTRAINT Unique_Seat_On_Booking UNIQUE (Booking, Seat_Number) );
+            CONSTRAINT Unique_Seat_On_Booking UNIQUE (Booking, Seat_Number, Class) );
 
 CREATE TABLE IF NOT EXISTS guest (
             Guest_ID CHAR(12) NOT NULL,
