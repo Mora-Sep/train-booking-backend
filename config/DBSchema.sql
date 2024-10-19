@@ -1,5 +1,6 @@
 
 
+DROP DATABASE IF EXISTS project_database;
 DROP DATABASE IF EXISTS railway;
 
 CREATE DATABASE railway;
