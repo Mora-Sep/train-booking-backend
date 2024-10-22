@@ -1,4 +1,3 @@
-const { raw } = require("express");
 const joi = require("joi");
 
 const userSchema = joi.object({

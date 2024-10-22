@@ -184,8 +184,6 @@ const guestDeleteBooking = async (guestID, bookingRefID) => {
 const completeBooking = async (bookingRefID) => {
   if (bookingRefID.length !== 12) throw new Error("Invalid booking ref id");
 
-  // Transaction Verification needed here
-
   const result = await bookingRepository.completeBooking(bookingRefID);
   return result;
 };
@@ -287,7 +285,6 @@ const sendTicket = async (bookingRefId) => {
     let formattedDetails = bookingDetails
       .map((detail) => {
         return `
-        Passenger: ${detail.passenger}
         Seat Number: ${detail.seatNumber}
         Class: ${detail.class}
         Origin: ${detail.origin}
@@ -326,7 +323,7 @@ const sendTicket = async (bookingRefId) => {
         <p>Please present this e-ticket and a valid ID when boarding the train. Your QR code for easy scanning is provided below:</p>
         <img src="${qrCodeDataUrl}" alt="E-ticket QR Code" />
         <p>Safe travels!</p>
-        <p>Best regards,<br>Train Booking Team</p>
+        <p>Best regards,<br>Train Booking Team - OnTrain</p>
       `,
     };
 

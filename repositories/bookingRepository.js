@@ -2,8 +2,8 @@ const ruConnection = require("../config/db").getRegisteredUserConnection;
 const guestConnection = require("../config/db").getGuestConnection;
 
 const userCreateBooking = async (username, data, finalPrice) => {
-  await ruConnection.raw(`SET @refID = FALSE`); //check
-  await ruConnection.raw(`SET @finalPrice = FALSE`); //check
+  await ruConnection.raw(`SET @refID = FALSE`);
+  await ruConnection.raw(`SET @finalPrice = FALSE`);
   await ruConnection.raw(`SET @status_var = FALSE`);
 
   await ruConnection.raw(
@@ -25,8 +25,8 @@ const userCreateBooking = async (username, data, finalPrice) => {
 };
 
 const guestCreateBooking = async (data, finalPrice) => {
-  await guestConnection.raw(`SET @refID = FALSE`); //check
-  await guestConnection.raw(`SET @finalPrice = FALSE`); //check
+  await guestConnection.raw(`SET @refID = FALSE`);
+  await guestConnection.raw(`SET @finalPrice = FALSE`);
   await guestConnection.raw(`SET @out_guest_id = FALSE`);
   await guestConnection.raw(`SET @status_var = FALSE`);
 
@@ -102,7 +102,7 @@ const userCancelBooking = async (username, bookingRefID) => {
 };
 
 const searchTrip = async (from, to, date) => {
-  // Step 1: Find trips that include the origin and destination stations
+  // Find trips that include the origin and destination stations
   const rawTrips = await guestConnection("trip")
     .innerJoin("intermediate_station as is1", "trip.ID", "is1.Schedule")
     .innerJoin("intermediate_station as is2", "trip.ID", "is2.Schedule")
@@ -140,7 +140,7 @@ const searchTrip = async (from, to, date) => {
     return null;
   }
 
-  // Step 2: Fetch seat reservations for each trip
+  // Fetch seat reservations for each trip
   const seatReservationsPromises = rawTrips.map((trip) =>
     guestConnection("seat_reservation")
       .where("ID", trip.ID)
@@ -167,7 +167,7 @@ const searchTrip = async (from, to, date) => {
 
   const prices = await Promise.all(priceList);
 
-  // Step 3: Combine trip and seat reservation data
+  // Combine trip and seat reservation data
   let combinedData = [];
 
   if (rawTrips) {
@@ -197,7 +197,7 @@ const searchTrip = async (from, to, date) => {
 };
 
 const getSeats = async (from, to, date, id) => {
-  // Step 1: Find trips that include the origin and destination stations
+  // Find trips that include the origin and destination stations
   const rawTrips = await guestConnection("trip")
     .innerJoin("intermediate_station as is1", "trip.ID", "is1.Schedule")
     .innerJoin("intermediate_station as is2", "trip.ID", "is2.Schedule")
@@ -213,7 +213,7 @@ const getSeats = async (from, to, date, id) => {
     return null;
   }
 
-  // Step 2: Fetch seat reservations for each trip
+  // Fetch seat reservations for each trip
   const filteredTrip = rawTrips.filter((trip) => trip.ID === Number(id));
 
   const seatReservations = await guestConnection("seat_reservation")
@@ -337,9 +337,8 @@ const userGetPendingPayments = async (username) => {
   for (const booking of data) {
     const passengers = await ruConnection("booked_seat as bk")
       .select(
-        "bk.FirstName as firstName",
-        "bk.LastName as lastName",
         "bk.Seat_Number as seat",
+        "bk.Class as class",
         "bk.IsAdult as isAdult"
       )
       .where("bk.Booking", booking.bookingRefID)
@@ -527,7 +526,7 @@ async function getStationSequence(scheduledTripId, stationCode) {
   const result = await guestConnection("intermediate_station")
     .select("Sequence")
     .where({ Schedule: scheduledTripId, Code: stationCode })
-    .first(); // .first() ensures only one row is returned
+    .first(); // ensures only one row is returned
   return result?.Sequence;
 }
 
