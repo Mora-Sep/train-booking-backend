@@ -52,12 +52,17 @@ const guestCreateBooking = async (data, finalPrice) => {
 };
 
 const userCancelBooking = async (username, bookingRefID) => {
+  const currentDateTime = new Date()
+    .toISOString()
+    .slice(0, 19)
+    .replace("T", " ");
+
   // Check if the booking exists for the user
   const bookingExists = await ruConnection.raw(
     `SELECT COUNT(*) as count 
      FROM booking 
-     WHERE Booking_Ref_ID = ? AND User = ?`,
-    [bookingRefID, username]
+     WHERE Booking_Ref_ID = ? AND User = ? AND Created_At > ?`,
+    [bookingRefID, username, currentDateTime]
   );
 
   if (bookingExists[0][0].count > 0) {
