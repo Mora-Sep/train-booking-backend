@@ -77,9 +77,9 @@ function generateIntermediateStations(startDate, days, startingScheduleId) {
 }
 
 // Start from October 17, 2024
-const startDate = new Date(2024, 9, 17); // Month is 0-indexed (9 = October)
-const days = 90; // Approximately three months
-const startingScheduleId = 31; // Assuming schedule ID starts from 31 after your last manual entry
+const startDate = new Date(2024, 9, 17); // Month is 0-indexed
+const days = 90; // Number of days to generate schedules for
+const startingScheduleId = 31; // Starting schedule ID
 
 const scheduledTripQueries = generateScheduledTrips(startDate, days);
 const intermediateStationQueries = generateIntermediateStations(

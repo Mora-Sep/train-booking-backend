@@ -338,8 +338,6 @@ CREATE OR REPLACE VIEW ticket AS
                 INNER JOIN route AS rut ON sht.Route = rut.Route_ID
                 INNER JOIN railway_station AS org ON bkset.from_station = org.Code
                 INNER JOIN railway_station AS des ON bkset.to_station = des.Code
-            -- WHERE
-            --     DATE(sht.Departure_Time) >= CURDATE()
             GROUP BY bk.Ticket_Number;
 
 CREATE OR REPLACE VIEW passenger AS
@@ -488,19 +486,19 @@ CREATE PROCEDURE UserCreateBooking(
 
         SET status_var = FALSE;
 
-        -- Step 1: Generate booking reference ID
+        -- Generate booking reference ID
         SET refID = GenerateRandomString();
 
-        -- Step 2: Determine sequences of the selected stations
+        -- Determine sequences of the selected stations
         SELECT is1.Sequence INTO origin_sequence
         FROM intermediate_station is1
         WHERE is1.Schedule = scheduled_trip_id AND is1.Code = from_station
-        LIMIT 1;  -- Ensure only one row is returned
+        LIMIT 1;
 
         SELECT is2.Sequence INTO destination_sequence
         FROM intermediate_station is2
         WHERE is2.Schedule = scheduled_trip_id AND is2.Code = to_station
-        LIMIT 1;  -- Ensure only one row is returned
+        LIMIT 1;
 
         IF origin_sequence IS NULL OR destination_sequence IS NULL THEN
             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid origin or destination station';
@@ -510,12 +508,12 @@ CREATE PROCEDURE UserCreateBooking(
             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Origin station must be before destination station';
         END IF;
 
-        -- Step 3: Calculate the final price based on the distance between the intermediate stations
+        -- Calculate the final price based on the distance between the intermediate stations
         SET final_Price = finalPrice;
 
 
 
-        -- Step 5: Insert passenger data into the temporary table
+        -- Insert passenger data into the temporary table
         WHILE i < JSON_LENGTH(passengers_json) DO
             SET seat_number = JSON_UNQUOTE(JSON_EXTRACT(passengers_json, CONCAT('$[', i, '].seatNumber')));
             SET class_value = JSON_UNQUOTE(JSON_EXTRACT(passengers_json, CONCAT('$[', i, '].class')));
@@ -531,7 +529,7 @@ CREATE PROCEDURE UserCreateBooking(
             SET i = i + 1;
         END WHILE;
 
-        -- Step 6: Start transaction for booking and seat reservation
+        -- Start transaction for booking and seat reservation
         START TRANSACTION;
             
             INSERT INTO booking (
@@ -539,19 +537,19 @@ CREATE PROCEDURE UserCreateBooking(
                 scheduled_trip, 
                 User, 
                 Final_price, 
-                from_station,   -- New column for origin station
-                to_station      -- New column for destination station
+                from_station,   
+                to_station      
             ) 
             VALUES (
                 refID, 
                 scheduled_trip_id, 
                 acc_username, 
                 finalPrice, 
-                from_station,  -- Inserting the origin station code
-                to_station     -- Inserting the destination station code
+                from_station,  
+                to_station     
             );
 
-            -- Step 8: Loop through passengers and reserve seats
+            -- Loop through passengers and reserve seats
             OPEN recordsCursor;
             readLoop: LOOP
                 FETCH recordsCursor INTO seat_number, class_value, first_name, last_name, is_adult;
@@ -560,46 +558,7 @@ CREATE PROCEDURE UserCreateBooking(
                 END IF;
 
                 SET seat_reserved = 0;
-
-                -- -- Check if the seat is reserved between the selected stations
-                -- SELECT 
-                --     (COUNT(*) > 0) INTO seat_reserved
-                -- FROM
-                --     booked_seat AS bk
-                --     INNER JOIN booking AS bkset ON bk.Booking = bkset.Booking_Ref_ID
-                --     INNER JOIN class AS cls ON bk.Class = cls.Class_Code
-                --     INNER JOIN scheduled_trip AS sht ON bkset.scheduled_trip = sht.Scheduled_ID
-                --     INNER JOIN intermediate_station is1 ON sht.Scheduled_ID = is1.Schedule
-                --     INNER JOIN intermediate_station is2 ON sht.Scheduled_ID = is2.Schedule
-                -- WHERE 
-                --     sht.Scheduled_ID = scheduled_trip_id 
-                --     AND cls.Class_Code = class 
-                --     AND bk.Seat_Number = seat_number
-                --     AND is1.Code = from_station 
-                --     AND is2.Code = to_station 
-                --     AND is1.Sequence <= origin_sequence 
-                --     AND is2.Sequence >= destination_sequence;
-
-                -- IF seat_reserved THEN
-                --     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Seat Already Booked';
-                -- END IF;
-
-                -- Check if seat number exceeds the maximum seat count
-                -- SELECT cpt.Seats_Count INTO max_seat_number
-                -- FROM 
-                --     scheduled_trip AS sht
-                --     INNER JOIN train AS trn ON sht.train = trn.Number
-                --     INNER JOIN model AS mdl ON trn.Model = mdl.Model_ID
-                --     INNER JOIN capacity AS cpt ON mdl.Model_ID = cpt.Model
-                --     INNER JOIN class AS cls ON cpt.Class = cls.Class_Code
-                -- WHERE 
-                --     sht.Scheduled_ID = scheduled_trip_id
-                --     AND cls.Class_Code = class;
-                
-                -- IF seat_number > max_seat_number THEN
-                --     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Seat Number Exceeds Maximum Seat Count';
-                -- END IF;
-                
+       
                 -- Insert booked seat record
                 INSERT INTO booked_seat (Booking, Seat_Number, Class, FirstName, LastName, IsAdult) 
                 VALUES (refID, seat_number, class_value, first_name, last_name, is_adult);
@@ -616,8 +575,8 @@ CREATE PROCEDURE GuestCreateBooking(
     IN scheduled_trip_id INTEGER, 
     IN in_guest_id CHAR(12), 
     IN passengers_json JSON,
-    IN from_station CHAR(3),  -- New parameter for origin station
-    IN to_station CHAR(3),    -- New parameter for destination station
+    IN from_station CHAR(3),  
+    IN to_station CHAR(3),    
     IN email VARCHAR(50),
     IN contact_number VARCHAR(16),
     IN finalPrice DECIMAL(8,2),
@@ -646,19 +605,19 @@ CREATE PROCEDURE GuestCreateBooking(
 
         SET status_var = FALSE;
 
-        -- Step 1: Generate booking reference ID
+        -- Generate booking reference ID
         SET refID = GenerateRandomString();
 
-        -- Step 2: Determine sequences of the selected stations
+        -- Determine sequences of the selected stations
         SELECT is1.Sequence INTO origin_sequence
         FROM intermediate_station is1
         WHERE is1.Schedule = scheduled_trip_id AND is1.Code = from_station
-        LIMIT 1;  -- Ensure only one row is returned
+        LIMIT 1; 
 
         SELECT is2.Sequence INTO destination_sequence
         FROM intermediate_station is2
         WHERE is2.Schedule = scheduled_trip_id AND is2.Code = to_station
-        LIMIT 1;  -- Ensure only one row is returned
+        LIMIT 1; 
 
         IF origin_sequence IS NULL OR destination_sequence IS NULL THEN
             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid origin or destination station';
@@ -668,10 +627,10 @@ CREATE PROCEDURE GuestCreateBooking(
             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Origin station must be before destination station';
         END IF;
 
-        -- Step 3: Calculate the final price based on the distance between the intermediate stations
+        -- Calculate the final price based on the distance between the intermediate stations
         SET final_Price = finalPrice;
 
-        -- Step 4: Create a temporary table to hold passenger data
+        -- Create a temporary table to hold passenger data
         DROP TEMPORARY TABLE IF EXISTS booking_data;
 
         CREATE TEMPORARY TABLE IF NOT EXISTS booking_data (
@@ -682,7 +641,7 @@ CREATE PROCEDURE GuestCreateBooking(
             IsAdult BOOLEAN
         );
 
-        -- Step 5: Insert passenger data into the temporary table
+        -- Insert passenger data into the temporary table
         WHILE i < JSON_LENGTH(passengers_json) DO
             SET seat_number = JSON_UNQUOTE(JSON_EXTRACT(passengers_json, CONCAT('$[', i, '].seatNumber')));
             SET class = JSON_UNQUOTE(JSON_EXTRACT(passengers_json, CONCAT('$[', i, '].class')));
@@ -698,7 +657,7 @@ CREATE PROCEDURE GuestCreateBooking(
             SET i = i + 1;
         END WHILE;
 
-        -- Step 6: Start transaction for booking and seat reservation
+        -- Start transaction for booking and seat reservation
         START TRANSACTION;
 
             INSERT INTO booking (
@@ -706,19 +665,19 @@ CREATE PROCEDURE GuestCreateBooking(
                 scheduled_trip, 
                 User, 
                 Final_price, 
-                from_station,   -- New column for origin station
-                to_station      -- New column for destination station
+                from_station,  
+                to_station     
             ) 
             VALUES (
                 refID, 
                 scheduled_trip_id, 
                 NULL, 
                 finalPrice, 
-                from_station,  -- Inserting the origin station code
-                to_station     -- Inserting the destination station code
+                from_station,  
+                to_station    
             );
 
-            -- Step 8: Loop through passengers and reserve seats
+            -- Loop through passengers and reserve seats
             OPEN recordsCursor;
             readLoop: LOOP
                 FETCH recordsCursor INTO seat_number, class, first_name, last_name, is_adult;
@@ -727,29 +686,6 @@ CREATE PROCEDURE GuestCreateBooking(
                 END IF;
 
                 SET seat_reserved = 0;
-
-                -- Check if the seat is reserved between the selected stations
-                -- SELECT 
-                --     (COUNT(*) > 0) INTO seat_reserved
-                -- FROM
-                --     booked_seat AS bk
-                --     INNER JOIN booking AS bkset ON bk.Booking = bkset.Booking_Ref_ID
-                --     INNER JOIN class AS cls ON bk.Class = cls.Class_Code
-                --     INNER JOIN scheduled_trip AS sht ON bkset.scheduled_trip = sht.Scheduled_ID
-                --     INNER JOIN intermediate_station is1 ON sht.Scheduled_ID = is1.Schedule
-                --     INNER JOIN intermediate_station is2 ON sht.Scheduled_ID = is2.Schedule
-                -- WHERE 
-                --     sht.Scheduled_ID = scheduled_trip_id 
-                --     AND cls.Class_Code = class
-                --     AND bk.Seat_Number = seat_number
-                --     AND is1.Code = from_station 
-                --     AND is2.Code = to_station 
-                --     AND is1.Sequence <= origin_sequence 
-                --     AND is2.Sequence >= destination_sequence;
-
-                -- IF seat_reserved THEN
-                --     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Seat Already Booked';
-                -- END IF;
 
                 -- Check if seat number exceeds the maximum seat count
                 SELECT cpt.Seats_Count INTO max_seat_number
@@ -762,7 +698,7 @@ CREATE PROCEDURE GuestCreateBooking(
                 WHERE 
                     sht.Scheduled_ID = scheduled_trip_id
                     AND cls.Class_Code = class
-                LIMIT 1;  -- Ensure only one row is returned;
+                LIMIT 1; 
 
                 IF seat_number > max_seat_number THEN
                     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Seat Number Exceeds Maximum Seat Count';
@@ -775,7 +711,7 @@ CREATE PROCEDURE GuestCreateBooking(
             END LOOP;
             CLOSE recordsCursor;
 
-            -- Step 9: Insert guest details into the guest table
+            -- Insert guest details into the guest table
             IF email = 'NULL' THEN
                 SET email = NULL;
             END IF;
@@ -831,8 +767,6 @@ BEGIN
                             trp.trainCode = train_code
                             AND ( trp.departureDateAndTime > lower_bound AND trp.arrivalDateAndTime < upper_bound )
                             OR ( trp.departureDateAndTime < lower_bound AND trp.arrivalDateAndTime > upper_bound );
-                            -- OR ( trp.departureDateAndTime < lower_bound AND trp.arrivalDateAndTime > lower_bound );
-                            -- OR ( trp.departureDateAndTime < upper_bound AND trp.arrivalDateAndTime > upper_bound );
 
                         IF scheduled_count > 0 THEN
                             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'train has scheduled trips at this time';
@@ -1019,29 +953,6 @@ CREATE EVENT CheckBookingValidity
                 AND User IS NULL
                 AND Completed = 0;
             END;
-
-
--- create_triggers()
--- CREATE TRIGGER check_routes_matching
---                 BEFORE INSERT ON booking
---                 FOR EACH ROW
---                 BEGIN
---                     DECLARE route_of_base_price SMALLINT;
---                     DECLARE route_of_scheduled_trip SMALLINT;
-
---                     SELECT Route INTO route_of_base_price
---                     FROM base_price
---                     WHERE Price_ID = NEW.BPrice_Per_Booking;
-
---                     SELECT Route INTO route_of_scheduled_trip
---                     FROM scheduled_trip
---                     WHERE Scheduled_ID = NEW.scheduled_trip;
-
---                     IF route_of_base_price != route_of_scheduled_trip THEN
---                         SIGNAL SQLSTATE '45000'
---                             SET MESSAGE_TEXT = 'Route of base price and scheduled trip do not match';
---                     END IF;
---                 END;
 
 
 CREATE EVENT DeletePastBookings

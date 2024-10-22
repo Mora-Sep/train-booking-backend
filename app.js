@@ -37,8 +37,7 @@ app.post(
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
 
-      // Complete the booking here using session details (like session.id)
-      // Call your complete booking endpoint
+      // Callcomplete booking endpoint
       try {
         axios.post(
           `http://localhost:3002/api/booking/complete/?bookingRefID=${session.client_reference_id}`
