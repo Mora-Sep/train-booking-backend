@@ -228,7 +228,7 @@ const forgotPassword = async (email) => {
 
   // Send email with reset link
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com", // or use your email service provider
+    host: "smtp.gmail.com",
     port: 465,
     secure: true,
     auth: {
@@ -242,7 +242,7 @@ const forgotPassword = async (email) => {
   const mailOptions = {
     to: email,
     from: process.env.EMAIL,
-    subject: "Password Reset",
+    subject: "Password Reset - OnTrain",
     text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
            Please click on the following link, or paste it into your browser to complete the process:\n\n
            ${resetUrl}\n\n
