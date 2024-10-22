@@ -397,6 +397,7 @@ const userGetPaymentHistory = async (username) => {
         "bk.FirstName as firstName",
         "bk.LastName as lastName",
         "bk.Seat_Number as seat",
+        "bk.Class as class",
         "bk.IsAdult as isAdult"
       )
       .where("bk.Booking", booking.bookingRefID)
