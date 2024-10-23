@@ -1,3 +1,5 @@
+const qrcode = require("qrcode");
+const nodemailer = require("nodemailer");
 const bookingRepository = require("../repositories/bookingRepository");
 const userRepository = require("../repositories/userRepository");
 const getAllRepository = require("../repositories/getAllRepository");
@@ -8,6 +10,8 @@ const {
 } = require("../utils/validators");
 
 const userCreateBooking = async (username, data) => {
+  if (!username) throw new Error("Invalid username");
+
   const fetchedUser = userRepository.findUserByUsername(username);
   if (!fetchedUser) throw new Error("No such user exists");
 
@@ -24,13 +28,31 @@ const userCreateBooking = async (username, data) => {
   const finalPrice = await calculateFinalPrice(
     data.tripID,
     username,
-    data.class,
-    data.bookingCount,
+    data.passengers,
     data.from,
     data.to
   );
 
+  for (const passenger of data.passengers) {
+    if (passenger.class === "First Class") {
+      passenger.class = "F";
+    } else if (passenger.class === "Second Class") {
+      passenger.class = "S";
+    } else if (passenger.class === "Third Class") {
+      passenger.class = "T";
+    }
+  }
+
   return bookingRepository.userCreateBooking(username, data, finalPrice);
+};
+
+const userCancelBooking = async (username, bookingRefID) => {
+  const fetchedUser = userRepository.findUserByUsername(username);
+  if (!fetchedUser) throw new Error("No such user exists");
+
+  if (bookingRefID.length !== 12) throw new Error("Invalid booking ref id");
+
+  return bookingRepository.userCancelBooking(username, bookingRefID);
 };
 
 const guestCreateBooking = async (data) => {
@@ -61,10 +83,10 @@ const guestCreateBooking = async (data) => {
   return result;
 };
 
-const searchTrip = async (from, to, frequency) => {
+const searchTrip = async (from, to, date) => {
   let fromCode, toCode;
 
-  if (!from || !to || !frequency) {
+  if (!from || !to || !date) {
     throw new Error("Invalid search parameters");
   }
 
@@ -79,51 +101,32 @@ const searchTrip = async (from, to, frequency) => {
     toCode = to;
   }
 
-  // Check if frequency is a valid date and convert it to a day of the week
-  if (!isNaN(Date.parse(frequency))) {
-    const date = new Date(frequency);
-    const daysOfWeek = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
-    frequency = daysOfWeek[date.getUTCDay()]; // or use date.getDay() if you want local time instead of UTC
-  }
-
-  let list1 = await bookingRepository.searchTrip(fromCode, toCode, frequency);
+  let list1 = await bookingRepository.searchTrip(fromCode, toCode, date);
   list1 = list1 || [];
 
-  if (["Sunday", "Saturday"].includes(frequency)) {
-    const list2 = await bookingRepository.searchTrip(
-      fromCode,
-      toCode,
-      "Weekends"
-    );
+  return list1;
+};
 
-    list1 = list1.concat(list2);
+const getSeats = async (from, to, date, id) => {
+  let fromCode, toCode;
+
+  if (!from || !to || !date) {
+    throw new Error("Invalid search parameters");
   }
 
-  if (
-    ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].includes(frequency)
-  ) {
-    const list3 = await bookingRepository.searchTrip(
-      fromCode,
-      toCode,
-      "Weekdays"
-    );
+  if (from.length !== 3 || to.length !== 3) {
+    const fromCodeRes = await getAllRepository.getRSCodeByName(from);
+    const toCodeRes = await getAllRepository.getRSCodeByName(to);
 
-    list1 = list1.concat(list3);
+    fromCode = fromCodeRes[0]?.Code;
+    toCode = toCodeRes[0]?.Code;
+  } else {
+    fromCode = from;
+    toCode = to;
   }
 
-  const list4 = await bookingRepository.searchTrip(fromCode, toCode, "Daily");
-
-  if (list4 && list4.length) {
-    list1 = list1.concat(list4);
-  }
+  let list1 = await bookingRepository.getSeats(fromCode, toCode, date, id);
+  list1 = list1 || [];
 
   return list1;
 };
@@ -149,6 +152,32 @@ const userGetPendingPayments = async (username) => {
   return bookingRepository.userGetPendingPayments(username);
 };
 
+const userGetPaymentHistory = async (username) => {
+  const fetchedUser = userRepository.findUserByUsername(username);
+  if (!fetchedUser) throw new Error("No such user exists");
+
+  const result = await bookingRepository.userGetPaymentHistory(username);
+
+  // Convert the date in each result to IST and format as YYYY-MM-DD
+  const convertedResult = result.map((booking) => {
+    const dateIST = new Date(booking.date).toLocaleString("en-GB", {
+      timeZone: "Asia/Kolkata",
+    });
+
+    const [date] = dateIST.split(", ");
+    const [day, month, year] = date.split("/");
+
+    // Replace the date with formatted IST date
+    booking.date = `${year}-${String(month).padStart(2, "0")}-${String(
+      day
+    ).padStart(2, "0")}`;
+
+    return booking;
+  });
+
+  return convertedResult;
+};
+
 const guestGetPendingPayments = async (guestID) => {
   if (validateGuestID(guestID)) {
     throw new Error(validateGuestID(guestID));
@@ -156,18 +185,6 @@ const guestGetPendingPayments = async (guestID) => {
 
   const payments = await bookingRepository.guestGetPendingPayments(guestID);
   return payments;
-};
-
-const userDeleteBooking = async (username, data) => {
-  const fetchedUser = userRepository.findUserByUsername(username);
-  if (!fetchedUser) throw new Error("No such user exists");
-
-  const booking = await bookingRepository.userSearchBookedTickets(username);
-  if (!booking) throw new Error("Booking not found");
-
-  if (data.id.length !== 12) throw new Error("Invalid booking ref id");
-
-  return bookingRepository.deleteBooking(data.id);
 };
 
 const guestDeleteBooking = async (guestID, bookingRefID) => {
@@ -187,9 +204,21 @@ const guestDeleteBooking = async (guestID, bookingRefID) => {
 const completeBooking = async (bookingRefID) => {
   if (bookingRefID.length !== 12) throw new Error("Invalid booking ref id");
 
-  // Transaction Verification needed here
-
   const result = await bookingRepository.completeBooking(bookingRefID);
+  return result;
+};
+
+const getBookingCheckout = async (bookingRefID) => {
+  if (bookingRefID.length !== 12) throw new Error("Invalid booking ref id");
+
+  const result = await bookingRepository.getBookingCheckout(bookingRefID);
+  const user = await userRepository.getUserDetails(result.bookedUser);
+  const fromStation = await getAllRepository.getRSNameByCode(result.from);
+  const toStation = await getAllRepository.getRSNameByCode(result.to);
+
+  result.email = user.Email;
+  result.from = fromStation[0].Name;
+  result.to = toStation[0].Name;
   return result;
 };
 
@@ -201,8 +230,7 @@ const searchBookedTicketByID = async (bookingRefID) => {
 async function calculateFinalPrice(
   scheduledTripId,
   username,
-  travelClass,
-  bookingCount,
+  passengers,
   fromStation,
   toStation
 ) {
@@ -226,18 +254,28 @@ async function calculateFinalPrice(
 
   // Calculate distance factor based on the sequence difference
   const distanceFactor = destinationSequence - originSequence;
+  let basicPrice = 0;
 
-  // Fetch base price per class
-  const basePricePerClass = await bookingRepository.getBasePricePerClass(
-    scheduledTripId,
-    travelClass
-  );
-  if (!basePricePerClass) {
-    throw new Error("Could not retrieve base price for the class");
+  for (const passenger of passengers) {
+    if (passenger.class === "F") {
+      passenger.class = "First Class";
+    } else if (passenger.class === "S") {
+      passenger.class = "Second Class";
+    } else if (passenger.class === "T") {
+      passenger.class = "Third Class";
+    }
+
+    // Fetch base price per class
+    const basePricePerClass = await bookingRepository.getBasePricePerClass(
+      scheduledTripId,
+      passenger.class
+    );
+    if (!basePricePerClass) {
+      throw new Error("Could not retrieve base price for the class");
+    }
+    // Calculate basic price for the segment
+    basicPrice = basicPrice + basePricePerClass * distanceFactor;
   }
-
-  // Calculate basic price for the segment
-  const basicPrice = basePricePerClass * distanceFactor * bookingCount;
 
   // Fetch discount percentage based on the user category
   let discountPercent;
@@ -252,11 +290,75 @@ async function calculateFinalPrice(
   return finalPrice.toFixed(2); // Return price formatted to 2 decimal places
 }
 
+const getStatus = async (bookingRefID) => {
+  const isCompleted = await bookingRepository.getStatus(bookingRefID);
+  return isCompleted;
+};
+
+const sendTicket = async (bookingRefId) => {
+  try {
+    const email = await userRepository.getMailByBookingRefId(bookingRefId);
+    const bookingDetails = await bookingRepository.getTicketDetails(
+      bookingRefId
+    );
+
+    let formattedDetails = bookingDetails
+      .map((detail) => {
+        return `
+        Seat Number: ${detail.seatNumber}
+        Class: ${detail.class}
+        Origin: ${detail.origin}
+        Destination: ${detail.destination}
+        Date: ${detail.date}
+        Departure Time: ${detail.departureTime}
+        Status: ${detail.status}
+      `;
+      })
+      .join("\n\n");
+
+    // Create QR code data (can include all booking details)
+    const qrData = `Booking Reference ID: ${bookingRefId}, Details: ${JSON.stringify(
+      bookingDetails
+    )}`;
+    const qrCodeDataUrl = await qrcode.toDataURL(qrData);
+
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.MAILPW,
+      },
+    });
+
+    const mailOptions = {
+      to: email,
+      from: process.env.EMAIL,
+      subject: `Your E-Ticket for Booking #${bookingRefId}`,
+      html: `
+        <p>Dear Customer,</p>
+        <p>Thank you for your booking! Here are your e-ticket details:</p>
+        <pre>${formattedDetails}</pre>
+        <p>Please present this e-ticket and a valid ID when boarding the train. Your QR code for easy scanning is provided below:</p>
+        <img src="${qrCodeDataUrl}" alt="E-ticket QR Code" />
+        <p>Safe travels!</p>
+        <p>Best regards,<br>Train Booking Team - OnTrain</p>
+      `,
+    };
+
+    // Send email
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Error sending e-ticket email:", error);
+  }
+};
+
 module.exports = {
   userSearchBookedTickets,
   userGetPendingPayments,
+  userGetPaymentHistory,
   userCreateBooking,
-  userDeleteBooking,
   guestCreateBooking,
   guestSearchBookedTickets,
   guestGetPendingPayments,
@@ -265,4 +367,9 @@ module.exports = {
   searchBookedTicketByID,
   searchTrip,
   calculateFinalPrice,
+  getSeats,
+  getBookingCheckout,
+  getStatus,
+  userCancelBooking,
+  sendTicket,
 };

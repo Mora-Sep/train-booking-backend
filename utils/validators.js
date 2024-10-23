@@ -1,4 +1,3 @@
-const { raw } = require("express");
 const joi = require("joi");
 
 const userSchema = joi.object({
@@ -159,9 +158,25 @@ const validateScheduleTrip = (trip) => {
       routeID: joi.number().required(),
       trainCode: joi.number().required(),
       departureTime: joi.string().required(),
-      frequency: joi.allow(),
+      date: joi.date().required(),
     })
     .validate(trip);
+
+  if (error) {
+    return error.details[0].message;
+  } else {
+    return null;
+  }
+};
+
+const validateAddStation = (station) => {
+  const { error } = joi
+    .object({
+      tripID: joi.number().required(),
+      code: joi.string().required(),
+      sequence: joi.number().required(),
+    })
+    .validate(station);
 
   if (error) {
     return error.details[0].message;
@@ -201,10 +216,8 @@ const validateCreateBooking = (data) => {
   const { error } = joi
     .object({
       tripID: joi.number().required(),
-      class: joi.string().required(),
       from: joi.string().required(),
       to: joi.string().required(),
-      bookingCount: joi.number().required(),
       passengers: joi.allow(),
     })
     .validate(data);
@@ -260,6 +273,7 @@ module.exports = {
   validateCreateRailwayStation,
   validateCreateRoute,
   validateScheduleTrip,
+  validateAddStation,
   validateStaffUpdate,
   validateCreateBooking,
   validateGuestCreateBooking,

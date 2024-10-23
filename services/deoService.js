@@ -11,6 +11,7 @@ const {
   validateCreateRailwayStation,
   validateCreateRoute,
   validateScheduleTrip,
+  validateAddStation,
   validateStaffUpdate,
 } = require("../utils/validators");
 
@@ -166,13 +167,20 @@ const scheduleTrip = async (username, data) => {
     throw new Error(validateScheduleTrip(data));
   }
 
-  if (
-    data.frequency.toLowerCase() !== "weekdays".toLowerCase() &&
-    data.frequency.toLowerCase() !== "weekends".toLowerCase()
-  )
-    throw new Error("Invalid frequency input");
-
   return deoRepository.scheduleTrip(data);
+};
+
+const addStation = async (username, data) => {
+  const fetchedDEO = await deoRepository.findDEOByUsername(username);
+  if (!fetchedDEO) {
+    throw new Error("Access denied!");
+  }
+
+  if (validateAddStation(data)) {
+    throw new Error(validateAddStation(data));
+  }
+
+  return deoRepository.addStation(data);
 };
 
 const updateDelay = async (username, data) => {
@@ -193,6 +201,7 @@ module.exports = {
   createRailwayStation,
   createRoute,
   scheduleTrip,
+  addStation,
   updateDelay,
   updateProfile,
 };

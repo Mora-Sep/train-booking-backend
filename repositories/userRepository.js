@@ -90,6 +90,59 @@ const updateRU = async (user) => {
     });
 };
 
+const updateForgotPW = async (token, expirationTime, email) => {
+  return connection("registered_user")
+    .where("registered_user.email", email)
+    .update({
+      reset_password_token: token,
+      reset_password_expires: expirationTime,
+    })
+    .then((result) => {
+      return result[0];
+    });
+};
+
+const findUserByToken = async (token) => {
+  return connection("registered_user")
+    .where({ reset_password_token: token })
+    .andWhere("reset_password_expires", ">", Date.now())
+    .then((user) => {
+      if (user.length) {
+        return user[0];
+      } else {
+        return null;
+      }
+    });
+};
+
+const updatePassword = async (username, password) => {
+  await connection("registered_user")
+    .where("registered_user.Username", username)
+    .update({
+      reset_password_token: null,
+      reset_password_expires: null,
+    });
+  return connection("user").where("user.Username", username).update({
+    password,
+  });
+};
+
+const getMailByBookingRefId = async (bookingRefId) => {
+  const username = await connection("booking")
+    .where({ Booking_Ref_ID: bookingRefId })
+    .select("User")
+    .then((result) => {
+      return result[0].User;
+    });
+
+  return connection("registered_user")
+    .where({ Username: username })
+    .select("Email")
+    .then((result) => {
+      return result[0].Email;
+    });
+};
+
 module.exports = {
   findUserByEmail,
   findUserByUsername,
@@ -99,4 +152,8 @@ module.exports = {
   getPassword,
   updateUser,
   updateRU,
+  updateForgotPW,
+  findUserByToken,
+  updatePassword,
+  getMailByBookingRefId,
 };

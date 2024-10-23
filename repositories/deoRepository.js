@@ -104,12 +104,26 @@ const createRoute = async (data) => {
 
 const scheduleTrip = async (data) => {
   await deoConnection.raw(`SET @status_var = FALSE`);
+  await deoConnection.raw(`SET @new_trip_id = 1`);
   const status = await deoConnection.raw(
-    "CALL ScheduleTrip(?, ?, ?, ?, @status_var)",
-    [data.routeID, data.trainCode, data.departureTime, data.frequency]
+    "CALL ScheduleTrip(?, ?, ?, ?, @status_var, @new_trip_id)",
+    [data.routeID, data.trainCode, data.departureTime, data.date]
   );
 
-  return status;
+  // Retrieve the OUT parameter values (status_var and new_trip_id)
+  const result = await deoConnection.raw(
+    "SELECT @status_var AS status_var, @new_trip_id AS new_trip_id"
+  );
+
+  return result[0]; // Return the object with status_var and new_trip_id
+};
+
+const addStation = async (data) => {
+  const { tripID: Schedule, code, sequence } = data;
+  const result = await deoConnection
+    .insert({ Schedule, code, sequence })
+    .into("intermediate_station");
+  return result;
 };
 
 const updateDelay = async (data) => {
@@ -132,6 +146,7 @@ module.exports = {
   createRailwayStation,
   createRoute,
   scheduleTrip,
+  addStation,
   updateDelay,
   updateProfile,
 };
