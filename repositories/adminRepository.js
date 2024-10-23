@@ -73,8 +73,20 @@ const updateProfile = async (username, data) => {
 };
 
 const getAllScheduledTrips = async () => {
+  const padZero = (num) => String(num).padStart(2, "0");
+
+  const currentDateIST = new Date().toLocaleString("en-GB", {
+    timeZone: "Asia/Kolkata",
+  });
+
+  const [date] = currentDateIST.split(", ");
+  const [day, month, year] = date.split("/");
+
+  const formattedDateIST = `${year}-${padZero(month)}-${padZero(day)}`;
+
   return adminConnection("admin_trip")
     .select("*")
+    .where("date", "=", formattedDateIST)
     .then((trips) => {
       return trips;
     });
