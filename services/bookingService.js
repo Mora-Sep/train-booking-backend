@@ -155,7 +155,27 @@ const userGetPendingPayments = async (username) => {
 const userGetPaymentHistory = async (username) => {
   const fetchedUser = userRepository.findUserByUsername(username);
   if (!fetchedUser) throw new Error("No such user exists");
-  return bookingRepository.userGetPaymentHistory(username);
+
+  const result = await bookingRepository.userGetPaymentHistory(username);
+
+  // Convert the date in each result to IST and format as YYYY-MM-DD
+  const convertedResult = result.map((booking) => {
+    const dateIST = new Date(booking.date).toLocaleString("en-GB", {
+      timeZone: "Asia/Kolkata",
+    });
+
+    const [date] = dateIST.split(", ");
+    const [day, month, year] = date.split("/");
+
+    // Replace the date with formatted IST date
+    booking.date = `${year}-${String(month).padStart(2, "0")}-${String(
+      day
+    ).padStart(2, "0")}`;
+
+    return booking;
+  });
+
+  return convertedResult;
 };
 
 const guestGetPendingPayments = async (guestID) => {
