@@ -52,17 +52,28 @@ const guestCreateBooking = async (data, finalPrice) => {
 };
 
 const userCancelBooking = async (username, bookingRefID) => {
-  const currentDateTime = new Date()
-    .toISOString()
-    .slice(0, 19)
-    .replace("T", " ");
+  // const currentDateTime = new Date()
+  //   .toISOString()
+  //   .slice(0, 19)
+  //   .replace("T", " ");
+
+  const padZero = (num) => String(num).padStart(2, "0");
+
+  const currentDateIST = new Date().toLocaleString("en-GB", {
+    timeZone: "Asia/Kolkata",
+  });
+
+  const [date] = currentDateIST.split(", ");
+  const [day, month, year] = date.split("/");
+
+  const formattedDateIST = `${year}-${padZero(month)}-${padZero(day)}`;
 
   // Check if the booking exists for the user
   const bookingExists = await ruConnection.raw(
     `SELECT COUNT(*) as count 
      FROM booking 
      WHERE Booking_Ref_ID = ? AND User = ? AND Created_At > ?`,
-    [bookingRefID, username, currentDateTime]
+    [bookingRefID, username, formattedDateIST]
   );
 
   if (bookingExists[0][0].count > 0) {
@@ -368,12 +379,19 @@ const userGetPaymentHistory = async (username) => {
   const data = await ruConnection("booking as bkset")
     .select(
       "bkset.Booking_Ref_ID as bookingRefID",
+      "st.Date as date",
+      "st.Departure_Time as time",
       "bkset.Final_Price as price",
       "rs1.Name as from",
       "rs2.Name as to"
     )
     .innerJoin("railway_station as rs1", "bkset.from_station", "rs1.Code")
     .innerJoin("railway_station as rs2", "bkset.to_station", "rs2.Code")
+    .innerJoin(
+      "scheduled_trip as st",
+      "bkset.scheduled_trip",
+      "st.Scheduled_ID"
+    )
     .where("bkset.User", username)
     .andWhere("bkset.Completed", 1)
     .orderBy("bkset.Created_At", "desc")
